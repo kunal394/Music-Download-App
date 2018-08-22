@@ -7,6 +7,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.example.bandcampdownloader.bandcamp.BandcampParser;
+
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +49,14 @@ public class SongsListDownloadService extends DownloadService<String, ArtistInfo
 
         @Override
         protected ArtistInfo doInBackground(String... strings) {
-            publishProgress("");
+            SongsListDownloadService songsListDownloadService = service.get();
+            DownloadCallback downloadCallback = null;
+            if (songsListDownloadService == null) {
+                Log.d(TAG, "FetchSongsListTask doInBackground(): Service found null!");
+            } else {
+                downloadCallback = songsListDownloadService.getDownloadCallback();
+            }
+            new BandcampParser(strings[0], downloadCallback);
             return null;
         }
 
