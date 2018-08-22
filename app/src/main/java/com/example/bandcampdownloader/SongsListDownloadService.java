@@ -5,24 +5,20 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SongsListDownloadService extends Service {
+public class SongsListDownloadService extends DownloadService<String, ArtistInfo> {
 
+    private static final String TAG = SongsListDownloadService.class.getSimpleName();
     private final IBinder binder = new LocalBinder();
-
-    private DownloadCallback downloadCallback;
 
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
-    }
-
-    public ArtistInfo fetchSongsList(String url) {
-        return new ArtistInfo();
     }
 
     public class LocalBinder extends Binder {
@@ -31,15 +27,12 @@ public class SongsListDownloadService extends Service {
         }
     }
 
-    public void startDownload(ArtistInfo artistInfo) {
+    public void startDownload(String url) {
+        new FetchSongsListTask(this).execute(url);
     }
 
-    public void setDownloadCallback(DownloadCallback downloadCallback) {
-        this.downloadCallback = downloadCallback;
-    }
-
-    public DownloadCallback getDownloadCallback() {
-        return downloadCallback;
+    public void onTaskCompletion() {
+        stopSelf();
     }
 
     private static class FetchSongsListTask extends AsyncTask<String, String, ArtistInfo> {
@@ -48,7 +41,7 @@ public class SongsListDownloadService extends Service {
         // and keeping a weak reference to the service in order to use the service methods and variables from inside this class
         private final WeakReference<SongsListDownloadService> service;
 
-        public FetchSongsListTask(SongsListDownloadService service) {
+        FetchSongsListTask(SongsListDownloadService service) {
             this.service = new WeakReference<>(service);
         }
 
@@ -59,9 +52,26 @@ public class SongsListDownloadService extends Service {
         }
 
         @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            SongsListDownloadService songsListDownloadService = service.get();
+            if (songsListDownloadService == null) {
+                Log.d(TAG, "FetchSongsListTask onProgressUpdate(): Service found null!");
+                return ;
+            }
+            songsListDownloadService.getDownloadCallback().updateFromDownload(null);
+        }
+
+        @Override
         protected void onPostExecute(ArtistInfo artistInfo) {
             super.onPostExecute(artistInfo);
-            service.get().getDownloadCallback().finishDownloading();
+            SongsListDownloadService songsListDownloadService = service.get();
+            if (songsListDownloadService == null) {
+                Log.d(TAG, "FetchSongsListTask onPostExecute(): Service found null!");
+                return;
+            }
+            songsListDownloadService.getDownloadCallback().finishDownloading();
+            songsListDownloadService.onTaskCompletion();
         }
     }
 }

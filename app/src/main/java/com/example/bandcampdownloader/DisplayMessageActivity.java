@@ -20,8 +20,9 @@ public class DisplayMessageActivity extends FragmentActivity {
     private ServiceConnection songsListDownloadServiceConnection;
     private ServiceConnection songsDownloadServiceConnection;
     private ConnectivityManager.NetworkCallback networkCallback;
-    private DownloadCallback downloadCallbackForSongsListDownload;
-    private DownloadCallback downloadCallbackForSongsDownload;
+    private DownloadCallback<ArtistInfo> downloadCallbackForSongsListDownload;
+    private DownloadCallback<ArtistInfo> downloadCallbackForSongsDownload;
+    private ArtistInfo parsedArtistInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +32,8 @@ public class DisplayMessageActivity extends FragmentActivity {
         performInitialSetup();
 
         String url = savedInstanceState.getString(MainActivity.DOWNLOAD_URL);
-        ArtistInfo artistInfo = fetchSongsList(url);
-        displaySongsList(artistInfo);
+        fetchSongsList(url);
+        displaySongsList(parsedArtistInfo);
         downloadSelectedSongs(getSelectedSongs());
     }
 
@@ -66,10 +67,10 @@ public class DisplayMessageActivity extends FragmentActivity {
         regDownloadCallbackForSongs();
     }
 
-    private ArtistInfo fetchSongsList(String url) {
+    private void fetchSongsList(String url) {
         Intent intent = new Intent(DisplayMessageActivity.this, SongsListDownloadService.class);
         bindService(intent, songsListDownloadServiceConnection, Context.BIND_AUTO_CREATE);
-        return songsListDownloadService.fetchSongsList(url);
+        songsListDownloadService.startDownload(url);
     }
 
     private void displaySongsList(ArtistInfo artistInfo) {
@@ -83,7 +84,7 @@ public class DisplayMessageActivity extends FragmentActivity {
     private void downloadSelectedSongs(ArtistInfo artistInfo) {
         Intent intent = new Intent(DisplayMessageActivity.this, SongsListDownloadService.class);
         bindService(intent, songsDownloadServiceConnection, Context.BIND_AUTO_CREATE);
-        songsListDownloadService.startDownload(artistInfo);
+        songsDownloadService.startDownload(artistInfo);
     }
 
     private void createNetworkCallback() {
@@ -170,9 +171,9 @@ public class DisplayMessageActivity extends FragmentActivity {
 
     private void regDownloadCallbackForSongs() {
         Log.d(TAG, "regDownloadCallbackForSongs()");
-        downloadCallbackForSongsDownload = new DownloadCallback<SongInfo>() {
+        downloadCallbackForSongsDownload = new DownloadCallback<ArtistInfo>() {
             @Override
-            public void updateFromDownload(SongInfo songInfo) {
+            public void updateFromDownload(ArtistInfo artistInfo) {
             }
 
             @Override
