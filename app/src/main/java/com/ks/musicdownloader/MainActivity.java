@@ -1,4 +1,4 @@
-package com.example.bandcampdownloader;
+package com.ks.musicdownloader;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.EditText;
 
+@SuppressWarnings("DanglingJavadoc")
 public class MainActivity extends Activity {
 
     public static final String DOWNLOAD_URL = "com.example.secondapp.DOWNLOAD_URL";
@@ -53,7 +54,7 @@ public class MainActivity extends Activity {
 
     private void createIntentAndDelegateActivity() {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.editText);
+        EditText editText = findViewById(R.id.editText);
         String url = editText.getText().toString();
         if (URLUtil.isValidUrl(url)) {
             intent.putExtra(DOWNLOAD_URL, url);

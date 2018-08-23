@@ -1,4 +1,4 @@
-package com.example.bandcampdownloader;
+package com.ks.musicdownloader;
 
 public class SongInfo {
 

@@ -1,8 +1,8 @@
-package com.example.bandcampdownloader.bandcamp;
+package com.ks.musicdownloader.bandcamp;
 
-import com.example.bandcampdownloader.ArtistInfo;
-import com.example.bandcampdownloader.DownloadCallback;
-import com.example.bandcampdownloader.SongsInfoParser;
+import com.ks.musicdownloader.ArtistInfo;
+import com.ks.musicdownloader.DownloadCallback;
+import com.ks.musicdownloader.SongsInfoParser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

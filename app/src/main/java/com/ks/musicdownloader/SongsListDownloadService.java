@@ -1,4 +1,4 @@
-package com.example.bandcampdownloader;
+package com.ks.musicdownloader;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -6,7 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.example.bandcampdownloader.bandcamp.BandcampParser;
+import com.ks.musicdownloader.bandcamp.BandcampParser;
 
 import java.lang.ref.WeakReference;
 

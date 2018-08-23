@@ -1,4 +1,4 @@
-package com.example.bandcampdownloader;
+package com.ks.musicdownloader;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

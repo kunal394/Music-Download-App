@@ -1,4 +1,4 @@
-package com.example.bandcampdownloader;
+package com.ks.musicdownloader;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.util.Log;
 
+@SuppressWarnings("DanglingJavadoc")
 public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
