@@ -1,5 +1,7 @@
 package com.example.bandcampdownloader;
 
+import java.io.IOException;
+
 public abstract class SongsInfoParser {
 
     private String url;
@@ -11,5 +13,13 @@ public abstract class SongsInfoParser {
         this.downloadCallback = downloadCallback;
     }
 
-    public abstract ArtistInfo parseArtistInfo();
+    public abstract ArtistInfo parseArtistInfo() throws IOException;
+
+    protected String getUrl() {
+        return url;
+    }
+
+    protected DownloadCallback getDownloadCallback() {
+        return downloadCallback;
+    }
 }
