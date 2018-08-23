@@ -13,7 +13,7 @@ import android.widget.EditText;
 @SuppressWarnings("DanglingJavadoc")
 public class MainActivity extends Activity {
 
-    public static final String DOWNLOAD_URL = "com.example.secondapp.DOWNLOAD_URL";
+    public static final String DOWNLOAD_URL = "com.ks.musicdownloader.DOWNLOAD_URL";
 
     private static final String TAG = MainActivity.class.getSimpleName();
 

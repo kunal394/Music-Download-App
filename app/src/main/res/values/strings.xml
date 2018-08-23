@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SecondApp</string>
+    <string name="app_name">MusicDownloader</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
     <string name="dialog_ok">OK</string>
