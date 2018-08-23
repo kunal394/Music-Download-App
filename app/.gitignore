@@ -1,1 +1,54 @@
-/build
+# gradle setting
+.gradle/
+gradle*
+!gradle.properties
+ 
+# Android Studio
+.idea/
+*.iml
+ 
+# build output
+build/
+
+sec/
+!**/com/sec/
+ 
+# Local setting file
+local.properties
+
+#ignore thumbnails created by windows
+Thumbs.db
+#Ignore files build by Visual Studio
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+*.dll
+*.lib
+*.sbr
+*.iml
+/build/
+/*/build/
+.idea/
+sec/
+.gradle/
+gradle/
+local.properties
+gradlew
+gradlew.bat
+*.properties
+.gitignore
+gen
