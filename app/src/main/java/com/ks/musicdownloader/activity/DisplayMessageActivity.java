@@ -15,30 +15,43 @@ import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.DownloadCallback;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.NetworkUtils;
-import com.ks.musicdownloader.service.SongsDownloadService;
-import com.ks.musicdownloader.service.SongsListDownloadService;
+import com.ks.musicdownloader.service.DownloaderService;
+import com.ks.musicdownloader.service.ParserService;
+import com.ks.musicdownloader.songsprocessors.SongsFactory;
+import com.ks.musicdownloader.songsprocessors.SongsProcessors;
 
 public class DisplayMessageActivity extends FragmentActivity {
 
     private static final String TAG = DisplayMessageActivity.class.getSimpleName();
+
+    private String url;
     private boolean networkConnected = true;
-    private SongsDownloadService songsDownloadService;
-    private SongsListDownloadService songsListDownloadService;
-    private ServiceConnection songsListDownloadServiceConnection;
-    private ServiceConnection songsDownloadServiceConnection;
+    private ParserService parserService;
+    private DownloaderService downloaderService;
+    private ServiceConnection parserServiceConnection;
+    private ServiceConnection downloaderServiceConnection;
     private ConnectivityManager.NetworkCallback networkCallback;
-    private DownloadCallback<ArtistInfo> downloadCallbackForSongsListDownload;
-    private DownloadCallback<ArtistInfo> downloadCallbackForSongsDownload;
+    private DownloadCallback<ArtistInfo> downloadCallbackForParser;
+    private DownloadCallback<ArtistInfo> downloadCallbackForDownloader;
     private ArtistInfo parsedArtistInfo;
+    private SongsProcessors songsProcessors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_message);
+        url = savedInstanceState.getString(MainActivity.DOWNLOAD_URL);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         performInitialSetup();
-
-        String url = savedInstanceState.getString(MainActivity.DOWNLOAD_URL);
+        songsProcessors = SongsFactory.getInstance().
+                getSongsProcessors(url, downloadCallbackForParser, downloadCallbackForDownloader);
+        if (songsProcessors == null) {
+            Log.d(TAG, "onStart(): No suitable processor found for the given url: " + url);
+        }
         fetchSongsList(url);
         displaySongsList(parsedArtistInfo);
         downloadSelectedSongs(getSelectedSongs());
@@ -57,27 +70,25 @@ public class DisplayMessageActivity extends FragmentActivity {
 
     private void unRegisterAllCallbacks() {
         NetworkUtils.unRegReceiverForConnectionValidationOnly(this, networkCallback);
-        songsListDownloadService.setDownloadCallback(null);
-        songsDownloadService.setDownloadCallback(null);
-        Intent songsListDownloadServiceintent = new Intent(DisplayMessageActivity.this, SongsListDownloadService.class);
-        Intent songsDownloadServiceintent = new Intent(DisplayMessageActivity.this, SongsListDownloadService.class);
-        stopService(songsListDownloadServiceintent);
-        stopService(songsDownloadServiceintent);
+        parserService.setDownloadCallback(null);
+        downloaderService.setDownloadCallback(null);
+        stopService(new Intent(DisplayMessageActivity.this, ParserService.class));
+        stopService(new Intent(DisplayMessageActivity.this, DownloaderService.class));
     }
 
     private void performInitialSetup() {
         createNetworkCallback();
         NetworkUtils.regReceiverForConnectionValidationOnly(this, networkCallback);
-        createServiceConnForSongsListDownloadService();
-        createServiceConnForSongsDownloadService();
-        regDownloadCallbackForSongsList();
-        regDownloadCallbackForSongs();
+        createServiceConnForParserService();
+        createServiceConnForDownloaderService();
+        createDownloadCallbackForParser();
+        createDownloadCallbackForDownloader();
     }
 
     private void fetchSongsList(String url) {
-        Intent intent = new Intent(DisplayMessageActivity.this, SongsListDownloadService.class);
-        bindService(intent, songsListDownloadServiceConnection, Context.BIND_AUTO_CREATE);
-        songsListDownloadService.startDownload(url);
+        Intent intent = new Intent(DisplayMessageActivity.this, ParserService.class);
+        bindService(intent, parserServiceConnection, Context.BIND_AUTO_CREATE);
+        parserService.startDownload(url);
     }
 
     private void displaySongsList(ArtistInfo artistInfo) {
@@ -89,9 +100,9 @@ public class DisplayMessageActivity extends FragmentActivity {
     }
 
     private void downloadSelectedSongs(ArtistInfo artistInfo) {
-        Intent intent = new Intent(DisplayMessageActivity.this, SongsListDownloadService.class);
-        bindService(intent, songsDownloadServiceConnection, Context.BIND_AUTO_CREATE);
-        songsDownloadService.startDownload(artistInfo);
+        Intent intent = new Intent(DisplayMessageActivity.this, ParserService.class);
+        bindService(intent, downloaderServiceConnection, Context.BIND_AUTO_CREATE);
+        downloaderService.startDownload(artistInfo);
     }
 
     private void createNetworkCallback() {
@@ -112,14 +123,15 @@ public class DisplayMessageActivity extends FragmentActivity {
         };
     }
 
-    private void createServiceConnForSongsListDownloadService() {
-        Log.d(TAG, "createServiceConnForSongsListDownloadService()");
-        songsListDownloadServiceConnection = new ServiceConnection() {
+    private void createServiceConnForParserService() {
+        Log.d(TAG, "createServiceConnForParserService()");
+        parserServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                SongsListDownloadService.LocalBinder binder = (SongsListDownloadService.LocalBinder) iBinder;
-                songsListDownloadService = binder.getService();
-                songsListDownloadService.setDownloadCallback(downloadCallbackForSongsListDownload);
+                ParserService.LocalBinder binder = (ParserService.LocalBinder) iBinder;
+                parserService = binder.getService();
+                parserService.setDownloadCallback(downloadCallbackForParser);
+                parserService.setSongsParser(songsProcessors.getSongsParser());
             }
 
             @Override
@@ -129,14 +141,15 @@ public class DisplayMessageActivity extends FragmentActivity {
         };
     }
 
-    private void createServiceConnForSongsDownloadService() {
-        Log.d(TAG, "createServiceConnForSongsDownloadService()");
-        songsDownloadServiceConnection = new ServiceConnection() {
+    private void createServiceConnForDownloaderService() {
+        Log.d(TAG, "createServiceConnForDownloaderService()");
+        downloaderServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                SongsDownloadService.LocalBinder binder = (SongsDownloadService.LocalBinder) iBinder;
-                songsDownloadService = binder.getService();
-                songsDownloadService.setDownloadCallback(downloadCallbackForSongsDownload);
+                DownloaderService.LocalBinder binder = (DownloaderService.LocalBinder) iBinder;
+                downloaderService = binder.getService();
+                downloaderService.setDownloadCallback(downloadCallbackForDownloader);
+                downloaderService.setSongsDownloader(songsProcessors.getSongsDownloader());
             }
 
             @Override
@@ -146,9 +159,9 @@ public class DisplayMessageActivity extends FragmentActivity {
         };
     }
 
-    private void regDownloadCallbackForSongsList() {
-        Log.d(TAG, "regDownloadCallbackForSongsList()");
-        downloadCallbackForSongsListDownload = new DownloadCallback<ArtistInfo>() {
+    private void createDownloadCallbackForParser() {
+        Log.d(TAG, "createDownloadCallbackForParser()");
+        downloadCallbackForParser = new DownloadCallback<ArtistInfo>() {
             @Override
             public void updateFromDownload(ArtistInfo result) {
 
@@ -176,9 +189,9 @@ public class DisplayMessageActivity extends FragmentActivity {
         };
     }
 
-    private void regDownloadCallbackForSongs() {
-        Log.d(TAG, "regDownloadCallbackForSongs()");
-        downloadCallbackForSongsDownload = new DownloadCallback<ArtistInfo>() {
+    private void createDownloadCallbackForDownloader() {
+        Log.d(TAG, "createDownloadCallbackForDownloader()");
+        downloadCallbackForDownloader = new DownloadCallback<ArtistInfo>() {
             @Override
             public void updateFromDownload(ArtistInfo artistInfo) {
             }

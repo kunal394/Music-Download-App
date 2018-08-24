@@ -1,15 +1,15 @@
 package com.ks.musicdownloader.songsprocessors.bandcamp;
 
 import com.ks.musicdownloader.ArtistInfo;
+import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.DownloadCallback;
+import com.ks.musicdownloader.Utils.RegexUtils;
 import com.ks.musicdownloader.songsprocessors.SongsParser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class BandcampParser extends SongsParser {
 
@@ -26,20 +26,9 @@ public class BandcampParser extends SongsParser {
         return new ArtistInfo();
     }
 
-    private String getRegexResult(String pattern, String text) {
-        String matched = "";
-        Pattern p = Pattern.compile(pattern);
-        Matcher m = p.matcher(text);
-        if (m.find()) {
-            matched = m.group();
-        }
-        return matched;
-    }
-
     private String getTralbumData(String url) throws IOException {
-        String regex = "(?<=var\\sTralbumData\\s=\\s)(.)*?(?=};)";
         Document document = Jsoup.connect(url).get();
         String scriptData = document.getElementsByTag("script").toString().replaceAll("\\s", " ");
-        return getRegexResult(regex, scriptData);
+        return RegexUtils.getFirstRegexResult(Constants.BANDCAMP_TRALBUM_REGEX, scriptData);
     }
 }

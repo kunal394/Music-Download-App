@@ -20,12 +20,19 @@ public abstract class SongsDownloader {
 
     private DownloadCallback downloadCallback;
 
-    public SongsDownloader(ArtistInfo artistInfo, DownloadCallback downloadCallback) {
-        this.artistInfo = artistInfo;
+    public SongsDownloader(DownloadCallback downloadCallback) {
         this.downloadCallback = downloadCallback;
     }
 
     public abstract void downloadSongs();
+
+    public void setArtistInfo(ArtistInfo artistInfo) {
+        this.artistInfo = artistInfo;
+    }
+
+    public void setDownloadCallback(DownloadCallback downloadCallback) {
+        this.downloadCallback = downloadCallback;
+    }
 
     protected boolean downloadAndSaveSong(String url, String filePath) {
         try {

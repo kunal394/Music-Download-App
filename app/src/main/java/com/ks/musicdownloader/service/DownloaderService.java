@@ -8,13 +8,15 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.ks.musicdownloader.ArtistInfo;
+import com.ks.musicdownloader.songsprocessors.SongsDownloader;
 
 import java.lang.ref.WeakReference;
 
-public class SongsDownloadService extends DownloadService<ArtistInfo, ArtistInfo> {
+public class DownloaderService extends DownloadService<ArtistInfo, ArtistInfo> {
 
-    private static final String TAG = SongsDownloadService.class.getSimpleName();
+    private static final String TAG = DownloaderService.class.getSimpleName();
     private final IBinder binder = new LocalBinder();
+    private SongsDownloader songsDownloader;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -37,18 +39,26 @@ public class SongsDownloadService extends DownloadService<ArtistInfo, ArtistInfo
     }
 
     public class LocalBinder extends Binder {
-        public SongsDownloadService getService() {
-            return SongsDownloadService.this;
+        public DownloaderService getService() {
+            return DownloaderService.this;
         }
+    }
+
+    public SongsDownloader getSongsDownloader() {
+        return songsDownloader;
+    }
+
+    public void setSongsDownloader(SongsDownloader songsDownloader) {
+        this.songsDownloader = songsDownloader;
     }
 
     private static class SongsDownloadTask extends AsyncTask<ArtistInfo, String, ArtistInfo> {
 
         // making this class static t avoid memory leak, since now static inner class can not access the members of its outer class
         // and keeping a weak reference to the service in order to use the service methods and variables from inside this class
-        private final WeakReference<SongsDownloadService> service;
+        private final WeakReference<DownloaderService> service;
 
-        SongsDownloadTask(SongsDownloadService service) {
+        SongsDownloadTask(DownloaderService service) {
             this.service = new WeakReference<>(service);
         }
 
@@ -60,24 +70,24 @@ public class SongsDownloadService extends DownloadService<ArtistInfo, ArtistInfo
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-            SongsDownloadService songsDownloadService = service.get();
-            if (songsDownloadService == null) {
+            DownloaderService downloaderService = service.get();
+            if (downloaderService == null) {
                 Log.d(TAG, "SongsDownloadTask onProgressUpdate(): Service found null!");
                 return ;
             }
-            songsDownloadService.getDownloadCallback().updateFromDownload(null);
+            downloaderService.getDownloadCallback().updateFromDownload(null);
         }
 
         @Override
         protected void onPostExecute(ArtistInfo artistInfo) {
             super.onPostExecute(artistInfo);
-            SongsDownloadService songsDownloadService = service.get();
-            if (songsDownloadService == null) {
+            DownloaderService downloaderService = service.get();
+            if (downloaderService == null) {
                 Log.d(TAG, "SongsDownloadTask onPostExecute(): Service found null!");
                 return;
             }
-            songsDownloadService.getDownloadCallback().finishDownloading();
-            songsDownloadService.onTaskCompletion();
+            downloaderService.getDownloadCallback().finishDownloading();
+            downloaderService.onTaskCompletion();
         }
     }
 }
