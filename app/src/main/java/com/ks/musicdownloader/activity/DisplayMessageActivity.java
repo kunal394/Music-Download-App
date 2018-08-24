@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.ks.musicdownloader.ArtistInfo;
+import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.DownloadCallback;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.NetworkUtils;
@@ -40,7 +41,7 @@ public class DisplayMessageActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_message);
-        url = savedInstanceState.getString(MainActivity.DOWNLOAD_URL);
+        url = savedInstanceState.getString(Constants.DOWNLOAD_URL);
     }
 
     @Override

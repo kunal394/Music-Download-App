@@ -10,13 +10,12 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 
+import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.NetworkUtils;
 
 @SuppressWarnings("DanglingJavadoc")
 public class MainActivity extends Activity {
-
-    public static final String DOWNLOAD_URL = "com.ks.musicdownloader.DOWNLOAD_URL";
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -60,7 +59,7 @@ public class MainActivity extends Activity {
         EditText editText = findViewById(R.id.editText);
         String url = editText.getText().toString();
         if (Patterns.WEB_URL.matcher(url).matches()) {
-            intent.putExtra(DOWNLOAD_URL, url);
+            intent.putExtra(Constants.DOWNLOAD_URL, url);
             startActivity(intent);
         } else {
             Log.d(TAG, "Error with the url: " + url);

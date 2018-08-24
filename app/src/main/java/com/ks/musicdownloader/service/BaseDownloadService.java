@@ -4,7 +4,7 @@ import android.app.Service;
 
 import com.ks.musicdownloader.DownloadCallback;
 
-public abstract class DownloadService<Input, Res> extends Service {
+public abstract class BaseDownloadService<Input, Res> extends Service {
 
     protected DownloadCallback<Res> downloadCallback;
 

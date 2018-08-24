@@ -12,9 +12,10 @@ import com.ks.musicdownloader.songsprocessors.SongsDownloader;
 
 import java.lang.ref.WeakReference;
 
-public class DownloaderService extends DownloadService<ArtistInfo, ArtistInfo> {
+public class DownloaderService extends BaseDownloadService<ArtistInfo, ArtistInfo> {
 
     private static final String TAG = DownloaderService.class.getSimpleName();
+
     private final IBinder binder = new LocalBinder();
     private SongsDownloader songsDownloader;
 
@@ -73,7 +74,7 @@ public class DownloaderService extends DownloadService<ArtistInfo, ArtistInfo> {
             DownloaderService downloaderService = service.get();
             if (downloaderService == null) {
                 Log.d(TAG, "SongsDownloadTask onProgressUpdate(): Service found null!");
-                return ;
+                return;
             }
             downloaderService.getDownloadCallback().updateFromDownload(null);
         }

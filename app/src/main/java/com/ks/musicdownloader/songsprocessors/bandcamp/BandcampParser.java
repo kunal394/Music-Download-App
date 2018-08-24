@@ -14,7 +14,6 @@ import java.io.IOException;
 public class BandcampParser extends SongsParser {
 
     private static final String TAG = BandcampParser.class.getSimpleName();
-    private String TEST_URL = "https://allthemwitches.bandcamp.com/album/our-mother-electricity";
 
     public BandcampParser(String url, DownloadCallback downloadCallback) {
         super(url, downloadCallback);

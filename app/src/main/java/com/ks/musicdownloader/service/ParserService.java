@@ -13,7 +13,7 @@ import com.ks.musicdownloader.songsprocessors.bandcamp.BandcampParser;
 
 import java.lang.ref.WeakReference;
 
-public class ParserService extends DownloadService<String, ArtistInfo> {
+public class ParserService extends BaseDownloadService<String, ArtistInfo> {
 
     private static final String TAG = ParserService.class.getSimpleName();
     private final IBinder binder = new LocalBinder();
