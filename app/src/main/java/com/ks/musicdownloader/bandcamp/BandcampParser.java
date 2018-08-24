@@ -2,7 +2,7 @@ package com.ks.musicdownloader.bandcamp;
 
 import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.DownloadCallback;
-import com.ks.musicdownloader.SongsInfoParser;
+import com.ks.musicdownloader.SongsParser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BandcampParser extends SongsInfoParser {
+public class BandcampParser extends SongsParser {
 
     private static final String TAG = BandcampParser.class.getSimpleName();
     private String TEST_URL = "https://allthemwitches.bandcamp.com/album/our-mother-electricity";

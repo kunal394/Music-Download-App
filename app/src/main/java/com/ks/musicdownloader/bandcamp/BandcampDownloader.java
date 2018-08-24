@@ -4,9 +4,9 @@ import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.DownloadCallback;
 import com.ks.musicdownloader.SongsDownloader;
 
-public class BandcampSongsDownloader extends SongsDownloader {
+public class BandcampDownloader extends SongsDownloader {
 
-    public BandcampSongsDownloader(ArtistInfo artistInfo, DownloadCallback downloadCallback) {
+    public BandcampDownloader(ArtistInfo artistInfo, DownloadCallback downloadCallback) {
         super(artistInfo, downloadCallback);
     }
 

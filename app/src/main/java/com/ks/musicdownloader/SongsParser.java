@@ -2,13 +2,13 @@ package com.ks.musicdownloader;
 
 import java.io.IOException;
 
-public abstract class SongsInfoParser {
+public abstract class SongsParser {
 
     private String url;
 
     private DownloadCallback downloadCallback;
 
-    public SongsInfoParser(String url, DownloadCallback downloadCallback) {
+    public SongsParser(String url, DownloadCallback downloadCallback) {
         this.url = url;
         this.downloadCallback = downloadCallback;
     }

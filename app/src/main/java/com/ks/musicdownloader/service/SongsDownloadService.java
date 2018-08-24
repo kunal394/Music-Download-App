@@ -1,4 +1,4 @@
-package com.ks.musicdownloader;
+package com.ks.musicdownloader.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.ks.musicdownloader.ArtistInfo;
 
 import java.lang.ref.WeakReference;
 
@@ -35,7 +37,7 @@ public class SongsDownloadService extends DownloadService<ArtistInfo, ArtistInfo
     }
 
     public class LocalBinder extends Binder {
-        SongsDownloadService getService() {
+        public SongsDownloadService getService() {
             return SongsDownloadService.this;
         }
     }

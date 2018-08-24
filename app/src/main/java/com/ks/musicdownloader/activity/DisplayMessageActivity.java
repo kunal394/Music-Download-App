@@ -1,4 +1,4 @@
-package com.ks.musicdownloader;
+package com.ks.musicdownloader.activity;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,6 +10,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+
+import com.ks.musicdownloader.ArtistInfo;
+import com.ks.musicdownloader.DownloadCallback;
+import com.ks.musicdownloader.R;
+import com.ks.musicdownloader.Utils.NetworkUtils;
+import com.ks.musicdownloader.service.SongsDownloadService;
+import com.ks.musicdownloader.service.SongsListDownloadService;
 
 public class DisplayMessageActivity extends FragmentActivity {
 

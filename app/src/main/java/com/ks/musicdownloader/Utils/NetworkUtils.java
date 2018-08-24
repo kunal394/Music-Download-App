@@ -1,4 +1,4 @@
-package com.ks.musicdownloader;
+package com.ks.musicdownloader.Utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

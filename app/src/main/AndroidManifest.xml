@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,8 +20,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DisplayMessageActivity"
-            android:parentActivityName=".MainActivity">
+            android:name=".activity.DisplayMessageActivity"
+            android:parentActivityName=".activity.MainActivity">
 
             <intent-filter>
                 <action android:name="com.ks.musicdownloader.DisplayMessage" />
@@ -31,18 +31,18 @@
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activity.MainActivity" />
         </activity>
         <!-- activity android:name=".DisplayMessageActivity"></activity -->
-        <activity android:name=".DisplaySecondMessage"
-            android:parentActivityName=".DisplayMessageActivity">
+        <activity android:name=".activity.DisplaySecondMessage"
+            android:parentActivityName=".activity.DisplayMessageActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".DisplayMessageActivity" />
+                android:value=".activity.DisplayMessageActivity" />
         </activity>
-        <service android:name=".SongsListDownloadService"
+        <service android:name=".service.SongsListDownloadService"
             android:enabled="true"/>
-        <service android:name=".SongsDownloadService" />
+        <service android:name=".service.SongsDownloadService" />
     </application>
 
 </manifest>

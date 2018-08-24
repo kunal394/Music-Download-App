@@ -1,4 +1,4 @@
-package com.ks.musicdownloader;
+package com.ks.musicdownloader.activity;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -9,6 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.EditText;
+
+import com.ks.musicdownloader.R;
+import com.ks.musicdownloader.Utils.NetworkUtils;
 
 @SuppressWarnings("DanglingJavadoc")
 public class MainActivity extends Activity {
