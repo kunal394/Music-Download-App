@@ -11,11 +11,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_descriptor"><!-- don't know what is fullbackup content. need to read this first-->
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -25,20 +25,12 @@
 
             <intent-filter>
                 <action android:name="com.ks.musicdownloader.DisplayMessage" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
-        </activity>
-        <!-- activity android:name=".DisplayMessageActivity"></activity -->
-        <activity android:name=".activity.DisplaySecondMessage"
-            android:parentActivityName=".activity.DisplayMessageActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.DisplayMessageActivity" />
         </activity>
         <service android:name=".service.SongsListDownloadService"
             android:enabled="true"/>
