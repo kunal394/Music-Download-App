@@ -1,1 +1,1 @@
-Android App for downloading songs from bandcamp.com
+Android App for downloading songs from various wensites.
