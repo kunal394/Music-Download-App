@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.DownloadCallback;
-import com.ks.musicdownloader.bandcamp.BandcampParser;
+import com.ks.musicdownloader.songsprocessors.bandcamp.BandcampParser;
 
 import java.lang.ref.WeakReference;
 

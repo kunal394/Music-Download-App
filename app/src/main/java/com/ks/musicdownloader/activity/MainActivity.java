@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
-import android.webkit.URLUtil;
 import android.widget.EditText;
 
 import com.ks.musicdownloader.R;
@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
         EditText editText = findViewById(R.id.editText);
         String url = editText.getText().toString();
-        if (URLUtil.isValidUrl(url)) {
+        if (Patterns.WEB_URL.matcher(url).matches()) {
             intent.putExtra(DOWNLOAD_URL, url);
             startActivity(intent);
         } else {

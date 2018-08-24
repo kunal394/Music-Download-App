@@ -1,4 +1,7 @@
-package com.ks.musicdownloader;
+package com.ks.musicdownloader.songsprocessors;
+
+import com.ks.musicdownloader.ArtistInfo;
+import com.ks.musicdownloader.DownloadCallback;
 
 import java.io.IOException;
 

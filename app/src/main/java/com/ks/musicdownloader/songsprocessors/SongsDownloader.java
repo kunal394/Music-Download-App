@@ -1,6 +1,9 @@
-package com.ks.musicdownloader;
+package com.ks.musicdownloader.songsprocessors;
 
 import android.util.Log;
+
+import com.ks.musicdownloader.ArtistInfo;
+import com.ks.musicdownloader.DownloadCallback;
 
 import java.io.File;
 import java.io.FileOutputStream;
