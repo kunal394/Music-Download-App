@@ -1,23 +1,25 @@
 package com.ks.musicdownloader.activity;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.NetworkUtils;
+import com.ks.musicdownloader.Utils.ToastUtils;
+import com.ks.musicdownloader.songsprocessors.SongsFactory;
 
 @SuppressWarnings("DanglingJavadoc")
 public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private SongsFactory songsFactory;
 
     /**
      * Called when the user taps the Send button
@@ -26,7 +28,7 @@ public class MainActivity extends Activity {
         if (NetworkUtils.isNetworkConnected(this)) {
             createIntentAndDelegateActivity();
         } else {
-            displayNoInternetDialog();
+            displayNoInternetToast();
         }
     }
 
@@ -39,44 +41,42 @@ public class MainActivity extends Activity {
     /******************Private************************************/
     /******************Methods************************************/
 
-    private void displayNoInternetDialog() {
-        // show a prompt notifying user that the internet is not available and return,
-        // otherwise start the other activity by passing the url provided by the user with the intent
-        new AlertDialog.Builder(this)
-                .setTitle("No Intenet Connection")
-                .setMessage("It seems you are not connected to the internet. Please connect and try again!")
-                .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setIcon(R.drawable.ic_launcher_background)
-                .show();
-    }
-
     private void createIntentAndDelegateActivity() {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
         EditText editText = findViewById(R.id.editText);
         String url = editText.getText().toString();
-        if (Patterns.WEB_URL.matcher(url).matches()) {
+        if (!Patterns.WEB_URL.matcher(url).matches()) {
+            Log.d(TAG, "Error with the url: " + url);
+            displayInvalidUrlToast();
+            return;
+        }
+        String siteName = getSongsFactory().getSite(url);
+        if (!siteName.equals("")) {
             intent.putExtra(Constants.DOWNLOAD_URL, url);
+            intent.putExtra(Constants.SITE_NAME, siteName);
             startActivity(intent);
         } else {
-            Log.d(TAG, "Error with the url: " + url);
-            displayInvalidURLDialog();
+            Log.d(TAG, "Unknown site: " + url);
+            displayUnsupportedSiteToast();
         }
     }
 
-    private void displayInvalidURLDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Invalid URL")
-                .setMessage("The url provided is not valid. Please try again with a valid url!")
-                .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setIcon(R.drawable.ic_launcher_background)
-                .show();
+    private void displayUnsupportedSiteToast() {
+        ToastUtils.displayToast(this, Constants.UNSUPPORTED_SITE, Toast.LENGTH_LONG);
+    }
+
+    private void displayInvalidUrlToast() {
+        ToastUtils.displayToast(this, Constants.INVALID_URL, Toast.LENGTH_LONG);
+    }
+
+    private void displayNoInternetToast() {
+        ToastUtils.displayToast(this, Constants.NO_INTERNET, Toast.LENGTH_LONG);
+    }
+
+    private SongsFactory getSongsFactory() {
+        if (songsFactory == null) {
+            songsFactory = SongsFactory.getInstance();
+        }
+        return songsFactory;
     }
 }

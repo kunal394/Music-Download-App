@@ -8,7 +8,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.ks.musicdownloader.ArtistInfo;
-import com.ks.musicdownloader.songsprocessors.SongsDownloader;
 
 import java.lang.ref.WeakReference;
 
@@ -17,7 +16,6 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, ArtistInf
     private static final String TAG = DownloaderService.class.getSimpleName();
 
     private final IBinder binder = new LocalBinder();
-    private SongsDownloader songsDownloader;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -43,14 +41,6 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, ArtistInf
         public DownloaderService getService() {
             return DownloaderService.this;
         }
-    }
-
-    public SongsDownloader getSongsDownloader() {
-        return songsDownloader;
-    }
-
-    public void setSongsDownloader(SongsDownloader songsDownloader) {
-        this.songsDownloader = songsDownloader;
     }
 
     private static class SongsDownloadTask extends AsyncTask<ArtistInfo, String, ArtistInfo> {

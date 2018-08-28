@@ -18,14 +18,14 @@ import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.NetworkUtils;
 import com.ks.musicdownloader.service.DownloaderService;
 import com.ks.musicdownloader.service.ParserService;
-import com.ks.musicdownloader.songsprocessors.SongsFactory;
-import com.ks.musicdownloader.songsprocessors.SongsProcessors;
+import com.ks.musicdownloader.songsprocessors.MusicSite;
 
 public class DisplayMessageActivity extends FragmentActivity {
 
     private static final String TAG = DisplayMessageActivity.class.getSimpleName();
 
     private String url;
+    private MusicSite musicSite;
     private boolean networkConnected = true;
     private ParserService parserService;
     private DownloaderService downloaderService;
@@ -35,24 +35,32 @@ public class DisplayMessageActivity extends FragmentActivity {
     private DownloadCallback<ArtistInfo> downloadCallbackForParser;
     private DownloadCallback<ArtistInfo> downloadCallbackForDownloader;
     private ArtistInfo parsedArtistInfo;
-    private SongsProcessors songsProcessors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate() starts");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_message);
         url = savedInstanceState.getString(Constants.DOWNLOAD_URL);
+        String siteName = savedInstanceState.getString(Constants.SITE_NAME);
+        if (siteName == null) {
+            musicSite = null;
+            return;
+        }
+        try {
+            musicSite = Enum.valueOf(MusicSite.class, siteName);
+        } catch (Exception e) {
+            // This should never happen
+            musicSite = null;
+            e.printStackTrace();
+            Log.d(TAG, "onCreate(): Error: Unknown website!");
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         performInitialSetup();
-        songsProcessors = SongsFactory.getInstance().
-                getSongsProcessors(url, downloadCallbackForParser, downloadCallbackForDownloader);
-        if (songsProcessors == null) {
-            Log.d(TAG, "onStart(): No suitable processor found for the given url: " + url);
-        }
         fetchSongsList(url);
         displaySongsList(parsedArtistInfo);
         downloadSelectedSongs(getSelectedSongs());
@@ -132,7 +140,7 @@ public class DisplayMessageActivity extends FragmentActivity {
                 ParserService.LocalBinder binder = (ParserService.LocalBinder) iBinder;
                 parserService = binder.getService();
                 parserService.setDownloadCallback(downloadCallbackForParser);
-                parserService.setSongsParser(songsProcessors.getSongsParser());
+                parserService.setSongsParser(musicSite.getMusicParser(url, downloadCallbackForParser));
             }
 
             @Override
@@ -150,7 +158,6 @@ public class DisplayMessageActivity extends FragmentActivity {
                 DownloaderService.LocalBinder binder = (DownloaderService.LocalBinder) iBinder;
                 downloaderService = binder.getService();
                 downloaderService.setDownloadCallback(downloadCallbackForDownloader);
-                downloaderService.setSongsDownloader(songsProcessors.getSongsDownloader());
             }
 
             @Override
