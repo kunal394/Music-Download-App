@@ -7,15 +7,18 @@ import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.util.Log;
 
+import com.ks.musicdownloader.Constants;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
+
 @SuppressWarnings("DanglingJavadoc")
 public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
-
-    public static boolean isNetworkConnected(Context context) {
-        NetworkInfo activeNetworkInfo = getActiveNetworkInfo(context);
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
     public static void regReceiverForConnectionValidationOnly(Context context, ConnectivityManager.NetworkCallback networkCallback) {
         Log.d(TAG, "regReceiverForConnectionValidationOnly");
@@ -53,6 +56,15 @@ public class NetworkUtils {
         connMgr.registerNetworkCallback(networkRequest, networkCallback);
     }
 
+    public static boolean doesUrlExists(String url) throws IOException {
+        if (RegexUtils.startsWithHTTP(url)) {
+            return doesHTTPUrlExists(url);
+        } else if (RegexUtils.startsWithHTTPS(url)) {
+            return doesHTTPSUrlExists(url);
+        }
+        return false;
+    }
+
     /******************Private************************************/
     /******************Methods************************************/
 
@@ -63,5 +75,21 @@ public class NetworkUtils {
 
     private static ConnectivityManager getConnectivityManager(Context context) {
         return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
+    private static boolean doesHTTPUrlExists(String url) throws IOException {
+        HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
+        httpURLConnection.setRequestMethod(Constants.REQUEST_HEAD);
+        httpURLConnection.connect();
+        int responseCode = httpURLConnection.getResponseCode();
+        return false;
+    }
+
+    private static boolean doesHTTPSUrlExists(String url) throws IOException {
+        HttpsURLConnection httpsURLConnection = (HttpsURLConnection) new URL(url).openConnection();
+        httpsURLConnection.setRequestMethod(Constants.REQUEST_HEAD);
+        httpsURLConnection.connect();
+        int responseCode = httpsURLConnection.getResponseCode();
+        return false;
     }
 }

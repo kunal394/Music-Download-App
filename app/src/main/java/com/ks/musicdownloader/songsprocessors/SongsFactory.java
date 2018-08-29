@@ -21,7 +21,7 @@ public class SongsFactory {
 
     public String getSite(String url) {
         for (MusicSite musicSite : MusicSite.values()) {
-            if (musicSite.isUrlMatching(url)) {
+            if (musicSite.isUrlMatchingAndExists(url)) {
                 return musicSite.name();
             }
         }
