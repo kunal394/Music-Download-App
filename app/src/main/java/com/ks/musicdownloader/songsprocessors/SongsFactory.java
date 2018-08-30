@@ -1,7 +1,5 @@
 package com.ks.musicdownloader.songsprocessors;
 
-import com.ks.musicdownloader.Constants;
-
 public class SongsFactory {
 
     private static final String TAG = SongsFactory.class.getSimpleName();
@@ -19,12 +17,12 @@ public class SongsFactory {
         return songsFactory;
     }
 
-    public String getSite(String url) {
+    public MusicSite getSite(String url) {
         for (MusicSite musicSite : MusicSite.values()) {
-            if (musicSite.isUrlMatchingAndExists(url)) {
-                return musicSite.name();
+            if (musicSite.isUrlMatching(url)) {
+                return musicSite;
             }
         }
-        return Constants.EMPTY_STRING;
+        return null;
     }
 }

@@ -12,7 +12,7 @@ public interface MusicSiteService {
      * @param url url to check
      * @return whether a url belongs to this site
      */
-    boolean isUrlMatchingAndExists(String url);
+    boolean isUrlMatching(String url);
 
     SongsParser getMusicParser(String url, DownloadCallback downloadCallback);
 

@@ -1,34 +1,46 @@
 package com.ks.musicdownloader.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.R;
+import com.ks.musicdownloader.Utils.CommonUtils;
 import com.ks.musicdownloader.Utils.NetworkUtils;
-import com.ks.musicdownloader.Utils.RegexUtils;
-import com.ks.musicdownloader.Utils.ToastUtils;
-import com.ks.musicdownloader.songsprocessors.SongsFactory;
 
 @SuppressWarnings("DanglingJavadoc")
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private SongsFactory songsFactory;
     private ConnectivityManager.NetworkCallback networkCallback;
     private boolean networkConnected;
+    private URLValidatorTaskListener urlValidatorTaskListener;
+    private ProgressBar validatorProgressBar;
+
+    /**
+     * Called when the user taps the Send button
+     */
+    public void sendMessage(View view) {
+        CommonUtils.hideKeyboard(this);
+        if (networkConnected) {
+            validateUrlAndStartActivityIfValid();
+        } else {
+            displayErrorToast(ValidationResult.NO_INTERNET);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        validatorProgressBar = findViewById(R.id.urlValidatorProgressBar);
     }
 
     @Override
@@ -37,6 +49,7 @@ public class MainActivity extends Activity {
         networkConnected = false;
         createNetworkCallback();
         NetworkUtils.regReceiverForConnectionValidationOnly(this, networkCallback);
+        createUrlValidatorListener();
     }
 
     // when display message activity opens, this function gets called
@@ -48,59 +61,14 @@ public class MainActivity extends Activity {
         networkCallback = null;
     }
 
-    /**
-     * Called when the user taps the Send button
-     */
-    public void sendMessage(View view) {
-        hideKeyboard();
-        if (networkConnected) {
-            validateUrlAndStartActivityIfValid();
-        } else {
-            displayNoInternetToast();
-        }
-    }
-
     /******************Private************************************/
     /******************Methods************************************/
 
-    private void hideKeyboard() {
-
-    }
-
     private void validateUrlAndStartActivityIfValid() {
-
-    }
-
-    private void createIntentAndDelegateActivity() {
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
         EditText editText = findViewById(R.id.editText);
         String url = editText.getText().toString();
-        if (Constants.EMPTY_STRING.equals(url)) {
-            displayNoUrlProvidedToast();
-            return;
-        } else if (!RegexUtils.isAValidUrl(url)) {
-            Log.d(TAG, "Error with the url: " + url);
-            displayInvalidUrlToast();
-            return;
-        }
-
-        url = prependHTTPSPartIfNotPresent(url);
-        String siteName = getSongsFactory().getSite(url);
-        if (!Constants.EMPTY_STRING.equals(siteName)) {
-            intent.putExtra(Constants.DOWNLOAD_URL, url);
-            intent.putExtra(Constants.SITE_NAME, siteName);
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Unknown site: " + url);
-            displayUnsupportedSiteToast();
-        }
-    }
-
-    private String prependHTTPSPartIfNotPresent(String url) {
-        if (!RegexUtils.startsWithHTTP(url) && !RegexUtils.startsWithHTTPS(url)) {
-            url = Constants.URL_HTTPS_PART + url;
-        }
-        return url;
+        displayValidatorProgressBar();
+        new URLValidatorTask(url, urlValidatorTaskListener).execute();
     }
 
     private void createNetworkCallback() {
@@ -121,26 +89,36 @@ public class MainActivity extends Activity {
         };
     }
 
-    private void displayNoInternetToast() {
-        ToastUtils.displayToast(this, Constants.NO_INTERNET, Toast.LENGTH_LONG);
+    private void createUrlValidatorListener() {
+        urlValidatorTaskListener = new URLValidatorTaskListener() {
+            @Override
+            public void handleValidatorResult(ValidationResult validationResult, String url, String siteName) {
+                hideValidatorProgressBar();
+                if (validationResult.isValidResult()) {
+                    createIntentAndDelegateActivity(url, siteName);
+                } else {
+                    displayErrorToast(validationResult);
+                }
+            }
+        };
     }
 
-    private void displayNoUrlProvidedToast() {
-        ToastUtils.displayToast(this, Constants.NO_URL_PROVIDED, Toast.LENGTH_LONG);
+    private void displayErrorToast(ValidationResult validationResult) {
+        validationResult.displayToast(this);
     }
 
-    private void displayInvalidUrlToast() {
-        ToastUtils.displayToast(this, Constants.INVALID_URL, Toast.LENGTH_LONG);
+    private void createIntentAndDelegateActivity(String url, String siteName) {
+        Intent intent = new Intent(this, DisplayListActivity.class);
+        intent.putExtra(Constants.DOWNLOAD_URL, url);
+        intent.putExtra(Constants.SITE_NAME, siteName);
+        startActivity(intent);
     }
 
-    private void displayUnsupportedSiteToast() {
-        ToastUtils.displayToast(this, Constants.UNSUPPORTED_SITE, Toast.LENGTH_LONG);
+    private void displayValidatorProgressBar() {
+        validatorProgressBar.setVisibility(View.VISIBLE);
     }
 
-    private SongsFactory getSongsFactory() {
-        if (songsFactory == null) {
-            songsFactory = SongsFactory.getInstance();
-        }
-        return songsFactory;
+    private void hideValidatorProgressBar() {
+        validatorProgressBar.setVisibility(View.GONE);
     }
 }

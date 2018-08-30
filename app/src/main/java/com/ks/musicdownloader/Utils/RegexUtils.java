@@ -7,6 +7,7 @@ import com.ks.musicdownloader.Constants;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("DanglingJavadoc")
 public class RegexUtils {
 
     public static boolean isAValidUrl(String url) {
@@ -27,11 +28,21 @@ public class RegexUtils {
         return matched;
     }
 
+    public static String prependHTTPSPartIfNotPresent(String url) {
+        if (!startsWithHTTP(url) && !startsWithHTTPS(url)) {
+            url = Constants.URL_HTTPS_PART + url;
+        }
+        return url;
+    }
+
     public static boolean startsWithHTTP(String url) {
         return url.startsWith(Constants.URL_HTTP_PART);
     }
 
-    public static boolean startsWithHTTPS(String url) {
+    /******************Private************************************/
+    /******************Methods************************************/
+
+    private static boolean startsWithHTTPS(String url) {
         return url.startsWith(Constants.URL_HTTPS_PART);
     }
 }

@@ -8,8 +8,9 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.Constants;
@@ -20,13 +21,14 @@ import com.ks.musicdownloader.service.DownloaderService;
 import com.ks.musicdownloader.service.ParserService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
-public class DisplayMessageActivity extends FragmentActivity {
+@SuppressWarnings("DanglingJavadoc")
+public class DisplayListActivity extends AppCompatActivity {
 
-    private static final String TAG = DisplayMessageActivity.class.getSimpleName();
+    private static final String TAG = DisplayListActivity.class.getSimpleName();
 
     private String url;
     private MusicSite musicSite;
-    private boolean networkConnected = true;
+    private boolean networkConnected = false;
     private ParserService parserService;
     private DownloaderService downloaderService;
     private ServiceConnection parserServiceConnection;
@@ -36,34 +38,29 @@ public class DisplayMessageActivity extends FragmentActivity {
     private DownloadCallback<ArtistInfo> downloadCallbackForDownloader;
     private ArtistInfo parsedArtistInfo;
 
+    /**
+     * Called when download button is clicked
+     *
+     * @param view view
+     */
+    public void downloadSongs(View view) {
+        parsedArtistInfo = getSelectedSongs();
+        bindToDownloaderService();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate() starts");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_message);
-        url = savedInstanceState.getString(Constants.DOWNLOAD_URL);
-        String siteName = savedInstanceState.getString(Constants.SITE_NAME);
-        if (siteName == null) {
-            musicSite = null;
-            return;
-        }
-        try {
-            musicSite = Enum.valueOf(MusicSite.class, siteName);
-        } catch (Exception e) {
-            // This should never happen
-            musicSite = null;
-            e.printStackTrace();
-            Log.d(TAG, "onCreate(): Error: Unknown website!");
-        }
+        setContentView(R.layout.activity_display_list);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        getIntentExtras();
         performInitialSetup();
-        fetchSongsList(url);
-        displaySongsList(parsedArtistInfo);
-        downloadSelectedSongs(getSelectedSongs());
+        bindToParserService(url);
     }
 
     @Override
@@ -77,12 +74,14 @@ public class DisplayMessageActivity extends FragmentActivity {
         unRegisterAllCallbacks();
     }
 
-    private void unRegisterAllCallbacks() {
-        NetworkUtils.unRegReceiverForConnectionValidationOnly(this, networkCallback);
-        parserService.setDownloadCallback(null);
-        downloaderService.setDownloadCallback(null);
-        stopService(new Intent(DisplayMessageActivity.this, ParserService.class));
-        stopService(new Intent(DisplayMessageActivity.this, DownloaderService.class));
+    /******************Private************************************/
+    /******************Methods************************************/
+
+    private void getIntentExtras() {
+        Intent intent = getIntent();
+        url = intent.getStringExtra(Constants.DOWNLOAD_URL);
+        String siteName = intent.getStringExtra(Constants.SITE_NAME);
+        musicSite = Enum.valueOf(MusicSite.class, siteName);
     }
 
     private void performInitialSetup() {
@@ -94,24 +93,34 @@ public class DisplayMessageActivity extends FragmentActivity {
         createDownloadCallbackForDownloader();
     }
 
-    private void fetchSongsList(String url) {
-        Intent intent = new Intent(DisplayMessageActivity.this, ParserService.class);
-        bindService(intent, parserServiceConnection, Context.BIND_AUTO_CREATE);
-        parserService.startDownload(url);
+    private void unRegisterAllCallbacks() {
+        NetworkUtils.unRegReceiverForConnectionValidationOnly(this, networkCallback);
+        if (parserService != null) {
+            parserService.setDownloadCallback(null);
+        }
+        if (downloaderService != null) {
+            downloaderService.setDownloadCallback(null);
+        }
+        stopService(new Intent(DisplayListActivity.this, ParserService.class));
+        stopService(new Intent(DisplayListActivity.this, DownloaderService.class));
     }
 
-    private void displaySongsList(ArtistInfo artistInfo) {
+    private void bindToParserService(String url) {
+        Intent intent = new Intent(DisplayListActivity.this, ParserService.class);
+        bindService(intent, parserServiceConnection, Context.BIND_AUTO_CREATE);
+    }
 
+    private void displaySongsList() {
+        // TODO: 30-08-2018 display the parsedArtistInfo here
     }
 
     private ArtistInfo getSelectedSongs() {
         return new ArtistInfo();
     }
 
-    private void downloadSelectedSongs(ArtistInfo artistInfo) {
-        Intent intent = new Intent(DisplayMessageActivity.this, ParserService.class);
+    private void bindToDownloaderService() {
+        Intent intent = new Intent(DisplayListActivity.this, DownloaderService.class);
         bindService(intent, downloaderServiceConnection, Context.BIND_AUTO_CREATE);
-        downloaderService.startDownload(artistInfo);
     }
 
     private void createNetworkCallback() {
@@ -137,10 +146,12 @@ public class DisplayMessageActivity extends FragmentActivity {
         parserServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                Log.d(TAG, "createServiceConnForParserService(): onServiceConnected start.");
                 ParserService.LocalBinder binder = (ParserService.LocalBinder) iBinder;
                 parserService = binder.getService();
                 parserService.setDownloadCallback(downloadCallbackForParser);
                 parserService.setSongsParser(musicSite.getMusicParser(url, downloadCallbackForParser));
+                parserService.startDownload(url);
             }
 
             @Override
@@ -158,6 +169,7 @@ public class DisplayMessageActivity extends FragmentActivity {
                 DownloaderService.LocalBinder binder = (DownloaderService.LocalBinder) iBinder;
                 downloaderService = binder.getService();
                 downloaderService.setDownloadCallback(downloadCallbackForDownloader);
+                downloaderService.startDownload(parsedArtistInfo);
             }
 
             @Override
@@ -172,7 +184,7 @@ public class DisplayMessageActivity extends FragmentActivity {
         downloadCallbackForParser = new DownloadCallback<ArtistInfo>() {
             @Override
             public void updateFromDownload(ArtistInfo result) {
-
+                parsedArtistInfo = result;
             }
 
             @Override
@@ -193,6 +205,7 @@ public class DisplayMessageActivity extends FragmentActivity {
 
             @Override
             public void finishDownloading() {
+                displaySongsList();
             }
         };
     }
