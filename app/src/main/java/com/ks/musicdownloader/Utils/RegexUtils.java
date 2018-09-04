@@ -19,7 +19,7 @@ public class RegexUtils {
     }
 
     public static String getFirstRegexResult(String pattern, String text) {
-        String matched = "";
+        String matched = Constants.EMPTY_STRING;
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(text);
         if (m.find()) {

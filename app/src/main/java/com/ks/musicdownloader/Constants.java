@@ -1,5 +1,7 @@
 package com.ks.musicdownloader;
 
+import android.os.Environment;
+
 public class Constants {
 
     // Intent extra strings
@@ -18,13 +20,22 @@ public class Constants {
 
     // Request methods
     public static final String REQUEST_HEAD = "HEAD";
-    public static final String REQUEST_GET = "GET";
     public static final String URL_HTTP_PART = "http://";
     public static final String URL_HTTPS_PART = "https://";
 
     public static String TEST_URL = "https://allthemwitches.bandcamp.com/album/our-mother-electricity";
 
-    // bandcamp
+    // Bandcamp
     public static final String BANDCAMP_URL_REGEX = "(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com\\/?.*";
-    public static final String BANDCAMP_TRALBUM_REGEX = "(?<=var\\sTralbumData\\s=\\s)(.)*?(?=};)";
+    public static final String BANDCAMP_ARTIST_URL_REGEX = "^(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com((\\/$)|(\\/music$))?";
+    public static final String BANDCAMP_TRALBUM_REGEX = "(?<=var\\sTralbumData\\s=\\s)(.)*?(?=\\};)";
+    public static final String BANDCAMP_TYPE_REGEX = "\\\"type\\\"\\:[^\\,]*";
+    public static final String BANDCAMP_TYPE_TRACK = "track";
+    public static final String BANDCAMP_TYPE_ALBUM = "album";
+
+    //Directories
+    public static final String MUSIC_DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+
+    // Artist info
+    public static final ArtistInfo DUMMY_ARTIST_INFO = new ArtistInfo();
 }

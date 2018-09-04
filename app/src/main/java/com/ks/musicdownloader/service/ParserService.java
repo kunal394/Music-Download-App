@@ -7,9 +7,9 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.ks.musicdownloader.ArtistInfo;
+import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.DownloadCallback;
-import com.ks.musicdownloader.songsprocessors.SongsParser;
-import com.ks.musicdownloader.songsprocessors.bandcamp.BandcampParser;
+import com.ks.musicdownloader.songsprocessors.MusicSite;
 
 import java.lang.ref.WeakReference;
 
@@ -17,7 +17,7 @@ public class ParserService extends BaseDownloadService<String, ArtistInfo> {
 
     private static final String TAG = ParserService.class.getSimpleName();
     private final IBinder binder = new LocalBinder();
-    private SongsParser songsParser;
+    private MusicSite musicSite;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -38,12 +38,12 @@ public class ParserService extends BaseDownloadService<String, ArtistInfo> {
         stopSelf();
     }
 
-    public void setSongsParser(SongsParser songsParser) {
-        this.songsParser = songsParser;
+    public MusicSite getMusicSite() {
+        return musicSite;
     }
 
-    public SongsParser getSongsParser() {
-        return songsParser;
+    public void setMusicSite(MusicSite musicSite) {
+        this.musicSite = musicSite;
     }
 
     private static class FetchSongsListTask extends AsyncTask<String, String, ArtistInfo> {
@@ -58,19 +58,30 @@ public class ParserService extends BaseDownloadService<String, ArtistInfo> {
 
         @Override
         protected ArtistInfo doInBackground(String... strings) {
+            String url = strings[0];
+            DownloadCallback downloadCallback;
+            MusicSite musicSite;
+            ArtistInfo artistInfo = Constants.DUMMY_ARTIST_INFO;
+
             ParserService parserService = service.get();
-            DownloadCallback downloadCallback = null;
             if (parserService == null) {
                 Log.d(TAG, "FetchSongsListTask doInBackground(): Service found null!");
+                return artistInfo;
             } else {
                 downloadCallback = parserService.getDownloadCallback();
+                musicSite = parserService.getMusicSite();
             }
-            ArtistInfo artistInfo = null;
+
+            if (downloadCallback == null || musicSite == null) {
+                Log.d(TAG, "FetchSongsListTask doInBackground(): Null MusicSite: " + musicSite + " or download callback: " + downloadCallback);
+                return artistInfo;
+            }
+
             try {
-                artistInfo = new BandcampParser(strings[0], downloadCallback).parseArtistInfo();
+                artistInfo = musicSite.getMusicParser(url, downloadCallback).parseArtistInfo();
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d(TAG, "Error while parsing the songs info! Error: " + e);
+                Log.d(TAG, "FetchSongsListTask doInBackground(): Error while parsing the songs info! Error: " + e);
             }
             return artistInfo;
         }

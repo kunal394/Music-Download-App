@@ -60,7 +60,7 @@ public class DisplayListActivity extends AppCompatActivity {
         super.onStart();
         getIntentExtras();
         performInitialSetup();
-        bindToParserService(url);
+        bindToParserService();
     }
 
     @Override
@@ -105,9 +105,13 @@ public class DisplayListActivity extends AppCompatActivity {
         stopService(new Intent(DisplayListActivity.this, DownloaderService.class));
     }
 
-    private void bindToParserService(String url) {
+    private void bindToParserService() {
         Intent intent = new Intent(DisplayListActivity.this, ParserService.class);
         bindService(intent, parserServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void notifyNothingToDownload() {
+        // TODO: 04-09-2018 notify nothing to download and stop the activity 
     }
 
     private void displaySongsList() {
@@ -150,7 +154,7 @@ public class DisplayListActivity extends AppCompatActivity {
                 ParserService.LocalBinder binder = (ParserService.LocalBinder) iBinder;
                 parserService = binder.getService();
                 parserService.setDownloadCallback(downloadCallbackForParser);
-                parserService.setSongsParser(musicSite.getMusicParser(url, downloadCallbackForParser));
+                parserService.setMusicSite(musicSite);
                 parserService.startDownload(url);
             }
 
@@ -205,7 +209,11 @@ public class DisplayListActivity extends AppCompatActivity {
 
             @Override
             public void finishDownloading() {
-                displaySongsList();
+                if (parsedArtistInfo == Constants.DUMMY_ARTIST_INFO) {
+                    notifyNothingToDownload();
+                } else {
+                    displaySongsList();
+                }
             }
         };
     }
@@ -215,6 +223,7 @@ public class DisplayListActivity extends AppCompatActivity {
         downloadCallbackForDownloader = new DownloadCallback<ArtistInfo>() {
             @Override
             public void updateFromDownload(ArtistInfo artistInfo) {
+
             }
 
             @Override
@@ -235,7 +244,6 @@ public class DisplayListActivity extends AppCompatActivity {
 
             @Override
             public void finishDownloading() {
-
             }
         };
     }

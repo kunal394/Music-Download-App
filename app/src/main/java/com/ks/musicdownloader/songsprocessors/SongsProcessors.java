@@ -4,11 +4,11 @@ public class SongsProcessors {
 
     private SongsDownloader songsDownloader;
 
-    private SongsParser songsParser;
+    private BaseParser baseParser;
 
-    public SongsProcessors(SongsDownloader songsDownloader, SongsParser songsParser) {
+    public SongsProcessors(SongsDownloader songsDownloader, BaseParser baseParser) {
         this.songsDownloader = songsDownloader;
-        this.songsParser = songsParser;
+        this.baseParser = baseParser;
     }
 
     public SongsProcessors() {
@@ -23,11 +23,11 @@ public class SongsProcessors {
         this.songsDownloader = songsDownloader;
     }
 
-    public SongsParser getSongsParser() {
-        return songsParser;
+    public BaseParser getBaseParser() {
+        return baseParser;
     }
 
-    public void setSongsParser(SongsParser songsParser) {
-        this.songsParser = songsParser;
+    public void setBaseParser(BaseParser baseParser) {
+        this.baseParser = baseParser;
     }
 }

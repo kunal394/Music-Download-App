@@ -3,15 +3,18 @@ package com.ks.musicdownloader.songsprocessors;
 import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.DownloadCallback;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.IOException;
 
-public abstract class SongsParser {
+public abstract class BaseParser {
 
     private String url;
 
     private DownloadCallback downloadCallback;
 
-    public SongsParser(String url, DownloadCallback downloadCallback) {
+    public BaseParser(String url, DownloadCallback downloadCallback) {
         this.url = url;
         this.downloadCallback = downloadCallback;
     }
@@ -24,5 +27,9 @@ public abstract class SongsParser {
 
     protected DownloadCallback getDownloadCallback() {
         return downloadCallback;
+    }
+
+    protected Document fetchDocumentFromUrl(String Url) throws IOException {
+        return Jsoup.connect(Url).get();
     }
 }
