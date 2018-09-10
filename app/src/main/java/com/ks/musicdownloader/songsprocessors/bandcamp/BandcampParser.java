@@ -13,14 +13,13 @@ import com.ks.musicdownloader.SongInfo;
 import com.ks.musicdownloader.Utils.RegexUtils;
 import com.ks.musicdownloader.songsprocessors.BaseParser;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class BandcampParser extends BaseParser {
@@ -28,9 +27,11 @@ public class BandcampParser extends BaseParser {
     private static final String TAG = BandcampParser.class.getSimpleName();
 
     private ArtistInfo artistInfo;
+    private int songsCount;
 
     public BandcampParser(String url, DownloadCallback downloadCallback) {
         super(url, downloadCallback);
+        songsCount = 0;
     }
 
     @Override
@@ -111,29 +112,34 @@ public class BandcampParser extends BaseParser {
         }
     }
 
-    private static void handleAlbum(Document document) throws IOException {
-        // TODO: 04-09-2018 complete this
+    private void handleAlbum(Document document) throws IOException {
         Log.d(TAG, "handleAlbum() start");
         String trackInfo = getTrackInfoForAlbum(document);
         if (Constants.EMPTY_STRING.equals(trackInfo)) {
             Log.d(TAG, "handleAlbum() no trackInfo found!");
-            //artistInfo = Constants.DUMMY_ARTIST_INFO;
+            artistInfo = Constants.DUMMY_ARTIST_INFO;
             return;
         }
-
         trackInfo = "{" + trackInfo.replaceFirst(Constants.BANDCAMP_TRACK_INFO_KEY, "\"" + Constants.BANDCAMP_TRACK_INFO_KEY + "\"") + "}";
+        String albumName = getTrackTitle(document);
+
         JsonFactory factory = new JsonFactory();
         factory.enable(JsonParser.Feature.ALLOW_COMMENTS);
-
         ObjectMapper mapper = new ObjectMapper(factory);
         JsonNode rootNode = mapper.readTree(trackInfo);
-
-        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
-        while (fieldsIterator.hasNext()) {
-            Map.Entry<String, JsonNode> field = fieldsIterator.next();
-            System.out.println("Key: " + field.getKey() + "\tValue:" + field.getValue());
-            Log.d(TAG, "Key: " + field.getKey() + "\tValue:" + field.getValue());
+        JsonNode trackInfoVals = rootNode.get(Constants.BANDCAMP_TRACK_INFO_KEY);
+        List<SongInfo> songsInfo = new ArrayList<>();
+        for (JsonNode trackInfoVal : trackInfoVals) {
+            String title = String.valueOf(trackInfoVal.get(Constants.BANDCAMP_TITLE_KEY));
+            String downloadUrl = String.valueOf(trackInfoVal.get(Constants.BANDCAMP_FILE_KEY).get(Constants.BANDCAMP_MP3_KEY));
+            if (Constants.EMPTY_STRING.equals(downloadUrl) || Constants.NULL_STRING.equals(downloadUrl) ||
+                    Constants.EMPTY_STRING.equals(title) || Constants.NULL_STRING.equals(title)) {
+                continue;
+            }
+            SongInfo songInfo = new SongInfo(songsCount++, title, downloadUrl);
+            songsInfo.add(songInfo);
         }
+        artistInfo.addSongsInfoToAlbum(songsInfo, albumName);
     }
 
     private void handleTrack(Document document) {
@@ -147,26 +153,22 @@ public class BandcampParser extends BaseParser {
             return;
         }
 
-        SongInfo songInfo = new SongInfo();
-        songInfo.setName(songTitle);
-        songInfo.setId(1);
-        songInfo.setUrl(songUrl);
-
+        SongInfo songInfo = new SongInfo(songsCount++, songTitle, songUrl);
         artistInfo.addSongInfoToAlbum(songInfo, Constants.DUMMY_ALBUM_NAME);
     }
 
-    private static String getTrackInfoForAlbum(Document document) {
+    private String getTrackInfoForAlbum(Document document) {
         String scriptData = document.getElementsByTag("script").toString().replaceAll("\\s", " ");
         return RegexUtils.getFirstRegexResult(Constants.BANDCAMP_TRACK_INFO_REGEX, scriptData);
     }
 
-    private static String getTrAlbumData(Document document) {
+    private String getTrAlbumData(Document document) {
         String scriptData = document.getElementsByTag("script").toString().replaceAll("\\s", " ");
         return RegexUtils.getFirstRegexResult(Constants.BANDCAMP_TRALBUM_REGEX, scriptData);
     }
 
     private String getTrackTitle(Document document) {
-        return document.select(Constants.BANDCAMP_TRACK_TITLE_SELECTOR_FOR_TRACK).text();
+        return document.select(Constants.BANDCAMP_TRACK_TITLE_SELECTOR).text();
     }
 
     private String getTrackUrl(String trAlbumData) {
@@ -192,18 +194,18 @@ public class BandcampParser extends BaseParser {
     }
 
     // TODO: 04-09-2018 Remove this 
-    public static void main(String[] args) throws IOException {
-        Document document = Jsoup.connect("https://ommosound.bandcamp.com/track/plutesc-in-aer").get();
-        String trAlbumData = getTrAlbumData(document);
-//        parseData(trAlbumData);
-        Document document1 = Jsoup.connect("https://ommosound.bandcamp.com/album/merkaba-ep").get();
-        String trAlbumData1 = getTrAlbumData(document);
-        Document document2 = Jsoup.connect("https://naxatras.bandcamp.com/").get();
-        Document document3 = Jsoup.connect("https://naxatras.bandcamp.com/album/ii").get();
-        String trAlbumData2 = getTrAlbumData(document3);
-
-        if (trAlbumData.equals(trAlbumData1)) {
-            return;
-        }
-    }
+//    public static void main(String[] args) throws IOException {
+//        Document document = Jsoup.connect("https://ommosound.bandcamp.com/track/plutesc-in-aer").get();
+//        String trAlbumData = getTrAlbumData(document);
+////        parseData(trAlbumData);
+//        Document document1 = Jsoup.connect("https://ommosound.bandcamp.com/album/merkaba-ep").get();
+//        String trAlbumData1 = getTrAlbumData(document);
+//        Document document2 = Jsoup.connect("https://naxatras.bandcamp.com/").get();
+//        Document document3 = Jsoup.connect("https://naxatras.bandcamp.com/album/ii").get();
+//        String trAlbumData2 = getTrAlbumData(document3);
+//
+//        if (trAlbumData.equals(trAlbumData1)) {
+//            return;
+//        }
+//    }
 }

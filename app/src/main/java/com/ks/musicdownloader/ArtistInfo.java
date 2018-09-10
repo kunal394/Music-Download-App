@@ -1,6 +1,7 @@
 package com.ks.musicdownloader;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,11 +31,15 @@ public class ArtistInfo {
     }
 
     public void addSongInfoToAlbum(SongInfo songInfo, String album) {
+        addSongsInfoToAlbum(Collections.singletonList(songInfo), album);
+    }
+
+    public void addSongsInfoToAlbum(List<SongInfo> songsInfo, String album) {
         if (albumInfo == null) {
             albumInfo = new HashMap<>();
         }
         List<SongInfo> songInfoForAlbum = getSongInfoForAlbum(album);
-        songInfoForAlbum.add(songInfo);
+        songInfoForAlbum.addAll(songsInfo);
     }
 
     private List<SongInfo> getSongInfoForAlbum(String album) {

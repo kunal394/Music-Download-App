@@ -8,6 +8,12 @@ public class SongInfo {
 
     private String url;
 
+    public SongInfo(Integer id, String name, String url) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+    }
+
     public Integer getId() {
         return id;
     }

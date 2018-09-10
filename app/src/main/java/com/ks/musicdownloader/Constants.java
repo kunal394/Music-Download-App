@@ -35,9 +35,13 @@ public class Constants {
     public static final String BANDCAMP_SONG_DOWNLOAD_URL_REGEX = "\\\"mp3-128\\\"\\:[^\\,]*";
     public static final String BANDCAMP_ARTIST_SELECTOR_FOR_ARTIST = "span.title";
     public static final String BANDCAMP_ARTIST_SELECTOR_FOR_ALBUM_AND_TRACK = "span[itemprop=byArtist]";
-    public static final String BANDCAMP_TRACK_TITLE_SELECTOR_FOR_TRACK = "h2.trackTitle";
+    public static final String BANDCAMP_TRACK_TITLE_SELECTOR = "h2.trackTitle";
     public static final String BANDCAMP_ALBUM_LIST_SELECTOR = "ol[data-initial-values]";
     public static final String BANDCAMP_TRACK_INFO_KEY = "trackinfo";
+    public static final String BANDCAMP_TITLE_KEY = "title";
+    public static final String BANDCAMP_FILE_KEY = "file";
+    public static final String BANDCAMP_MP3_KEY = "mp3-128";
+    public static final String NULL_STRING = "null";
 
     //Directories
     public static final String MUSIC_DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
