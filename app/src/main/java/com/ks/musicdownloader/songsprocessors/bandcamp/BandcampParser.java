@@ -113,6 +113,17 @@ public class BandcampParser extends BaseParser {
 
     private void handleAlbum(Document document) throws IOException {
         Log.d(TAG, "handleAlbum() start");
+        String albumName = document.select(Constants.BANDCAMP_TRACK_TITLE_SELECTOR).text();
+        parseTrackInfo(document, albumName);
+    }
+
+    private void handleTrack(Document document) throws IOException {
+        Log.d(TAG, "handleTrack() start");
+        parseTrackInfo(document, Constants.DUMMY_ALBUM_NAME);
+    }
+
+    private void parseTrackInfo(Document document, String albumName) throws IOException {
+        Log.d(TAG, "parseTrackInfo()");
         String trackInfo = getTrackInfoForAlbum(document);
         if (Constants.EMPTY_STRING.equals(trackInfo)) {
             Log.d(TAG, "handleAlbum() no trackInfo found!");
@@ -120,8 +131,6 @@ public class BandcampParser extends BaseParser {
             return;
         }
         trackInfo = "{" + trackInfo.replaceFirst(Constants.BANDCAMP_TRACK_INFO_KEY, "\"" + Constants.BANDCAMP_TRACK_INFO_KEY + "\"") + "}";
-        String albumName = getTrackTitle(document);
-
         JsonFactory factory = new JsonFactory();
         factory.enable(JsonParser.Feature.ALLOW_COMMENTS);
         ObjectMapper mapper = new ObjectMapper(factory);
@@ -141,43 +150,9 @@ public class BandcampParser extends BaseParser {
         artistInfo.addSongsInfoToAlbum(songsInfo, albumName);
     }
 
-    private void handleTrack(Document document) {
-        Log.d(TAG, "handleTrack() start");
-        String trAlbumData = getTrAlbumData(document);
-        String songTitle = getTrackTitle(document);
-        String songUrl = getTrackUrl(trAlbumData);
-
-        if (Constants.EMPTY_STRING.equals(songUrl) || Constants.EMPTY_STRING.equals(songTitle)) {
-            Log.d(TAG, "handleTrack(): Empty name: " + songTitle + " or url: " + songUrl);
-            return;
-        }
-
-        SongInfo songInfo = new SongInfo(songsCount++, songTitle, songUrl);
-        artistInfo.addSongInfoToAlbum(songInfo, Constants.DUMMY_ALBUM_NAME);
-    }
-
     private String getTrackInfoForAlbum(Document document) {
         String scriptData = document.getElementsByTag("script").toString().replaceAll("\\s", " ");
         return RegexUtils.getFirstRegexResult(Constants.BANDCAMP_TRACK_INFO_REGEX, scriptData);
-    }
-
-    private String getTrAlbumData(Document document) {
-        String scriptData = document.getElementsByTag("script").toString().replaceAll("\\s", " ");
-        return RegexUtils.getFirstRegexResult(Constants.BANDCAMP_TRALBUM_REGEX, scriptData);
-    }
-
-    private String getTrackTitle(Document document) {
-        return document.select(Constants.BANDCAMP_TRACK_TITLE_SELECTOR).text();
-    }
-
-    private String getTrackUrl(String trAlbumData) {
-        String downloadUrlMatch = RegexUtils.getFirstRegexResult(Constants.BANDCAMP_SONG_DOWNLOAD_URL_REGEX, trAlbumData);
-        if (Constants.EMPTY_STRING.equals(downloadUrlMatch)) {
-            Log.d(TAG, "getTrackUrl() got no match for track download url: " + downloadUrlMatch);
-            return Constants.EMPTY_STRING;
-        }
-        downloadUrlMatch = downloadUrlMatch.substring(downloadUrlMatch.indexOf(":") + 1);
-        return downloadUrlMatch.substring(1, downloadUrlMatch.length() - 2);
     }
 
     private String getBaseUrlForArtist() {
