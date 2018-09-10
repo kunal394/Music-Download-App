@@ -115,6 +115,7 @@ public class DisplayListActivity extends AppCompatActivity {
     }
 
     private void displaySongsList() {
+        Log.d(TAG, "displaySongsList");
         // TODO: 30-08-2018 display the parsedArtistInfo here
     }
 

@@ -129,8 +129,8 @@ public class BandcampParser extends BaseParser {
         JsonNode trackInfoVals = rootNode.get(Constants.BANDCAMP_TRACK_INFO_KEY);
         List<SongInfo> songsInfo = new ArrayList<>();
         for (JsonNode trackInfoVal : trackInfoVals) {
-            String title = String.valueOf(trackInfoVal.get(Constants.BANDCAMP_TITLE_KEY));
-            String downloadUrl = String.valueOf(trackInfoVal.get(Constants.BANDCAMP_FILE_KEY).get(Constants.BANDCAMP_MP3_KEY));
+            String title = String.valueOf(trackInfoVal.get(Constants.BANDCAMP_TITLE_KEY)).replaceAll("\"", "");
+            String downloadUrl = String.valueOf(trackInfoVal.get(Constants.BANDCAMP_FILE_KEY).get(Constants.BANDCAMP_MP3_KEY)).replaceAll("\"", "");
             if (Constants.EMPTY_STRING.equals(downloadUrl) || Constants.NULL_STRING.equals(downloadUrl) ||
                     Constants.EMPTY_STRING.equals(title) || Constants.NULL_STRING.equals(title)) {
                 continue;
@@ -176,12 +176,8 @@ public class BandcampParser extends BaseParser {
             Log.d(TAG, "getTrackUrl() got no match for track download url: " + downloadUrlMatch);
             return Constants.EMPTY_STRING;
         }
-        String[] match = downloadUrlMatch.split(":");
-        if (match.length != 2) {
-            Log.d(TAG, "getTrackUrl() wrong match for track download url: " + downloadUrlMatch);
-            return Constants.EMPTY_STRING;
-        }
-        return match[1];
+        downloadUrlMatch = downloadUrlMatch.substring(downloadUrlMatch.indexOf(":") + 1);
+        return downloadUrlMatch.substring(1, downloadUrlMatch.length() - 2);
     }
 
     private String getBaseUrlForArtist() {
@@ -191,20 +187,4 @@ public class BandcampParser extends BaseParser {
         }
         return artistUrl;
     }
-
-    // TODO: 04-09-2018 Remove this 
-//    public static void main(String[] args) throws IOException {
-//        Document document = Jsoup.connect("https://ommosound.bandcamp.com/track/plutesc-in-aer").get();
-//        String trAlbumData = getTrAlbumData(document);
-////        parseData(trAlbumData);
-//        Document document1 = Jsoup.connect("https://ommosound.bandcamp.com/album/merkaba-ep").get();
-//        String trAlbumData1 = getTrAlbumData(document);
-//        Document document2 = Jsoup.connect("https://naxatras.bandcamp.com/").get();
-//        Document document3 = Jsoup.connect("https://naxatras.bandcamp.com/album/ii").get();
-//        String trAlbumData2 = getTrAlbumData(document3);
-//
-//        if (trAlbumData.equals(trAlbumData1)) {
-//            return;
-//        }
-//    }
 }

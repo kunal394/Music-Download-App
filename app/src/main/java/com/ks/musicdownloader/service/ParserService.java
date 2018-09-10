@@ -105,8 +105,11 @@ public class ParserService extends BaseDownloadService<String, ArtistInfo> {
                 Log.d(TAG, "FetchSongsListTask onPostExecute(): Service found null!");
                 return;
             }
-            parserService.getDownloadCallback().updateFromDownload(artistInfo);
-            parserService.getDownloadCallback().finishDownloading();
+            DownloadCallback<ArtistInfo> downloadCallback = parserService.getDownloadCallback();
+            if (downloadCallback != null) {
+                downloadCallback.updateFromDownload(artistInfo);
+                downloadCallback.finishDownloading();
+            }
             parserService.onTaskCompletion();
         }
     }

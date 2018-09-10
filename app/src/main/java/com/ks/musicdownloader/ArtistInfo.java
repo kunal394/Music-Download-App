@@ -40,6 +40,7 @@ public class ArtistInfo {
         }
         List<SongInfo> songInfoForAlbum = getSongInfoForAlbum(album);
         songInfoForAlbum.addAll(songsInfo);
+        albumInfo.put(album, songInfoForAlbum);
     }
 
     private List<SongInfo> getSongInfoForAlbum(String album) {

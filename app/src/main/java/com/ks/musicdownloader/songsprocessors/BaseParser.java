@@ -17,7 +17,7 @@ public abstract class BaseParser {
     public BaseParser(String url, DownloadCallback downloadCallback) {
         if (url.endsWith("/")) {
             // remove '/' from the end of the url
-            url = url.substring(0, url.length() - 2);
+            url = url.substring(0, url.length() - 1);
         }
         this.url = url;
         this.downloadCallback = downloadCallback;

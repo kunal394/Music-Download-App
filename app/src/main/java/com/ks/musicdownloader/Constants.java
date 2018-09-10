@@ -16,14 +16,14 @@ public class Constants {
     public static final String NON_EXISTENT_URL_MESSAGE = "The provided url does not exists.";
     public static final String VALID_URL_MESSAGE = "VALID_URL";
 
+    // String constants
     public static final String EMPTY_STRING = "";
+    public static final String NULL_STRING = "null";
 
     // Request methods
     public static final String REQUEST_HEAD = "HEAD";
     public static final String URL_HTTP_PART = "http://";
     public static final String URL_HTTPS_PART = "https://";
-
-    public static String TEST_URL = "https://allthemwitches.bandcamp.com/album/our-mother-electricity";
 
     // Bandcamp
     public static final String BANDCAMP_URL_REGEX = "(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com\\/?.*";
@@ -41,7 +41,9 @@ public class Constants {
     public static final String BANDCAMP_TITLE_KEY = "title";
     public static final String BANDCAMP_FILE_KEY = "file";
     public static final String BANDCAMP_MP3_KEY = "mp3-128";
-    public static final String NULL_STRING = "null";
+    public static final String BANDCAMP_ARTIST_TEST_URL = "https://naxatras.bandcamp.com/";
+    public static final String BANDCAMP_ALBUM_TEST_URL = "https://naxatras.bandcamp.com/album/naxatras";
+    public static final String BANDCAMP_TRACK_TEST_URL = "https://ommosound.bandcamp.com/track/plutesc-in-aer";
 
     //Directories
     public static final String MUSIC_DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
