@@ -11,6 +11,9 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.Constants;
@@ -37,6 +40,9 @@ public class DisplayListActivity extends AppCompatActivity {
     private DownloadCallback<ArtistInfo> downloadCallbackForParser;
     private DownloadCallback<ArtistInfo> downloadCallbackForDownloader;
     private ArtistInfo parsedArtistInfo;
+    private ProgressBar progressBar;
+    private TextView nothingToDownloadView;
+    private Button downloadButton;
 
     /**
      * Called when download button is clicked
@@ -53,6 +59,10 @@ public class DisplayListActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate() starts");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_list);
+        progressBar = findViewById(R.id.parserProgressBar);
+        progressBar.setVisibility(View.VISIBLE);
+        nothingToDownloadView = findViewById(R.id.nothingToDownloadView);
+        downloadButton = findViewById(R.id.download_button);
     }
 
     @Override
@@ -111,12 +121,19 @@ public class DisplayListActivity extends AppCompatActivity {
     }
 
     private void notifyNothingToDownload() {
-        // TODO: 04-09-2018 notify nothing to download and stop the activity 
+        Log.d(TAG, "notifyNothingToDownload()");
+        hideProgressBar();
+        nothingToDownloadView.setVisibility(View.VISIBLE);
     }
 
     private void displaySongsList() {
-        Log.d(TAG, "displaySongsList");
-        // TODO: 30-08-2018 display the parsedArtistInfo here
+        Log.d(TAG, "displaySongsList()");
+        hideProgressBar();
+        downloadButton.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgressBar() {
+        progressBar.setVisibility(View.GONE);
     }
 
     private ArtistInfo getSelectedSongs() {

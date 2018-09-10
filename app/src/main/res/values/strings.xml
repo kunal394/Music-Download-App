@@ -4,4 +4,5 @@
     <string name="button_fetch_songs_list">Fetch Songs</string>
     <string name="button_download_songs">Download</string>
     <string name="list_display">Select Songs To Download</string>
+    <string name="nothingToDownload">Sorry! Nothing to download :( !</string>
 </resources>
