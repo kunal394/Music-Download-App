@@ -102,7 +102,6 @@ public class BandcampParser extends BaseParser {
     private void handleArtist(Document document) throws IOException {
         Log.d(TAG, "handleArtist() start");
         String baseUrl = getBaseUrlForArtist();
-        // get the list of album urls and call handleTrackOrAlbum with the document of every url
         Elements albumElements = document.select(Constants.BANDCAMP_ALBUM_LIST_SELECTOR).select("a");
         for (Element albumElement : albumElements) {
             String albumUrl = albumElement.attr("href");
