@@ -28,14 +28,21 @@ public class Constants {
     // Bandcamp
     public static final String BANDCAMP_URL_REGEX = "(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com\\/?.*";
     public static final String BANDCAMP_ARTIST_URL_REGEX = "^(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com((\\/$)|(\\/music$))?";
+    public static final String BANDCAMP_ALBUM_URL_REGEX = "^(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com\\/album\\/.*";
+    public static final String BANDCAMP_TRACK_URL_REGEX = "^(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com\\/track\\/.*";
     public static final String BANDCAMP_TRALBUM_REGEX = "(?<=var\\sTralbumData\\s=\\s)(.)*?(?=\\};)";
-    public static final String BANDCAMP_TYPE_REGEX = "\\\"type\\\"\\:[^\\,]*";
-    public static final String BANDCAMP_TYPE_TRACK = "track";
-    public static final String BANDCAMP_TYPE_ALBUM = "album";
+    public static final String BANDCAMP_TRACK_INFO_REGEX = "trackinfo\\: \\[[^\\]]*\\]";
+    public static final String BANDCAMP_SONG_DOWNLOAD_URL_REGEX = "\\\"mp3-128\\\"\\:[^\\,]*";
+    public static final String BANDCAMP_ARTIST_SELECTOR_FOR_ARTIST = "span.title";
+    public static final String BANDCAMP_ARTIST_SELECTOR_FOR_ALBUM_AND_TRACK = "span[itemprop=byArtist]";
+    public static final String BANDCAMP_TRACK_TITLE_SELECTOR_FOR_TRACK = "h2.trackTitle";
+    public static final String BANDCAMP_ALBUM_LIST_SELECTOR = "ol[data-initial-values]";
+    public static final String BANDCAMP_TRACK_INFO_KEY = "trackinfo";
 
     //Directories
     public static final String MUSIC_DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
 
     // Artist info
     public static final ArtistInfo DUMMY_ARTIST_INFO = new ArtistInfo();
+    public static final String DUMMY_ALBUM_NAME = "DUMMY_ALBUM_NAME";
 }

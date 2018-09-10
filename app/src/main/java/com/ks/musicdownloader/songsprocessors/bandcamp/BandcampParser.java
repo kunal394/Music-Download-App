@@ -9,16 +9,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.DownloadCallback;
+import com.ks.musicdownloader.SongInfo;
 import com.ks.musicdownloader.Utils.RegexUtils;
 import com.ks.musicdownloader.songsprocessors.BaseParser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class BandcampParser extends BaseParser {
 
     private static final String TAG = BandcampParser.class.getSimpleName();
@@ -35,54 +39,125 @@ public class BandcampParser extends BaseParser {
         artistInfo = new ArtistInfo();
         Document document = fetchDocumentFromUrl(getUrl());
         if (isArtistUrl()) {
+            Log.d(TAG, "parseArtistInfo(): artist url found!");
+            if (!setArtistNameForArtistUrl(document)) {
+                Log.d(TAG, "parseArtistInfo() could not set artist name!");
+                return Constants.DUMMY_ARTIST_INFO;
+            }
             handleArtist(document);
+        } else if (isAlbumUrl()) {
+            Log.d(TAG, "parseArtistInfo() album url found!");
+            if (!setArtistNameForTrackOrAlbum(document)) {
+                Log.d(TAG, "parseArtistInfo() could not set artist name!");
+                return Constants.DUMMY_ARTIST_INFO;
+            }
+            handleAlbum(document);
+        } else if (isTrackUrl()) {
+            Log.d(TAG, "parseArtistInfo() track url found!");
+            if (!setArtistNameForTrackOrAlbum(document)) {
+                Log.d(TAG, "parseArtistInfo() could not set artist name!");
+                return Constants.DUMMY_ARTIST_INFO;
+            }
+            handleTrack(document);
         } else {
-            handleTrackOrAlbum(document);
+            // should never happen
+            Log.d(TAG, "Unknown type url: " + getUrl());
+            return Constants.DUMMY_ARTIST_INFO;
         }
         return artistInfo;
+    }
+
+    private boolean setArtistNameForArtistUrl(Document document) {
+        String artistName = document.select(Constants.BANDCAMP_ARTIST_SELECTOR_FOR_ARTIST).text();
+        if (Constants.EMPTY_STRING.equals(artistName)) {
+            return false;
+        }
+        artistInfo.setArtist(artistName);
+        return true;
+    }
+
+    private boolean setArtistNameForTrackOrAlbum(Document document) {
+        String artistName = document.select(Constants.BANDCAMP_ARTIST_SELECTOR_FOR_ALBUM_AND_TRACK).text();
+        if (Constants.EMPTY_STRING.equals(artistName)) {
+            return false;
+        }
+        artistInfo.setArtist(artistName);
+        return true;
     }
 
     private boolean isArtistUrl() {
         return RegexUtils.isRegexMatching(Constants.BANDCAMP_ARTIST_URL_REGEX, getUrl());
     }
 
-    private void handleArtist(Document document) {
-        Log.d(TAG, "handleArtist()");
-        // get the list of album urls and call handleTrackOrAlbum with the document of every url
+    private boolean isAlbumUrl() {
+        return RegexUtils.isRegexMatching(Constants.BANDCAMP_ALBUM_URL_REGEX, getUrl());
     }
 
-    private void handleTrackOrAlbum(Document document) {
-        Log.d(TAG, "handleTrackOrAlbum()");
-        String trAlbumData = Constants.EMPTY_STRING;
-        try {
-            trAlbumData = getTrAlbumData(document);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "handleTrackOrAlbum(): Error found while getting tralbum data: " + e);
-        }
+    private boolean isTrackUrl() {
+        return RegexUtils.isRegexMatching(Constants.BANDCAMP_TRACK_URL_REGEX, getUrl());
+    }
 
-        if (Constants.EMPTY_STRING.equals(trAlbumData)) {
-            Log.d(TAG, "handleTrackOrAlbum(): No tralbum data found for url: " + getUrl());
-            artistInfo = Constants.DUMMY_ARTIST_INFO;
+    // get the list of album urls and call handleTrackOrAlbum with the document of every url
+    private void handleArtist(Document document) throws IOException {
+        Log.d(TAG, "handleArtist() start");
+        String baseUrl = getBaseUrlForArtist();
+        // get the list of album urls and call handleTrackOrAlbum with the document of every url
+        Elements albumElements = document.select(Constants.BANDCAMP_ALBUM_LIST_SELECTOR).select("a");
+        for (Element albumElement : albumElements) {
+            String albumUrl = albumElement.attr("href");
+            Document albumDocument = fetchDocumentFromUrl(baseUrl + albumUrl);
+            Log.d(TAG, "handleArtist() calling handle album for album url: " + albumUrl);
+            handleAlbum(albumDocument);
+        }
+    }
+
+    private static void handleAlbum(Document document) throws IOException {
+        // TODO: 04-09-2018 complete this
+        Log.d(TAG, "handleAlbum() start");
+        String trackInfo = getTrackInfoForAlbum(document);
+        if (Constants.EMPTY_STRING.equals(trackInfo)) {
+            Log.d(TAG, "handleAlbum() no trackInfo found!");
+            //artistInfo = Constants.DUMMY_ARTIST_INFO;
             return;
         }
 
-        String type = getUrlType(trAlbumData);
-        if (Constants.EMPTY_STRING.equals(type)) {
-            Log.d(TAG, "handleTrackOrAlbum(): No type found in tralbum data for url: " + getUrl());
-            artistInfo = Constants.DUMMY_ARTIST_INFO;
+        trackInfo = "{" + trackInfo.replaceFirst(Constants.BANDCAMP_TRACK_INFO_KEY, "\"" + Constants.BANDCAMP_TRACK_INFO_KEY + "\"") + "}";
+        JsonFactory factory = new JsonFactory();
+        factory.enable(JsonParser.Feature.ALLOW_COMMENTS);
+
+        ObjectMapper mapper = new ObjectMapper(factory);
+        JsonNode rootNode = mapper.readTree(trackInfo);
+
+        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
+        while (fieldsIterator.hasNext()) {
+            Map.Entry<String, JsonNode> field = fieldsIterator.next();
+            System.out.println("Key: " + field.getKey() + "\tValue:" + field.getValue());
+            Log.d(TAG, "Key: " + field.getKey() + "\tValue:" + field.getValue());
+        }
+    }
+
+    private void handleTrack(Document document) {
+        Log.d(TAG, "handleTrack() start");
+        String trAlbumData = getTrAlbumData(document);
+        String songTitle = getTrackTitle(document);
+        String songUrl = getTrackUrl(trAlbumData);
+
+        if (Constants.EMPTY_STRING.equals(songUrl) || Constants.EMPTY_STRING.equals(songTitle)) {
+            Log.d(TAG, "handleTrack(): Empty name: " + songTitle + " or url: " + songUrl);
             return;
         }
 
-        if (Constants.BANDCAMP_TYPE_ALBUM.equals(type)) {
-            handleAlbum();
-        } else if (Constants.BANDCAMP_TYPE_TRACK.equals(type)) {
-            handleTrack();
-        } else {
-            // this should not happen
-            Log.d(TAG, "handleTrackOrAlbum(): Unknown type found: " + type);
-            artistInfo = Constants.DUMMY_ARTIST_INFO;
-        }
+        SongInfo songInfo = new SongInfo();
+        songInfo.setName(songTitle);
+        songInfo.setId(1);
+        songInfo.setUrl(songUrl);
+
+        artistInfo.addSongInfoToAlbum(songInfo, Constants.DUMMY_ALBUM_NAME);
+    }
+
+    private static String getTrackInfoForAlbum(Document document) {
+        String scriptData = document.getElementsByTag("script").toString().replaceAll("\\s", " ");
+        return RegexUtils.getFirstRegexResult(Constants.BANDCAMP_TRACK_INFO_REGEX, scriptData);
     }
 
     private static String getTrAlbumData(Document document) {
@@ -90,51 +165,45 @@ public class BandcampParser extends BaseParser {
         return RegexUtils.getFirstRegexResult(Constants.BANDCAMP_TRALBUM_REGEX, scriptData);
     }
 
-    private String getUrlType(String trAlbumData) {
-        String type = Constants.EMPTY_STRING;
-        try {
-            type = RegexUtils.getFirstRegexResult(Constants.BANDCAMP_TYPE_REGEX, trAlbumData).replaceAll("\"", "").split(":")[1];
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "getUrlType(): Error found while getting url type from tralbum data: " + e + " for url: " + getUrl());
+    private String getTrackTitle(Document document) {
+        return document.select(Constants.BANDCAMP_TRACK_TITLE_SELECTOR_FOR_TRACK).text();
+    }
+
+    private String getTrackUrl(String trAlbumData) {
+        String downloadUrlMatch = RegexUtils.getFirstRegexResult(Constants.BANDCAMP_SONG_DOWNLOAD_URL_REGEX, trAlbumData);
+        if (Constants.EMPTY_STRING.equals(downloadUrlMatch)) {
+            Log.d(TAG, "getTrackUrl() got no match for track download url: " + downloadUrlMatch);
+            return Constants.EMPTY_STRING;
         }
-        return type;
+        String[] match = downloadUrlMatch.split(":");
+        if (match.length != 2) {
+            Log.d(TAG, "getTrackUrl() wrong match for track download url: " + downloadUrlMatch);
+            return Constants.EMPTY_STRING;
+        }
+        return match[1];
     }
 
-    private void handleAlbum() {
-        // TODO: 04-09-2018 complete this
-        Log.d(TAG, "handleAlbum() start");
-    }
-
-    private void handleTrack() {
-        // TODO: 04-09-2018 complete this 
-        Log.d(TAG, "handleTrack() start");
+    private String getBaseUrlForArtist() {
+        String artistUrl = getUrl();
+        if (artistUrl.endsWith("/music")) {
+            return artistUrl.replace("/music", "");
+        }
+        return artistUrl;
     }
 
     // TODO: 04-09-2018 Remove this 
     public static void main(String[] args) throws IOException {
         Document document = Jsoup.connect("https://ommosound.bandcamp.com/track/plutesc-in-aer").get();
         String trAlbumData = getTrAlbumData(document);
-        parseData(trAlbumData);
-        document = Jsoup.connect("https://ommosound.bandcamp.com/album/merkaba-ep").get();
+//        parseData(trAlbumData);
+        Document document1 = Jsoup.connect("https://ommosound.bandcamp.com/album/merkaba-ep").get();
         String trAlbumData1 = getTrAlbumData(document);
+        Document document2 = Jsoup.connect("https://naxatras.bandcamp.com/").get();
+        Document document3 = Jsoup.connect("https://naxatras.bandcamp.com/album/ii").get();
+        String trAlbumData2 = getTrAlbumData(document3);
+
         if (trAlbumData.equals(trAlbumData1)) {
             return;
-        }
-    }
-
-    private static void parseData(String json) throws IOException {
-        JsonFactory factory = new JsonFactory();
-        factory.enable(JsonParser.Feature.ALLOW_COMMENTS);
-
-        ObjectMapper mapper = new ObjectMapper(factory);
-        JsonNode rootNode = mapper.readTree(json);
-
-        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
-        while (fieldsIterator.hasNext()) {
-
-            Map.Entry<String, JsonNode> field = fieldsIterator.next();
-            Log.d(TAG, "Key: " + field.getKey() + "\tValue:" + field.getValue());
         }
     }
 }
