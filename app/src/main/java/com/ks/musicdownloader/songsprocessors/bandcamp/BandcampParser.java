@@ -39,21 +39,21 @@ public class BandcampParser extends BaseParser {
         Log.d(TAG, "parseArtistInfo()");
         artistInfo = new ArtistInfo();
         Document document = fetchDocumentFromUrl(getUrl());
-        if (isArtistUrl()) {
+        if (isArtistUrl(getUrl())) {
             Log.d(TAG, "parseArtistInfo(): artist url found!");
             if (!setArtistNameForArtistUrl(document)) {
                 Log.d(TAG, "parseArtistInfo() could not set artist name!");
                 return Constants.DUMMY_ARTIST_INFO;
             }
             handleArtist(document);
-        } else if (isAlbumUrl()) {
+        } else if (isAlbumUrl(getUrl())) {
             Log.d(TAG, "parseArtistInfo() album url found!");
             if (!setArtistNameForTrackOrAlbum(document)) {
                 Log.d(TAG, "parseArtistInfo() could not set artist name!");
                 return Constants.DUMMY_ARTIST_INFO;
             }
             handleAlbum(document);
-        } else if (isTrackUrl()) {
+        } else if (isTrackUrl(getUrl())) {
             Log.d(TAG, "parseArtistInfo() track url found!");
             if (!setArtistNameForTrackOrAlbum(document)) {
                 Log.d(TAG, "parseArtistInfo() could not set artist name!");
@@ -86,16 +86,16 @@ public class BandcampParser extends BaseParser {
         return true;
     }
 
-    private boolean isArtistUrl() {
-        return RegexUtils.isRegexMatching(Constants.BANDCAMP_ARTIST_URL_REGEX, getUrl());
+    private boolean isArtistUrl(String url) {
+        return RegexUtils.isRegexMatching(Constants.BANDCAMP_ARTIST_URL_REGEX, url);
     }
 
-    private boolean isAlbumUrl() {
-        return RegexUtils.isRegexMatching(Constants.BANDCAMP_ALBUM_URL_REGEX, getUrl());
+    private boolean isAlbumUrl(String url) {
+        return RegexUtils.isRegexMatching(Constants.BANDCAMP_ALBUM_URL_REGEX, url);
     }
 
-    private boolean isTrackUrl() {
-        return RegexUtils.isRegexMatching(Constants.BANDCAMP_TRACK_URL_REGEX, getUrl());
+    private boolean isTrackUrl(String url) {
+        return RegexUtils.isRegexMatching(Constants.BANDCAMP_TRACK_URL_REGEX, url);
     }
 
     // get the list of album urls and call handleTrackOrAlbum with the document of every url
@@ -104,10 +104,17 @@ public class BandcampParser extends BaseParser {
         String baseUrl = getBaseUrlForArtist();
         Elements albumElements = document.select(Constants.BANDCAMP_ALBUM_LIST_SELECTOR).select("a");
         for (Element albumElement : albumElements) {
-            String albumUrl = albumElement.attr("href");
-            Document albumDocument = fetchDocumentFromUrl(baseUrl + albumUrl);
-            Log.d(TAG, "handleArtist() calling handle album for album url: " + albumUrl);
-            handleAlbum(albumDocument);
+            String destUrl = albumElement.attr("href");
+            destUrl = baseUrl + destUrl;
+            Document destDocument = fetchDocumentFromUrl(destUrl);
+            Log.d(TAG, "handleArtist() calling handle album for album url: " + destUrl);
+            if (isAlbumUrl(destUrl)) {
+                handleAlbum(destDocument);
+            } else if (isTrackUrl(destUrl)) {
+                handleTrack(destDocument);
+            } else {
+                Log.d(TAG, "handleArtist(): This should not happen. No type found for url: " + destUrl);
+            }
         }
     }
 

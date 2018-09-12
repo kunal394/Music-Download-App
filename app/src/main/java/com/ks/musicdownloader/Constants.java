@@ -31,7 +31,7 @@ public class Constants {
     public static final String BANDCAMP_ALBUM_URL_REGEX = "^(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com\\/album\\/.*";
     public static final String BANDCAMP_TRACK_URL_REGEX = "^(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com\\/track\\/.*";
     public static final String BANDCAMP_TRALBUM_REGEX = "(?<=var\\sTralbumData\\s=\\s)(.)*?(?=\\};)"; // might come to use later
-    public static final String BANDCAMP_TRACK_INFO_REGEX = "trackinfo\\: \\[[^\\]]*\\]";
+    public static final String BANDCAMP_TRACK_INFO_REGEX = "trackinfo\\: (.*?)\\}\\]"; // match everything till "}]" is found
     public static final String BANDCAMP_ARTIST_SELECTOR_FOR_ARTIST = "span.title";
     public static final String BANDCAMP_ARTIST_SELECTOR_FOR_ALBUM_AND_TRACK = "span[itemprop=byArtist]";
     public static final String BANDCAMP_TRACK_TITLE_SELECTOR = "h2.trackTitle";

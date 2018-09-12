@@ -20,6 +20,7 @@ public class NetworkUtils {
         }
         NetworkRequest networkRequest = new NetworkRequest.Builder()
                 .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
                 .build();
         connMgr.registerNetworkCallback(networkRequest, networkCallback);
     }
