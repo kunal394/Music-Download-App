@@ -7,6 +7,7 @@ import com.ks.musicdownloader.Utils.ToastUtils;
 
 public enum ValidationResult implements ValidationResultService {
 
+    NO_EXTERNAL_STORAGE_PERMISSION(Constants.NO_EXTERNAL_STORAGE_PERMISSION_MESSAGE, false),
     NO_INTERNET(Constants.NO_INTERNET_MESSAGE, false),
     NO_URL_PROVIDED(Constants.NO_URL_PROVIDED_MESSAGE, false),
     INVALID_URL(Constants.INVALID_URL_MESSAGE, false),

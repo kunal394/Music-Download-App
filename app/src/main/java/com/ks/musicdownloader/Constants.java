@@ -1,14 +1,20 @@
 package com.ks.musicdownloader;
 
+import android.Manifest;
 import android.os.Environment;
 
 public class Constants {
+
+    // Permissions Constants
+    public static final String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    public static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 1;
 
     // Intent extra strings
     public static final String DOWNLOAD_URL = "DOWNLOAD_URL";
     public static final String SITE_NAME = "SITE_NAME";
 
     // Toast Messages and validator status
+    public static final String NO_EXTERNAL_STORAGE_PERMISSION_MESSAGE = "No permission to save downloaded files!";
     public static final String NO_INTERNET_MESSAGE = "No internet is available. Please check your connection and retry!";
     public static final String NO_URL_PROVIDED_MESSAGE = "No url provided. Please provide a valid url and retry!";
     public static final String INVALID_URL_MESSAGE = "The provided url is invalid!";
@@ -49,5 +55,9 @@ public class Constants {
 
     // Artist info
     public static final ArtistInfo DUMMY_ARTIST_INFO = new ArtistInfo();
-    public static final String DUMMY_ALBUM_NAME = "DUMMY_ALBUM_NAME";
+    public static final String SINGLES_ALBUM = "Singles";
+
+    // Looper Constants
+    public static final String DOWNLOAD_THREAD = "DOWNLOAD_THREAD";
+    public static final int ENQUEUE_SONGS = 1;
 }

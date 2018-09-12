@@ -24,6 +24,8 @@ import com.ks.musicdownloader.service.DownloaderService;
 import com.ks.musicdownloader.service.ParserService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
+import java.util.Map;
+
 @SuppressWarnings("DanglingJavadoc")
 public class DisplayListActivity extends AppCompatActivity {
 
@@ -38,11 +40,12 @@ public class DisplayListActivity extends AppCompatActivity {
     private ServiceConnection downloaderServiceConnection;
     private ConnectivityManager.NetworkCallback networkCallback;
     private DownloadCallback<ArtistInfo> downloadCallbackForParser;
-    private DownloadCallback<ArtistInfo> downloadCallbackForDownloader;
+    private DownloadCallback<Integer> downloadCallbackForDownloader;
     private ArtistInfo parsedArtistInfo;
     private ProgressBar progressBar;
     private TextView nothingToDownloadView;
     private Button downloadButton;
+    private Map<Integer, Long> songsDownloadReferences;
 
     /**
      * Called when download button is clicked
@@ -126,6 +129,10 @@ public class DisplayListActivity extends AppCompatActivity {
         nothingToDownloadView.setVisibility(View.VISIBLE);
     }
 
+    private void notifyDownloadedSong(Integer downloadedSongId) {
+        // TODO: 12-09-2018 complete this
+    }
+
     private void displaySongsList() {
         Log.d(TAG, "displaySongsList()");
         hideProgressBar();
@@ -137,7 +144,7 @@ public class DisplayListActivity extends AppCompatActivity {
     }
 
     private ArtistInfo getSelectedSongs() {
-        return new ArtistInfo();
+        return parsedArtistInfo;
     }
 
     private void bindToDownloaderService() {
@@ -191,6 +198,7 @@ public class DisplayListActivity extends AppCompatActivity {
                 DownloaderService.LocalBinder binder = (DownloaderService.LocalBinder) iBinder;
                 downloaderService = binder.getService();
                 downloaderService.setDownloadCallback(downloadCallbackForDownloader);
+                downloaderService.setMusicSite(musicSite);
                 downloaderService.startDownload(parsedArtistInfo);
             }
 
@@ -227,6 +235,7 @@ public class DisplayListActivity extends AppCompatActivity {
 
             @Override
             public void finishDownloading() {
+                unbindService(parserServiceConnection);
                 if (parsedArtistInfo == Constants.DUMMY_ARTIST_INFO) {
                     notifyNothingToDownload();
                 } else {
@@ -238,10 +247,10 @@ public class DisplayListActivity extends AppCompatActivity {
 
     private void createDownloadCallbackForDownloader() {
         Log.d(TAG, "createDownloadCallbackForDownloader()");
-        downloadCallbackForDownloader = new DownloadCallback<ArtistInfo>() {
+        downloadCallbackForDownloader = new DownloadCallback<Integer>() {
             @Override
-            public void updateFromDownload(ArtistInfo artistInfo) {
-
+            public void updateFromDownload(Integer downloadedSongId) {
+                notifyDownloadedSong(downloadedSongId);
             }
 
             @Override
@@ -262,6 +271,7 @@ public class DisplayListActivity extends AppCompatActivity {
 
             @Override
             public void finishDownloading() {
+                unbindService(downloaderServiceConnection);
             }
         };
     }

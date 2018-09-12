@@ -5,6 +5,8 @@ import com.ks.musicdownloader.DownloadCallback;
 import com.ks.musicdownloader.Utils.RegexUtils;
 import com.ks.musicdownloader.songsprocessors.bandcamp.BandcampParser;
 
+import java.io.File;
+
 public enum MusicSite implements MusicSiteService {
 
     BANDCAMP {
@@ -16,6 +18,11 @@ public enum MusicSite implements MusicSiteService {
         @Override
         public BandcampParser getMusicParser(String url, DownloadCallback downloadCallback) {
             return new BandcampParser(url, downloadCallback);
+        }
+
+        @Override
+        public String createFilePath(String artist, String album, String song) {
+            return artist + File.separator + album + File.separator + song;
         }
     }
 }

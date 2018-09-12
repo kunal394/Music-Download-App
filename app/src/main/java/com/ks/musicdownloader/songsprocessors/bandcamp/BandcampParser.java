@@ -126,7 +126,7 @@ public class BandcampParser extends BaseParser {
 
     private void handleTrack(Document document) throws IOException {
         Log.d(TAG, "handleTrack() start");
-        parseTrackInfo(document, Constants.DUMMY_ALBUM_NAME);
+        parseTrackInfo(document, Constants.SINGLES_ALBUM);
     }
 
     private void parseTrackInfo(Document document, String albumName) throws IOException {

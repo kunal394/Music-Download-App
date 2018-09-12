@@ -1,9 +1,12 @@
 package com.ks.musicdownloader.activity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        checkForPermissions();
         super.onStart();
         networkConnected = false;
         createNetworkCallback();
@@ -61,8 +65,26 @@ public class MainActivity extends AppCompatActivity {
         networkCallback = null;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case Constants.PERMISSION_WRITE_EXTERNAL_STORAGE:
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    ValidationResult.NO_EXTERNAL_STORAGE_PERMISSION.displayToast(this);
+                    finish();
+                }
+                break;
+        }
+    }
+
     /******************Private************************************/
     /******************Methods************************************/
+
+    private void checkForPermissions() {
+        // TODO: 12-09-2018 might cause issues
+        ActivityCompat.requestPermissions(this, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_WRITE_EXTERNAL_STORAGE);
+    }
 
     private void validateUrlAndStartActivityIfValid() {
         EditText editText = findViewById(R.id.editText);
