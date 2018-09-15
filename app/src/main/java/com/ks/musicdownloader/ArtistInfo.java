@@ -62,4 +62,13 @@ public class ArtistInfo implements Serializable {
         }
         return songsMap;
     }
+
+    @Override
+    public String toString() {
+        return "ArtistInfo{" +
+                "artist='" + artist + '\'' +
+                ", albumInfo=" + albumInfo.toString() +
+                ", songsMap=" + songsMap.toString() +
+                '}';
+    }
 }

@@ -16,10 +16,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.CommonUtils;
 import com.ks.musicdownloader.Utils.NetworkUtils;
+import com.ks.musicdownloader.service.ParserService;
 
 @SuppressWarnings("DanglingJavadoc")
 public class MainActivity extends AppCompatActivity {
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         NetworkUtils.unRegReceiverForConnectionValidationOnly(this, networkCallback);
+        unregisterReceiver(broadcastReceiver);
         networkCallback = null;
     }
 
@@ -130,7 +133,10 @@ public class MainActivity extends AppCompatActivity {
             public void handleValidatorResult(ValidationResult validationResult, String url, String siteName) {
                 hideValidatorProgressBar();
                 if (validationResult.isValidResult()) {
-                    createIntentAndDelegateActivity(url, siteName);
+                    // createIntentAndDelegateActivity(url, siteName);
+                    Intent intent = new Intent(MainActivity.this, ParserService.class);
+                    intent.putExtra(Constants.DOWNLOAD_URL, url);
+                    startService(intent);
                 } else {
                     displayErrorToast(validationResult);
                 }
@@ -161,7 +167,29 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            Log.d(TAG, "ParserBroadcastReceiver, onReceive()");
+            String parseResult = intent.getAction();
+            if (parseResult == null || parseResult.equals(Constants.EMPTY_STRING)) {
+                return;
+            }
+            switch (parseResult) {
+                case Constants.PARSE_ERROR_ACTION_KEY:
+                    String errorMsg = intent.getStringExtra(Constants.PARSE_ERROR_MESSAGE_KEY);
+                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_ERROR_ACTION_KEY, parse error: " + errorMsg);
+                    // TODO: 16-09-2018 display error message here
+                    if (Constants.PARSE_ERROR_NULL_INTENT.equals(errorMsg)) {
+                        // should never happen
+                    } else {
+                        // display parse error message
+                    }
+                    break;
+                case Constants.PARSE_SUCCESS_ACTION_KEY:
+                    ArtistInfo artistInfo = (ArtistInfo) intent.getSerializableExtra(Constants.PARSE_SUCCESS_MESSAGE_KEY);
+                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_SUCCESS_ACTION_KEY, artistInfo: "
+                            + artistInfo.toString());
+                    // TODO: 16-09-2018 start the next activity here with the artist info
+                    break;
+            }
         }
     }
 }
