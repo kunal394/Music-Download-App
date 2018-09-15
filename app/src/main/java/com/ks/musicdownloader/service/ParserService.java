@@ -31,27 +31,31 @@ public class ParserService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        Log.d(TAG, "onHandleIntent()");
         if (intent == null) {
-            Log.d(TAG, "Intent null!");
+            Log.d(TAG, "onHandleIntent(): Intent null!");
             sendBroadcast(createIntentForNullIntentReceived());
             return;
         }
 
         String url = intent.getStringExtra(Constants.DOWNLOAD_URL);
-        MusicSite musicSite = (MusicSite) intent.getSerializableExtra(Constants.MUSIC_SITE);
-        Log.d(TAG, "Parsing songs for music site: " + musicSite.name() + " with url: " + url);
+        String siteName = intent.getStringExtra(Constants.MUSIC_SITE);
         ArtistInfo artistInfo = null;
         String error = Constants.EMPTY_STRING;
         try {
+            MusicSite musicSite = MusicSite.valueOf(siteName);
+            Log.d(TAG, "onHandleIntent(): Parsing songs for music site: " + musicSite.name() + " with url: " + url);
             artistInfo = musicSite.getMusicParser(url).parseArtistInfo();
         } catch (IOException e) {
-            Log.d(TAG, "Error found while parsing songs. Error: " + e);
+            Log.d(TAG, "onHandleIntent(): Error found while parsing songs. Error: " + e);
             error = e.getMessage();
             e.printStackTrace();
         }
         if (artistInfo == Constants.DUMMY_ARTIST_INFO) {
+            Log.d(TAG, "onHandleIntent(): Sending error broadcast with error: " + error);
             sendBroadcast(createParseErrorIntent(error));
         } else {
+            Log.d(TAG, "onHandleIntent(): Sending success broadcast.");
             sendBroadcast(createSuccessIntent(artistInfo));
         }
     }
@@ -73,6 +77,7 @@ public class ParserService extends IntentService {
     private Intent createSuccessIntent(ArtistInfo artistInfo) {
         Intent intent = new Intent();
         intent.setAction(Constants.PARSE_SUCCESS_ACTION_KEY);
+        // TODO: 16-09-2018 will need to make artistInfo parcealable, no workaround to it
         Bundle bundle = new Bundle();
         bundle.putSerializable(Constants.PARSE_SUCCESS_MESSAGE_KEY, artistInfo);
         intent.putExtras(bundle);

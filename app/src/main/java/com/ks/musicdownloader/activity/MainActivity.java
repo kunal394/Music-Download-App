@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                     // createIntentAndDelegateActivity(url, siteName);
                     Intent intent = new Intent(MainActivity.this, ParserService.class);
                     intent.putExtra(Constants.DOWNLOAD_URL, url);
+                    intent.putExtra(Constants.MUSIC_SITE, siteName);
                     startService(intent);
                 } else {
                     displayErrorToast(validationResult);
