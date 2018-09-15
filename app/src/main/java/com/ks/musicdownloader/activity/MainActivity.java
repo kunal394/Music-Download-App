@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.R;
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private ConnectivityManager.NetworkCallback networkCallback;
     private boolean networkConnected;
     private URLValidatorTaskListener urlValidatorTaskListener;
-    private ProgressBar validatorProgressBar;
+    private RelativeLayout validatorProgressBar;
 
     /**
      * Called when the user taps the Send button
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
     /******************Methods************************************/
 
     private void checkForPermissions() {
-        // TODO: 12-09-2018 might cause issues
         ActivityCompat.requestPermissions(this, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_WRITE_EXTERNAL_STORAGE);
     }
 

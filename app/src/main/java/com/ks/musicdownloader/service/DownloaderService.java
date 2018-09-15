@@ -2,8 +2,10 @@ package com.ks.musicdownloader.service;
 
 import android.app.DownloadManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Environment;
@@ -12,6 +14,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.util.LongSparseArray;
 import android.util.SparseArray;
 
 import com.ks.musicdownloader.ArtistInfo;
@@ -19,11 +22,13 @@ import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.SongInfo;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
+@SuppressWarnings("DanglingJavadoc")
 public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> {
 
     private static final String TAG = DownloaderService.class.getSimpleName();
@@ -31,8 +36,9 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
     private final IBinder binder = new LocalBinder();
     private MusicSite musicSite;
     private ArtistInfo parsedArtistInfo;
-    private SparseArray<Long> songsDownloadReferences;
+    private LongSparseArray<Integer> songsDownloadReferences;
     private DownloadManager dm;
+    private BroadcastReceiver onCompleteBroadcastReceiver;
 
     HandlerThread handlerThread = new HandlerThread(Constants.DOWNLOAD_THREAD);
     Handler handler;
@@ -40,6 +46,8 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
     @Override
     public IBinder onBind(Intent intent) {
         handlerThread.start();
+        createBroadcastReceiverForCompletedDownloads();
+        registerReceiver(onCompleteBroadcastReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         return binder;
     }
 
@@ -50,6 +58,7 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
 
     @Override
     public void onTaskCompletion() {
+        unregisterReceiver(onCompleteBroadcastReceiver);
         stopSelf();
     }
 
@@ -72,6 +81,24 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
         }
     }
 
+    /******************Private************************************/
+    /******************Methods************************************/
+
+    private void createBroadcastReceiverForCompletedDownloads() {
+        onCompleteBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long downloadedReferenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                Log.d(TAG, "onCompleteBroadcastReceiver onReceive() download id: " + downloadedReferenceId);
+                if (downloadedReferenceId == -1) {
+                    return;
+                }
+                Integer downloadedSongId = songsDownloadReferences.get(downloadedReferenceId);
+                downloadCallback.updateFromDownload(downloadedSongId);
+            }
+        };
+    }
+
     private void createHandler() {
         handler = new Handler(handlerThread.getLooper()) {
             @Override
@@ -90,7 +117,7 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
 
     private void enqueueSongsForDownload() {
         Log.d(TAG, "enqueueSongsForDownload()");
-        songsDownloadReferences = new SparseArray<>();
+        songsDownloadReferences = new LongSparseArray<>();
         if (dm == null) {
             Log.d(TAG, "startDownload(): dm found null!");
             return;
@@ -102,12 +129,23 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
             List<Integer> songIds = albumEntry.getValue();
             for (Integer songId : songIds) {
                 SongInfo songInfo = songsMap.get(songId);
+                String filePath = musicSite.createFilePath(parsedArtistInfo.getArtist(), album, songInfo.getName());
+                if (doesFileExists(filePath)) {
+                    Log.d(TAG, "file: " + filePath + " already exists. So not downloading again.");
+                    downloadCallback.updateFromDownload(songId);
+                    continue;
+                }
                 Log.d(TAG, "enqueueSongsForDownload() adding song: " + songInfo.getName() + " for download.");
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(songInfo.getUrl()));
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, musicSite.createFilePath(parsedArtistInfo.getArtist(), album, songInfo.getName()));
-                songsDownloadReferences.put(songId, dm.enqueue(request));
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, filePath);
+                songsDownloadReferences.put(dm.enqueue(request), songId);
             }
         }
+    }
+
+    private boolean doesFileExists(String filePath) {
+        File file = new File(Constants.MUSIC_DIRECTORY, filePath);
+        return file.exists();
     }
 }

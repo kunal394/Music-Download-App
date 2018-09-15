@@ -56,6 +56,9 @@ public class ArtistInfo {
     }
 
     public SparseArray<SongInfo> getSongsMap() {
+        if (songsMap == null) {
+            songsMap = new SparseArray<>();
+        }
         return songsMap;
     }
 }

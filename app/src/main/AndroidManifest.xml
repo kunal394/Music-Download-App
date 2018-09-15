@@ -36,9 +36,10 @@
         </activity>
 
         <service
-            android:name=".service.ParserService"
+            android:name=".service.ParserServiceDep"
             android:enabled="true" />
         <service android:name=".service.DownloaderService" />
+        <service android:name=".service.ParserService"/>
 
     </application>
 

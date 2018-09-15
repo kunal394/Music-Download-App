@@ -5,4 +5,6 @@
     <string name="button_download_songs">Download</string>
     <string name="list_display">Select Songs To Download</string>
     <string name="nothingToDownload">Sorry! Nothing to download :( !</string>
+    <string name="parsingProgressText">Extracting Songs List from URL</string>
+    <string name="validatorProgressText">Validating URL</string>
 </resources>
