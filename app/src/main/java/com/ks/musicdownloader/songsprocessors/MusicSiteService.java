@@ -14,7 +14,9 @@ public interface MusicSiteService<T extends BaseParser> {
      */
     boolean isUrlMatching(String url);
 
-    BaseParser getMusicParser(String url, DownloadCallback downloadCallback);
+    BaseParser getMusicParserDep(String url, DownloadCallback downloadCallback);
+
+    BaseParser getMusicParser(String url);
 
     String createFilePath(String artist, String album, String song);
 

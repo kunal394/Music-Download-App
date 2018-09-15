@@ -16,8 +16,13 @@ public enum MusicSite implements MusicSiteService {
         }
 
         @Override
-        public BandcampParser getMusicParser(String url, DownloadCallback downloadCallback) {
+        public BandcampParser getMusicParserDep(String url, DownloadCallback downloadCallback) {
             return new BandcampParser(url, downloadCallback);
+        }
+
+        @Override
+        public BandcampParser getMusicParser(String url) {
+            return new BandcampParser(url, null);
         }
 
         @Override

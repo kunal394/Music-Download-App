@@ -1,6 +1,9 @@
 package com.ks.musicdownloader.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -26,14 +29,15 @@ public class MainActivity extends AppCompatActivity {
     private boolean networkConnected;
     private URLValidatorTaskListener urlValidatorTaskListener;
     private RelativeLayout validatorProgressBar;
+    private BroadcastReceiver broadcastReceiver;
 
     /**
      * Called when the user taps the Send button
      */
-    public void sendMessage(View view) {
+    public void extractSongsFromURL(View view) {
         CommonUtils.hideKeyboard(this);
         if (networkConnected) {
-            validateUrlAndStartActivityIfValid();
+            validateURL();
         } else {
             displayErrorToast(ValidationResult.NO_INTERNET);
         }
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         validatorProgressBar = findViewById(R.id.urlValidatorProgressBar);
+        broadcastReceiver = new ParserBroadcastReceiver();
     }
 
     @Override
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         networkConnected = false;
         createNetworkCallback();
+        registerBroadcastReceiver();
         NetworkUtils.regReceiverForConnectionValidationOnly(this, networkCallback);
         createUrlValidatorListener();
     }
@@ -85,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_WRITE_EXTERNAL_STORAGE);
     }
 
-    private void validateUrlAndStartActivityIfValid() {
+    private void validateURL() {
         EditText editText = findViewById(R.id.editText);
         String url = editText.getText().toString();
         displayValidatorProgressBar();
@@ -110,6 +116,14 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    private void registerBroadcastReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.PARSE_ERROR_ACTION_KEY);
+        intentFilter.addAction(Constants.PARSE_SUCCESS_ACTION_KEY);
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        registerReceiver(broadcastReceiver, intentFilter);
+    }
+
     private void createUrlValidatorListener() {
         urlValidatorTaskListener = new URLValidatorTaskListener() {
             @Override
@@ -131,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     private void createIntentAndDelegateActivity(String url, String siteName) {
         Intent intent = new Intent(this, DisplayListActivity.class);
         intent.putExtra(Constants.DOWNLOAD_URL, url);
-        intent.putExtra(Constants.SITE_NAME, siteName);
+        intent.putExtra(Constants.MUSIC_SITE, siteName);
         startActivity(intent);
     }
 
@@ -141,5 +155,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void hideValidatorProgressBar() {
         validatorProgressBar.setVisibility(View.GONE);
+    }
+
+    private class ParserBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
     }
 }

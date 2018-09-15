@@ -11,7 +11,12 @@ public class Constants {
 
     // Intent extra strings
     public static final String DOWNLOAD_URL = "DOWNLOAD_URL";
-    public static final String SITE_NAME = "SITE_NAME";
+    public static final String MUSIC_SITE = "MUSIC_SITE";
+    public static final String PARSE_ERROR_ACTION_KEY = "PARSER_ERROR_ACTION_KEY";
+    public static final String PARSE_ERROR_MESSAGE_KEY = "PARSER_ERROR_MESSAGE_KEY";
+    public static final String PARSE_ERROR_NULL_INTENT = "Null intent found!";
+    public static final String PARSE_SUCCESS_ACTION_KEY = "PARSE_SUCCESS_ACTION_KEY";
+    public static final String PARSE_SUCCESS_MESSAGE_KEY = "PARSE_SUCCESS_MESSAGE_KEY";
 
     // Toast Messages and validator status
     public static final String NO_EXTERNAL_STORAGE_PERMISSION_MESSAGE = "No permission to save downloaded files!";

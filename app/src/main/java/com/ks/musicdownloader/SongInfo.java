@@ -1,6 +1,8 @@
 package com.ks.musicdownloader;
 
-public class SongInfo {
+import java.io.Serializable;
+
+public class SongInfo implements Serializable {
 
     private Integer id;
 

@@ -108,7 +108,7 @@ public class DisplayListActivity extends AppCompatActivity {
     private void getIntentExtras() {
         Intent intent = getIntent();
         url = intent.getStringExtra(Constants.DOWNLOAD_URL);
-        String siteName = intent.getStringExtra(Constants.SITE_NAME);
+        String siteName = intent.getStringExtra(Constants.MUSIC_SITE);
         musicSite = Enum.valueOf(MusicSite.class, siteName);
     }
 

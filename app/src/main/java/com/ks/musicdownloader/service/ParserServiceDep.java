@@ -78,7 +78,7 @@ public class ParserServiceDep extends BaseDownloadService<String, ArtistInfo> {
             }
 
             try {
-                artistInfo = musicSite.getMusicParser(url, downloadCallback).parseArtistInfo();
+                artistInfo = musicSite.getMusicParserDep(url, downloadCallback).parseArtistInfo();
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d(TAG, "FetchSongsListTask doInBackground(): Error while parsing the songs info! Error: " + e);
