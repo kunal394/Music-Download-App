@@ -77,9 +77,8 @@ public class ParserService extends IntentService {
     private Intent createSuccessIntent(ArtistInfo artistInfo) {
         Intent intent = new Intent();
         intent.setAction(Constants.PARSE_SUCCESS_ACTION_KEY);
-        // TODO: 16-09-2018 will need to make artistInfo parcealable, no workaround to it
         Bundle bundle = new Bundle();
-        bundle.putSerializable(Constants.PARSE_SUCCESS_MESSAGE_KEY, artistInfo);
+        bundle.putParcelable(Constants.PARSE_SUCCESS_MESSAGE_KEY, artistInfo);
         intent.putExtras(bundle);
         return intent;
     }

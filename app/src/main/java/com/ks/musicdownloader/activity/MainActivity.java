@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.PARSE_SUCCESS_ACTION_KEY:
-                    ArtistInfo artistInfo = (ArtistInfo) intent.getSerializableExtra(Constants.PARSE_SUCCESS_MESSAGE_KEY);
+                    ArtistInfo artistInfo = intent.getParcelableExtra(Constants.PARSE_SUCCESS_MESSAGE_KEY);
                     Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_SUCCESS_ACTION_KEY, artistInfo: "
                             + artistInfo.toString());
                     // TODO: 16-09-2018 start the next activity here with the artist info
