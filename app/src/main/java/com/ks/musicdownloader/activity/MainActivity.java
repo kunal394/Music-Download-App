@@ -190,6 +190,8 @@ public class MainActivity extends AppCompatActivity {
                             + artistInfo.toString());
                     // TODO: 16-09-2018 start the next activity here with the artist info
                     break;
+                default:
+                    break;
             }
         }
     }
