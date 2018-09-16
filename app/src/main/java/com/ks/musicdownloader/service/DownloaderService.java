@@ -139,6 +139,7 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(songInfo.getUrl()));
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, filePath);
+                request.setMimeType(Constants.AUDIO_MIME_TYPE);
                 songsDownloadReferences.put(dm.enqueue(request), songId);
             }
         }

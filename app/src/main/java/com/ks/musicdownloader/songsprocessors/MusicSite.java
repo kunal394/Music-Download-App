@@ -27,7 +27,7 @@ public enum MusicSite implements MusicSiteService {
 
         @Override
         public String createFilePath(String artist, String album, String song) {
-            return artist + File.separator + album + File.separator + song;
+            return artist + File.separator + album + File.separator + song + Constants.MP3_EXTENSION;
         }
     }
 }

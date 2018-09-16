@@ -71,4 +71,6 @@ public class Constants {
     public static final int HIDE_PROGRESS_BAR = 2;
     public static final int VALIDATING_PROGRESS = 3;
     public static final int PARSE_ERROR = 4;
+    public static final String AUDIO_MIME_TYPE = "audio/*";
+    public static String MP3_EXTENSION = ".mp3";
 }
