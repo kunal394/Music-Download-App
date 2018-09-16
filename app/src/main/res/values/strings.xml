@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Music Downloader</string>
-    <string name="edit_message">Enter a message</string>
+    <string name="edit_message">Enter URL</string>
     <string name="button_fetch_songs_list">Fetch Songs</string>
     <string name="button_download_songs">Download</string>
     <string name="list_display">Select Songs To Download</string>
     <string name="nothingToDownload">Sorry! Nothing to download :( !</string>
-    <string name="parsingProgressText">Extracting Songs List from URL</string>
+    <string name="parsingProgressText">Extracting Songs List</string>
     <string name="validatorProgressText">Validating URL</string>
 </resources>

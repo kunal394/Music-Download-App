@@ -8,6 +8,9 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.Constants;
@@ -32,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     private URLValidatorTaskListener urlValidatorTaskListener;
     private RelativeLayout validatorProgressBar;
     private BroadcastReceiver broadcastReceiver;
+    private TextView progressBarTextView;
+    private Handler handler;
+    private String musicSite;
 
     /**
      * Called when the user taps the Send button
@@ -50,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         validatorProgressBar = findViewById(R.id.urlValidatorProgressBar);
+        progressBarTextView = findViewById(R.id.progressBarText);
         broadcastReceiver = new ParserBroadcastReceiver();
     }
 
@@ -57,11 +65,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         checkForPermissions();
         super.onStart();
-        networkConnected = false;
-        createNetworkCallback();
-        registerBroadcastReceiver();
-        NetworkUtils.regReceiverForConnectionValidationOnly(this, networkCallback);
-        createUrlValidatorListener();
+        init();
     }
 
     // when display message activity opens, this function gets called
@@ -94,10 +98,45 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_WRITE_EXTERNAL_STORAGE);
     }
 
+    private void init() {
+        networkConnected = false;
+        createNetworkCallback();
+        createHandler();
+        registerBroadcastReceiver();
+        NetworkUtils.regReceiverForConnectionValidationOnly(this, networkCallback);
+        createUrlValidatorListener();
+    }
+
+    private void createHandler() {
+        handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                Log.d(TAG, "handleMessage()");
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case Constants.VALIDATING_PROGRESS:
+                        validatorProgressBar.setVisibility(View.VISIBLE);
+                        progressBarTextView.setText(R.string.validatorProgressText);
+                        break;
+                    case Constants.PARSING_PROGRESS:
+                        progressBarTextView.setText(R.string.parsingProgressText);
+                        break;
+                    case Constants.HIDE_PROGRESS_BAR:
+                        validatorProgressBar.setVisibility(View.GONE);
+                        break;
+                    case Constants.PARSE_ERROR:
+                        validatorProgressBar.setVisibility(View.GONE);
+                        displayErrorToast(ValidationResult.PARSING_ERROR);
+                        break;
+                }
+            }
+        };
+    }
+
     private void validateURL() {
         EditText editText = findViewById(R.id.editText);
         String url = editText.getText().toString();
-        displayValidatorProgressBar();
+        handler.sendEmptyMessage(Constants.VALIDATING_PROGRESS);
         new URLValidatorTask(url, urlValidatorTaskListener).execute();
     }
 
@@ -131,9 +170,9 @@ public class MainActivity extends AppCompatActivity {
         urlValidatorTaskListener = new URLValidatorTaskListener() {
             @Override
             public void handleValidatorResult(ValidationResult validationResult, String url, String siteName) {
-                hideValidatorProgressBar();
                 if (validationResult.isValidResult()) {
-                    // createIntentAndDelegateActivity(url, siteName);
+                    handler.sendEmptyMessage(Constants.PARSING_PROGRESS);
+                    musicSite = siteName;
                     Intent intent = new Intent(MainActivity.this, ParserService.class);
                     intent.putExtra(Constants.DOWNLOAD_URL, url);
                     intent.putExtra(Constants.MUSIC_SITE, siteName);
@@ -149,19 +188,13 @@ public class MainActivity extends AppCompatActivity {
         validationResult.displayToast(this);
     }
 
-    private void createIntentAndDelegateActivity(String url, String siteName) {
+    private void createIntentAndDelegateActivity(ArtistInfo artistInfo) {
         Intent intent = new Intent(this, DisplayListActivity.class);
-        intent.putExtra(Constants.DOWNLOAD_URL, url);
-        intent.putExtra(Constants.MUSIC_SITE, siteName);
+        intent.putExtra(Constants.MUSIC_SITE, musicSite);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
+        intent.putExtras(bundle);
         startActivity(intent);
-    }
-
-    private void displayValidatorProgressBar() {
-        validatorProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void hideValidatorProgressBar() {
-        validatorProgressBar.setVisibility(View.GONE);
     }
 
     private class ParserBroadcastReceiver extends BroadcastReceiver {
@@ -177,18 +210,16 @@ public class MainActivity extends AppCompatActivity {
                 case Constants.PARSE_ERROR_ACTION_KEY:
                     String errorMsg = intent.getStringExtra(Constants.PARSE_ERROR_MESSAGE_KEY);
                     Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_ERROR_ACTION_KEY, parse error: " + errorMsg);
-                    // TODO: 16-09-2018 display error message here
                     if (Constants.PARSE_ERROR_NULL_INTENT.equals(errorMsg)) {
-                        // should never happen
-                    } else {
-                        // display parse error message
+                        Log.wtf(TAG, "ParserBroadcastReceiver, onReceive() parser service received null intent!");
                     }
+                    handler.sendEmptyMessage(Constants.PARSE_ERROR);
                     break;
                 case Constants.PARSE_SUCCESS_ACTION_KEY:
                     ArtistInfo artistInfo = intent.getParcelableExtra(Constants.PARSE_SUCCESS_MESSAGE_KEY);
                     Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_SUCCESS_ACTION_KEY, artistInfo: "
                             + artistInfo.toString());
-                    // TODO: 16-09-2018 start the next activity here with the artist info
+                    createIntentAndDelegateActivity(artistInfo);
                     break;
                 default:
                     break;

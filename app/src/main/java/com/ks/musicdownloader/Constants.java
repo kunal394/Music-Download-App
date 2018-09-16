@@ -17,6 +17,7 @@ public class Constants {
     public static final String PARSE_ERROR_NULL_INTENT = "Null intent found!";
     public static final String PARSE_SUCCESS_ACTION_KEY = "PARSE_SUCCESS_ACTION_KEY";
     public static final String PARSE_SUCCESS_MESSAGE_KEY = "PARSE_SUCCESS_MESSAGE_KEY";
+    public static final String PARSED_ARTIST_INFO = "PARSED_ARTIST_INFO";
 
     // Toast Messages and validator status
     public static final String NO_EXTERNAL_STORAGE_PERMISSION_MESSAGE = "No permission to save downloaded files!";
@@ -26,6 +27,7 @@ public class Constants {
     public static final String UNSUPPORTED_SITE_MESSAGE = "The url is either unsupported or has no media in it!";
     public static final String NON_EXISTENT_URL_MESSAGE = "The provided url does not exists.";
     public static final String VALID_URL_MESSAGE = "VALID_URL";
+    public static final String PARSE_ERROR_MESSAGE = "Error while extracting songs from the url!";
 
     // String constants
     public static final String EMPTY_STRING = "";
@@ -65,4 +67,8 @@ public class Constants {
     // Looper Constants
     public static final String DOWNLOAD_THREAD = "DOWNLOAD_THREAD";
     public static final int ENQUEUE_SONGS = 1;
+    public static final int PARSING_PROGRESS = 1;
+    public static final int HIDE_PROGRESS_BAR = 2;
+    public static final int VALIDATING_PROGRESS = 3;
+    public static final int PARSE_ERROR = 4;
 }

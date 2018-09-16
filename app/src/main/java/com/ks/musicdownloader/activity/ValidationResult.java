@@ -13,7 +13,8 @@ public enum ValidationResult implements ValidationResultService {
     INVALID_URL(Constants.INVALID_URL_MESSAGE, false),
     UNSUPPORTED_SITE(Constants.UNSUPPORTED_SITE_MESSAGE, false),
     NON_EXISTENT_URL(Constants.NON_EXISTENT_URL_MESSAGE, false),
-    VALID_URL(Constants.VALID_URL_MESSAGE, true);
+    VALID_URL(Constants.VALID_URL_MESSAGE, true),
+    PARSING_ERROR(Constants.PARSE_ERROR_MESSAGE, false);
 
     private final String message;
     private final boolean validResult;

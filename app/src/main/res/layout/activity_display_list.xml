@@ -7,7 +7,7 @@
     tools:context=".activity.DisplayListActivity">
 
     <TextView
-        android:id="@+id/top_bar_display_message_activity"
+        android:id="@+id/artistView"
         android:layout_width="wrap_content"
         android:layout_height="31dp"
         android:layout_marginEnd="8dp"
@@ -23,48 +23,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/nothingToDownloadView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="@string/nothingToDownload"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_bar_display_message_activity" />
-
-    <RelativeLayout
-        android:id="@+id/parserProgressBarLayout"
-        android:layout_width="177dp"
-        android:layout_height="94dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.524">
-
-        <ProgressBar
-            android:id="@+id/progressBarForParser"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="17dp"
-            android:text="@string/parsingProgressText"
-            android:textAlignment="center" />
-    </RelativeLayout>
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/download_button"
         android:layout_width="wrap_content"
@@ -75,7 +33,6 @@
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="gone"
         android:onClick="downloadSongs"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
