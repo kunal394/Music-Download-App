@@ -63,7 +63,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         validatorProgressBar = fragmentView.findViewById(R.id.urlValidatorProgressBar);
         progressBarTextView = fragmentView.findViewById(R.id.progressBarText);
-        fetchSongsButton = fragmentView.findViewById(R.id.fetch_songs_button1);
+        fetchSongsButton = fragmentView.findViewById(R.id.fetch_songs_button);
         fetchSongsButton.setOnClickListener(this);
 
         broadcastReceiver = new ParserBroadcastReceiver();
@@ -91,7 +91,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             return ;
         }
         switch (view.getId()) {
-            case R.id.fetch_songs_button1:
+            case R.id.fetch_songs_button:
                 extractSongsFromURL();
                 break;
         }

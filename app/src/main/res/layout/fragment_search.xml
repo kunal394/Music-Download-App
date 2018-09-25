@@ -20,13 +20,13 @@
             android:ems="10"
             android:hint="@string/edit_message"
             android:inputType="textPersonName"
-            app:layout_constraintEnd_toStartOf="@+id/fetch_songs_button1"
+            app:layout_constraintEnd_toStartOf="@+id/fetch_songs_button"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/fetch_songs_button1"
+            android:id="@+id/fetch_songs_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
