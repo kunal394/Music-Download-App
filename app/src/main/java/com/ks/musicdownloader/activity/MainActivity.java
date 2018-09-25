@@ -1,91 +1,80 @@
 package com.ks.musicdownloader.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.Network;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.R;
-import com.ks.musicdownloader.Utils.CommonUtils;
-import com.ks.musicdownloader.Utils.NetworkUtils;
-import com.ks.musicdownloader.service.ParserService;
 
 @SuppressWarnings("DanglingJavadoc")
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
-    private ConnectivityManager.NetworkCallback networkCallback;
-    private boolean networkConnected;
-    private URLValidatorTaskListener urlValidatorTaskListener;
-    private RelativeLayout validatorProgressBar;
-    private BroadcastReceiver broadcastReceiver;
-    private TextView progressBarTextView;
-    private Handler handler;
-    private String musicSite;
+    public static final int SEARCH_FRAGMENT = 1;
+    int CURRENTLY_SELECTED_FRAGMENT = 0;
 
-    /**
-     * Called when the user taps the Send button
-     */
-    public void extractSongsFromURL(View view) {
-        CommonUtils.hideKeyboard(this);
-        if (networkConnected) {
-            validateURL();
-        } else {
-            displayErrorToast(ValidationResult.NO_INTERNET);
-        }
-    }
-
-    public void drawerActivity(View view) {
-        Intent intent = new Intent(this, Main2Activity.class);
-        startActivity(intent);
-    }
+    private DrawerLayout drawerLayout;
+    ActionBar actionBar;
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        validatorProgressBar = findViewById(R.id.urlValidatorProgressBar);
-        progressBarTextView = findViewById(R.id.progressBarText);
-        broadcastReceiver = new ParserBroadcastReceiver();
+        drawerLayout = findViewById(R.id.drawer_layout);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            actionBar.setTitle(R.string.action_search);
+        }
+        navigationView = findViewById(R.id.nav_view);
     }
 
     @Override
     protected void onStart() {
         checkForPermissions();
         super.onStart();
-        init();
-    }
-
-    // when display message activity opens, this function gets called
-    // so unregister the network callback here and then register again in onStart
-    @Override
-    protected void onStop() {
-        super.onStop();
-        NetworkUtils.unRegReceiverForConnectionValidationOnly(this, networkCallback);
-        networkCallback = null;
+        displaySearchFragment();
+        drawerLayout.addDrawerListener(createDrawerLayoutListener());
+        navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.global, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                displaySearchFragment();
+                return true;
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -108,132 +97,88 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_WRITE_EXTERNAL_STORAGE);
     }
 
-    private void init() {
-        networkConnected = false;
-        createNetworkCallback();
-        createHandler();
-        registerBroadcastReceiver();
-        NetworkUtils.regReceiverForConnectionValidationOnly(this, networkCallback);
-        createUrlValidatorListener();
+    @NonNull
+    private DrawerLayout.DrawerListener createDrawerLayoutListener() {
+        return new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View view, float v) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View view) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View view) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int i) {
+
+            }
+        };
     }
 
-    private void createHandler() {
-        handler = new Handler(Looper.getMainLooper()) {
+    @NonNull
+    private NavigationView.OnNavigationItemSelectedListener createNavigationViewListener() {
+        return new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void handleMessage(Message msg) {
-                Log.d(TAG, "handleMessage()");
-                super.handleMessage(msg);
-                switch (msg.what) {
-                    case Constants.VALIDATING_PROGRESS:
-                        validatorProgressBar.setVisibility(View.VISIBLE);
-                        progressBarTextView.setText(R.string.validatorProgressText);
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                // set item as selected to persist highlight
+                menuItem.setChecked(true);
+
+                // close drawer when item is tapped
+                drawerLayout.closeDrawers();
+
+                switch (menuItem.getItemId()) {
+                    case R.id.nav_search:
+                        setActionBarTitle(R.string.action_search);
+                        displaySearchFragment();
                         break;
-                    case Constants.PARSING_PROGRESS:
-                        progressBarTextView.setText(R.string.parsingProgressText);
+                    case R.id.nav_settings:
+                        setActionBarTitle(R.string.nav_settings);
+                        displaySettingsFragment();
                         break;
-                    case Constants.HIDE_PROGRESS_BAR:
-                        validatorProgressBar.setVisibility(View.GONE);
-                        break;
-                    case Constants.PARSE_ERROR:
-                        validatorProgressBar.setVisibility(View.GONE);
-                        displayErrorToast(ValidationResult.PARSING_ERROR);
+                    case R.id.nav_source:
+                        setActionBarTitle(R.string.nav_source);
+                        displayAboutUsFragment();
                         break;
                 }
+                return true;
             }
         };
     }
 
-    private void validateURL() {
-        EditText editText = findViewById(R.id.editText);
-        String url = editText.getText().toString();
-        handler.sendEmptyMessage(Constants.VALIDATING_PROGRESS);
-        new URLValidatorTask(url, urlValidatorTaskListener).execute();
-    }
-
-    private void createNetworkCallback() {
-        Log.d(TAG, "createNetworkCallback()");
-        networkCallback = new ConnectivityManager.NetworkCallback() {
-
-            @Override
-            public void onAvailable(Network network) {
-                super.onAvailable(network);
-                networkConnected = true;
-            }
-
-            @Override
-            public void onLost(Network network) {
-                super.onLost(network);
-                networkConnected = false;
-            }
-        };
-    }
-
-    private void registerBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.PARSE_ERROR_ACTION_KEY);
-        intentFilter.addAction(Constants.PARSE_SUCCESS_ACTION_KEY);
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        registerReceiver(broadcastReceiver, intentFilter);
-    }
-
-    private void createUrlValidatorListener() {
-        urlValidatorTaskListener = new URLValidatorTaskListener() {
-            @Override
-            public void handleValidatorResult(ValidationResult validationResult, String url, String siteName) {
-                if (validationResult.isValidResult()) {
-                    handler.sendEmptyMessage(Constants.PARSING_PROGRESS);
-                    musicSite = siteName;
-                    Intent intent = new Intent(MainActivity.this, ParserService.class);
-                    intent.putExtra(Constants.DOWNLOAD_URL, url);
-                    intent.putExtra(Constants.MUSIC_SITE, siteName);
-                    startService(intent);
-                } else {
-                    displayErrorToast(validationResult);
-                }
-            }
-        };
-    }
-
-    private void displayErrorToast(ValidationResult validationResult) {
-        validationResult.displayToast(this);
-    }
-
-    private void createIntentAndDelegateActivity(ArtistInfo artistInfo) {
-        Intent intent = new Intent(this, DisplayListActivity.class);
-        intent.putExtra(Constants.MUSIC_SITE, musicSite);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
-        intent.putExtras(bundle);
-        startActivity(intent);
-    }
-
-    private class ParserBroadcastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "ParserBroadcastReceiver, onReceive()");
-            String parseResult = intent.getAction();
-            if (parseResult == null || parseResult.equals(Constants.EMPTY_STRING)) {
-                return;
-            }
-            switch (parseResult) {
-                case Constants.PARSE_ERROR_ACTION_KEY:
-                    String errorMsg = intent.getStringExtra(Constants.PARSE_ERROR_MESSAGE_KEY);
-                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_ERROR_ACTION_KEY, parse error: " + errorMsg);
-                    if (Constants.PARSE_ERROR_NULL_INTENT.equals(errorMsg)) {
-                        Log.wtf(TAG, "ParserBroadcastReceiver, onReceive() parser service received null intent!");
-                    }
-                    handler.sendEmptyMessage(Constants.PARSE_ERROR);
-                    break;
-                case Constants.PARSE_SUCCESS_ACTION_KEY:
-                    ArtistInfo artistInfo = intent.getParcelableExtra(Constants.PARSE_SUCCESS_MESSAGE_KEY);
-                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_SUCCESS_ACTION_KEY, artistInfo: "
-                            + artistInfo.toString());
-                    createIntentAndDelegateActivity(artistInfo);
-                    break;
-                default:
-                    break;
-            }
+    private void setActionBarTitle(int stringRes) {
+        if (actionBar != null) {
+            actionBar.setTitle(stringRes);
         }
+    }
+
+    private void displaySearchFragment() {
+        if (CURRENTLY_SELECTED_FRAGMENT != SEARCH_FRAGMENT) {
+            displayFragment(new SearchFragment());
+        }
+    }
+
+    private void displaySettingsFragment() {
+        CURRENTLY_SELECTED_FRAGMENT = 0;
+        displayFragment(new SettingsFragment());
+    }
+
+    private void displayAboutUsFragment() {
+        CURRENTLY_SELECTED_FRAGMENT = 0;
+        displayFragment(new AboutUsFragment());
+    }
+
+    private void displayFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_content_frame, fragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
     }
 }

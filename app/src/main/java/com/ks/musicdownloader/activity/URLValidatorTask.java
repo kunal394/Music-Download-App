@@ -34,17 +34,18 @@ public class URLValidatorTask extends AsyncTask<Void, Void, Pair<ValidationResul
         if (Constants.EMPTY_STRING.equals(url)) {
             return new Pair<>(ValidationResult.NO_URL_PROVIDED, null);
         } else if (!RegexUtils.isAValidUrl(url)) {
-            Log.d(TAG, "Error with the url: " + url);
+            Log.d(TAG, "doInBackground() Error with the url: " + url);
             return new Pair<>(ValidationResult.INVALID_URL, null);
         }
 
         url = RegexUtils.prependHTTPSPartIfNotPresent(url);
         MusicSite site = getSongsFactory().getSite(url);
         if (null == site) {
-            Log.d(TAG, "Unknown site: " + url);
+            Log.d(TAG, "doInBackground() Unknown site: " + url);
             return new Pair<>(ValidationResult.UNSUPPORTED_SITE, null);
         } else {
             if (remoteUrlExists()) {
+                Log.d(TAG, "doInBackground() site: " + site.name());
                 return new Pair<>(ValidationResult.VALID_URL, site.name());
             } else {
                 return new Pair<>(ValidationResult.NON_EXISTENT_URL, null);

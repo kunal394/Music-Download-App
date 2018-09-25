@@ -38,8 +38,6 @@
         <service android:name=".service.DownloaderService" />
         <service android:name=".service.ParserService" />
 
-        <activity
-            android:name=".activity.Main2Activity"/>
     </application>
 
 </manifest>

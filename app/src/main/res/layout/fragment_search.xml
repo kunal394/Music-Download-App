@@ -1,14 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/under_construction" />
+        android:layout_height="match_parent">
+
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="208dp"
+            android:ems="10"
+            android:hint="@string/edit_message"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toStartOf="@+id/fetch_songs_button1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/fetch_songs_button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/button_fetch_songs_list"
+            app:layout_constraintBaseline_toBaselineOf="@+id/editText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/editText" />
+
+        <RelativeLayout
+            android:id="@+id/urlValidatorProgressBar"
+            android:layout_width="184dp"
+            android:layout_height="93dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.737">
+
+            <ProgressBar
+                android:id="@+id/progressBarForValidator"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="37dp"
+                android:layout_height="30dp"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:id="@+id/progressBarText"
+                android:layout_width="125dp"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="13dp"
+                android:contentDescription="@string/list_display"
+                android:gravity="center_horizontal"
+                android:text="@string/validatorProgressText" />
+        </RelativeLayout>
+
+    </android.support.constraint.ConstraintLayout>
 
 </FrameLayout>
