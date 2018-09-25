@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- We can make a group of items single-selectable by applying
+    android:checkableBehavior="single" to a group.
+    This allows us to show which list item is currently selected.-->
+    <group android:checkableBehavior="single"
+        android:id="@+id/nav_main_activity_top_group">
+        <item
+            android:id="@+id/nav_search"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="@string/action_search" />
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/nav_settings_and_source">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/nav_settings" />
+        <item
+            android:id="@+id/nav_source"
+            android:icon="@drawable/ic_source"
+            android:title="@string/nav_source"/>
+    </group>
+</menu>

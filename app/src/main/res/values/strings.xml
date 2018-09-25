@@ -2,9 +2,16 @@
     <string name="app_name">Music Downloader</string>
     <string name="edit_message">Enter URL</string>
     <string name="button_fetch_songs_list">Fetch Songs</string>
-    <string name="button_download_songs">Download</string>
     <string name="list_display">Select Songs To Download</string>
-    <string name="nothingToDownload">Sorry! Nothing to download :( !</string>
     <string name="parsingProgressText">Extracting Songs List</string>
     <string name="validatorProgressText">Validating URL</string>
+
+    <string name="nav_settings">Settings</string>
+    <string name="main_nav_title">Main Activity Nav Bar</string>
+    <string name="drawer">Display Drawer</string>
+    <string name="action_search">Search</string>
+    <string name="nav_source">Source Code</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="under_construction">Under Construction ◝( ′ㅂ`)و ̑̑</string>
 </resources>

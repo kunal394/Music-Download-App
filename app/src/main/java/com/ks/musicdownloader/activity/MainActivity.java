@@ -52,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void drawerActivity(View view) {
+        Intent intent = new Intent(this, Main2Activity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,8 +79,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         NetworkUtils.unRegReceiverForConnectionValidationOnly(this, networkCallback);
-        unregisterReceiver(broadcastReceiver);
         networkCallback = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override

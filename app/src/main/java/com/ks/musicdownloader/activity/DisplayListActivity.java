@@ -1,7 +1,6 @@
 package com.ks.musicdownloader.activity;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
@@ -36,7 +35,8 @@ public class DisplayListActivity extends AppCompatActivity {
     private DownloadCallback<Integer> downloadCallbackForDownloader;
     private ArtistInfo parsedArtistInfo;
     private TextView artistView;
-    private FloatingActionButton downloadButton;
+    private  FloatingActionButton downloadButton;
+    private boolean downloading;
 
     /**
      * Called when download button is clicked
@@ -45,6 +45,7 @@ public class DisplayListActivity extends AppCompatActivity {
      */
     public void downloadSongs(View view) {
         downloadButton.hide();
+        downloading = true;
         parsedArtistInfo = getSelectedSongs();
         bindToDownloaderService();
     }
@@ -61,6 +62,9 @@ public class DisplayListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if (downloading) {
+            downloadButton.hide();
+        }
         getIntentExtras();
         init();
     }
@@ -116,8 +120,8 @@ public class DisplayListActivity extends AppCompatActivity {
     }
 
     private void bindToDownloaderService() {
-        Intent intent = new Intent(DisplayListActivity.this, DownloaderService.class);
-        bindService(intent, downloaderServiceConnection, Context.BIND_AUTO_CREATE);
+//        Intent intent = new Intent(DisplayListActivity.this, DownloaderService.class);
+//        bindService(intent, downloaderServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private void createNetworkCallback() {
