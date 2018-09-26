@@ -1,8 +1,6 @@
 package com.ks.musicdownloader.songsprocessors;
 
-import com.ks.musicdownloader.DownloadCallback;
-
-public interface MusicSiteService<T extends BaseParser> {
+public interface MusicSiteService {
 
     /**
      * This method is responsible for checking if a url belongs to a particular website or not.
@@ -13,8 +11,6 @@ public interface MusicSiteService<T extends BaseParser> {
      * @return whether a url belongs to this site
      */
     boolean isUrlMatching(String url);
-
-    BaseParser getMusicParserDep(String url, DownloadCallback downloadCallback);
 
     BaseParser getMusicParser(String url);
 

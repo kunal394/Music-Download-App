@@ -7,12 +7,17 @@
     <string name="validatorProgressText">Validating URL</string>
 
     <string name="nav_settings">Settings</string>
-    <string name="main_nav_title">Main Activity Nav Bar</string>
-    <string name="drawer">Display Drawer</string>
     <string name="action_search">Search</string>
     <string name="nav_source">Source Code</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="under_construction">Under Construction ◝( ′ㅂ`)و ̑̑</string>
     <string name="github_repo">Github Repo</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="artist_info">Artist Info</string>
+    <string name="artist_group_id">artist_group_id</string>
+    <string name="album_info">Album Info</string>
+    <string name="album_group_id">album_group_id</string>
 </resources>

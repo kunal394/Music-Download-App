@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- We can make a group of items single-selectable by applying
+    android:checkableBehavior="single" to a group.
+    This allows us to show which list item is currently selected.-->
+
+    <!-- orderInCategory defines the positions of menu groups or items in the nav view.
+     higher the order lower the item/group in the nav view-->
+    <group
+        android:id="@+id/nav_main_activity_top_group"
+        android:checkableBehavior="single"
+        android:orderInCategory="100">
+        <item
+            android:id="@+id/nav_search"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="@string/action_search" />
+    </group>
+</menu>

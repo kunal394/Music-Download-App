@@ -49,6 +49,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private Handler handler;
 
     private String musicSite;
+    private boolean parsing;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -86,13 +87,15 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        // TODO: 26-09-2018 how to add onclick listener
         if (view == null) {
-            return ;
+            return;
         }
         switch (view.getId()) {
             case R.id.fetch_songs_button:
-                extractSongsFromURL();
+                if (!parsing) {
+                    parsing = true;
+                    extractSongsFromURL();
+                }
                 break;
         }
     }
@@ -135,8 +138,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 super.handleMessage(msg);
                 switch (msg.what) {
                     case Constants.VALIDATING_PROGRESS:
-                        validatorProgressBar.setVisibility(View.VISIBLE);
                         progressBarTextView.setText(R.string.validatorProgressText);
+                        validatorProgressBar.setVisibility(View.VISIBLE);
                         break;
                     case Constants.PARSING_PROGRESS:
                         progressBarTextView.setText(R.string.parsingProgressText);
@@ -204,7 +207,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     private void createIntentAndDelegateActivity(ArtistInfo artistInfo) {
-        Intent intent = new Intent(getContext(), DisplayListActivity.class);
+        Intent intent = new Intent(getContext(), ListSongsActivity.class);
         intent.putExtra(Constants.MUSIC_SITE, musicSite);
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
@@ -223,6 +226,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             }
             switch (parseResult) {
                 case Constants.PARSE_ERROR_ACTION_KEY:
+                    parsing = false;
                     String errorMsg = intent.getStringExtra(Constants.PARSE_ERROR_MESSAGE_KEY);
                     Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_ERROR_ACTION_KEY, parse error: " + errorMsg);
                     if (Constants.PARSE_ERROR_NULL_INTENT.equals(errorMsg)) {
@@ -231,10 +235,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     handler.sendEmptyMessage(Constants.PARSE_ERROR);
                     break;
                 case Constants.PARSE_SUCCESS_ACTION_KEY:
+                    parsing = false;
                     ArtistInfo artistInfo = intent.getParcelableExtra(Constants.PARSE_SUCCESS_MESSAGE_KEY);
                     Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_SUCCESS_ACTION_KEY, artistInfo: "
                             + artistInfo.toString());
                     Log.d(TAG, "site: " + musicSite);
+                    handler.sendEmptyMessage(Constants.HIDE_PROGRESS_BAR);
                     createIntentAndDelegateActivity(artistInfo);
                     break;
                 default:

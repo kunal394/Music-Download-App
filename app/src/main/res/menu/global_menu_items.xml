@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/nav_settings_and_source"
+        android:checkableBehavior="single"
+        android:orderInCategory="110">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/nav_settings" />
+        <item
+            android:id="@+id/nav_source"
+            android:icon="@drawable/ic_source"
+            android:title="@string/nav_source" />
+    </group>
+</menu>

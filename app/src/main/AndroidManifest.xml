@@ -21,23 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.DisplayListActivity"
-            android:parentActivityName=".activity.MainActivity">
-            <intent-filter>
-                <action android:name="com.ks.musicdownloader.DisplayMessage" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <!-- The meta-data tag is required if you support API level 15 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
-        </activity>
 
         <service android:name=".service.DownloaderService" />
         <service android:name=".service.ParserService" />
 
+        <activity android:name=".activity.ListSongsActivity" />
     </application>
 
 </manifest>
