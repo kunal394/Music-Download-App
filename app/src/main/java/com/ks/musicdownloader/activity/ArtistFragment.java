@@ -48,8 +48,8 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void setArguments(@Nullable Bundle bundle) {
-        super.setArguments(bundle);
         Log.d(TAG, "setArguments");
+        super.setArguments(bundle);
         if (bundle == null) {
             Log.wtf(TAG, "No artist info found! Killing fragment!!");
             removeFragment();
@@ -84,12 +84,6 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume obj: " + this);
-    }
-
-    @Override
     public void onClick(View view) {
         if (view == null) {
             return;
@@ -118,7 +112,6 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
             @Override
             public void setAlbumCheckedStatus(String album, Boolean status) {
                 artistInfo.setAlbumCheckedStatus(album, status);
-                fragmentCallback.download();
             }
         };
     }

@@ -31,7 +31,6 @@ import com.ks.musicdownloader.DownloadCallback;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.SongInfo;
 import com.ks.musicdownloader.Utils.NetworkUtils;
-import com.ks.musicdownloader.Utils.ToastUtils;
 import com.ks.musicdownloader.service.DownloaderService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
@@ -125,7 +124,6 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
         if (downloading) {
             return;
         }
-        ToastUtils.displayLongToast(this, "Download callback working :D !!");
         downloading = true;
 //        bindToDownloaderService();
     }
@@ -169,7 +167,7 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
         actionBar.setTitle(R.string.album_info);
         AlbumFragment albumFragment = new AlbumFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.PARSE_SUCCESS_MESSAGE_KEY, parsedArtistInfo);
+        bundle.putParcelable(Constants.PARSED_ARTIST_INFO, parsedArtistInfo);
         albumFragment.setArguments(bundle);
         displayFragment(albumFragment);
     }

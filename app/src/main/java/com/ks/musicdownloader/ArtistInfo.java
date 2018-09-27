@@ -172,4 +172,18 @@ public class ArtistInfo implements Parcelable {
             albumCheckedStatus.put(album, false);
         }
     }
+
+    public void setSongCheckedStatus(Integer songId, Boolean status) {
+        getSongsMap().get(songId).setChecked(status);
+    }
+
+    public ArrayList<SongInfo> getSongsList() {
+        SparseArray<SongInfo> songsMap = getSongsMap();
+        int size = songsMap.size();
+        ArrayList<SongInfo> songInfoList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            songInfoList.add(songsMap.valueAt(i));
+        }
+        return songInfoList;
+    }
 }
