@@ -2,63 +2,73 @@ package com.ks.musicdownloader.activity;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.CheckedTextView;
+
+import com.ks.musicdownloader.R;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Kunal Singh(knl.singh) on 26-09-2018.
  */
 public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder> {
 
-    private String[] albumNames;
-    private OnItemClickListener listener;
+    private List<String> albumNames;
+    private HashMap<String, Boolean> albumCheckedStatus;
+    private ArtistAdapterCallback adapterCallback;
 
-    public ArtistAdapter(String[] albumNames, OnItemClickListener listener) {
+    ArtistAdapter(List<String> albumNames, HashMap<String, Boolean> albumCheckedStatus, ArtistAdapterCallback adapterCallback) {
         this.albumNames = albumNames;
-        this.listener = listener;
-    }
-
-    /**
-     * Interface for receiving click events from cells.
-     */
-    public interface OnItemClickListener {
-        void onClick(View view, int position);
+        this.albumCheckedStatus = albumCheckedStatus;
+        this.adapterCallback = adapterCallback;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        LayoutInflater vi = LayoutInflater.from(parent.getContext());
-//        View v = vi.inflate(R.layout.drawer_list_item, parent, false);
-//        TextView tv = (TextView) v.findViewById(android.R.id.text1);
-//        return new ViewHolder(tv);
-        return null;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view = inflater.inflate(R.layout.list_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        holder.textView.setText(albumNames[holder.getAdapterPosition()]);
-        holder.textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onClick(view, holder.getAdapterPosition());
-            }
-        });
+        holder.bind(albumNames.get(holder.getAdapterPosition()));
     }
 
     @Override
     public int getItemCount() {
-        return albumNames.length;
+        return albumNames.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        final TextView textView;
+        final CheckedTextView checkedTextView;
 
-        public ViewHolder(TextView textView) {
-            super(textView);
-            this.textView = textView;
+        ViewHolder(View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+            this.checkedTextView = itemView.findViewById(R.id.checked_text_view);
+        }
+
+        void bind(String album) {
+            // use the sparse boolean array to check
+            checkedTextView.setChecked(albumCheckedStatus.get(album));
+            checkedTextView.setText(album);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            String album = albumNames.get(adapterPosition);
+            Boolean newStatus = !albumCheckedStatus.get(album);
+            checkedTextView.setChecked(newStatus);
+            albumCheckedStatus.put(album, newStatus);
+            adapterCallback.setAlbumCheckedStatus(album, newStatus);
         }
     }
 }

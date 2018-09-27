@@ -11,6 +11,8 @@ public class SongInfo implements Parcelable {
 
     private String url;
 
+    private boolean checked;
+
     public SongInfo(Integer id, String name, String url) {
         this.id = id;
         this.name = name;
@@ -61,6 +63,14 @@ public class SongInfo implements Parcelable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 
     @Override

@@ -28,24 +28,6 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/download_frameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true">
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/download_button"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="16dp"
-            android:onClick="downloadSongs"
-            android:visibility="gone"
-            app:srcCompat="@android:drawable/stat_sys_download" />
-    </FrameLayout>
-
     <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
     <!-- The NavigationView (the drawer) must specify its horizontal gravity with the
     android:layout_gravity attribute. To support right-to-left (RTL) languages,

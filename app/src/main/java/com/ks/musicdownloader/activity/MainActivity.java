@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         drawerLayout.addDrawerListener(createDrawerLayoutListener());
         navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
+        markSearchMenuItemChecked();
         displaySearchFragment();
     }
 
@@ -118,6 +119,11 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setTitle(stringRes);
         }
+    }
+
+    private void markSearchMenuItemChecked() {
+        Menu menu = navigationView.getMenu();
+        menu.findItem(R.id.nav_search).setChecked(true);
     }
 
     private void displaySearchFragment() {
@@ -202,8 +208,5 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         };
-    }
-
-    public void downloadSongs(View view) {
     }
 }

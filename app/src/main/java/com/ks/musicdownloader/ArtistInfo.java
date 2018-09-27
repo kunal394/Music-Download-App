@@ -16,6 +16,8 @@ public class ArtistInfo implements Parcelable {
     // album name to list of ids of songs
     private HashMap<String, List<Integer>> albumInfo;
 
+    private HashMap<String, Boolean> albumCheckedStatus;
+
     // song id to songInfo
     private SparseArray<SongInfo> songsMap;
 
@@ -137,6 +139,37 @@ public class ArtistInfo implements Parcelable {
             int key = songsMap.keyAt(i);
             dest.writeInt(key);
             dest.writeParcelable(songsMap.get(key), flags);
+        }
+    }
+
+    public HashMap<String, Boolean> getAlbumCheckedStatus() {
+        if (albumCheckedStatus == null) {
+            initializeAlbumCheckedStatus();
+        }
+        return albumCheckedStatus;
+    }
+
+    public Boolean getAlbumCheckedStatus(String album) {
+        if (albumCheckedStatus == null) {
+            initializeAlbumCheckedStatus();
+        }
+        return albumCheckedStatus.get(album);
+    }
+
+    public void setAlbumCheckedStatus(String album, Boolean checked) {
+        albumCheckedStatus.put(album, checked);
+        for (Integer songId : albumInfo.get(album)) {
+            songsMap.get(songId).setChecked(checked);
+        }
+    }
+
+    private void initializeAlbumCheckedStatus() {
+        if (albumCheckedStatus == null) {
+            albumCheckedStatus = new HashMap<>();
+        }
+
+        for (String album : albumInfo.keySet()) {
+            albumCheckedStatus.put(album, false);
         }
     }
 }

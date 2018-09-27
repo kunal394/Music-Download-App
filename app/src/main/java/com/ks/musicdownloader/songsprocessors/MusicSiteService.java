@@ -1,5 +1,9 @@
 package com.ks.musicdownloader.songsprocessors;
 
+import android.support.design.widget.NavigationView;
+
+import com.ks.musicdownloader.ArtistInfo;
+
 public interface MusicSiteService {
 
     /**
@@ -15,5 +19,7 @@ public interface MusicSiteService {
     BaseParser getMusicParser(String url);
 
     String createFilePath(String artist, String album, String song);
+
+    void createNavMenu(NavigationView navView, ArtistInfo artistInfo);
 
 }

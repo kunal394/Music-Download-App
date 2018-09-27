@@ -74,4 +74,8 @@ public class Constants {
     public static final String AUDIO_MIME_TYPE = "audio/*";
     public static final String GITHUB_REPO_URI = "https://github.com/kunal394/Music-Download-App";
     public static String MP3_EXTENSION = ".mp3";
+    public static final int OTHER_FRAGMENTS = 2;
+    public static final int NO_FRAGMENT = 0;
+    public static final int DISPLAY_ARTIST_FRAGMENT = 1;
+    public static final int DISPLAY_OTHER_FRAGMENTS = 2;
 }

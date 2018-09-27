@@ -7,9 +7,11 @@ import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,9 +22,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 
 import com.ks.musicdownloader.ArtistInfo;
@@ -31,6 +31,7 @@ import com.ks.musicdownloader.DownloadCallback;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.SongInfo;
 import com.ks.musicdownloader.Utils.NetworkUtils;
+import com.ks.musicdownloader.Utils.ToastUtils;
 import com.ks.musicdownloader.service.DownloaderService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
@@ -38,34 +39,27 @@ import java.util.HashMap;
 import java.util.List;
 
 @SuppressWarnings("DanglingJavadoc")
-public class ListSongsActivity extends AppCompatActivity {
+public class ListSongsActivity extends AppCompatActivity implements FragmentCallback {
 
     private static final String TAG = ListSongsActivity.class.getSimpleName();
 
-    private static final int OTHER_FRAGMENTS = 2;
-    private static final int NO_FRAGMENT = 0;
-    private static int CURRENTLY_SELECTED_FRAGMENT = NO_FRAGMENT;
+    private static final int ARTIST_FRAGMENT = 1;
+    private static int CURRENTLY_SELECTED_FRAGMENT = Constants.NO_FRAGMENT;
 
     private DrawerLayout drawerLayout;
     private ActionBar actionBar;
     private NavigationView navigationView;
-    private FloatingActionButton downloadButton;
 
     private ArtistInfo parsedArtistInfo;
     MusicSite musicSite;
+
     private boolean downloading;
     private DownloaderService downloaderService;
     private ServiceConnection downloaderServiceConnection;
     private boolean networkConnected = false;
     private ConnectivityManager.NetworkCallback networkCallback;
     private DownloadCallback<Integer> downloadCallbackForDownloader;
-
-    public void downloadSongs(View view) {
-        changeDownloadButtonVisibility(View.GONE);
-        downloading = true;
-        parsedArtistInfo = getSelectedSongs();
-        bindToDownloaderService();
-    }
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,27 +84,23 @@ public class ListSongsActivity extends AppCompatActivity {
         // get the navigation view
         navigationView = findViewById(R.id.nav_view);
 
-        // get the download button
-        downloadButton = findViewById(R.id.download_button);
-        changeDownloadButtonVisibility(View.VISIBLE);
-
         // parse intent extras
         getIntentExtras();
 
-        createArtistMenuGroup();
-        createAlbumMenuGroup();
+        musicSite.createNavMenu(navigationView, parsedArtistInfo);
+        createHandler();
         displayArtistFragment();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (downloading) {
-            changeDownloadButtonVisibility(View.GONE);
+        init();
+        if (CURRENTLY_SELECTED_FRAGMENT != ARTIST_FRAGMENT) {
+            handler.sendEmptyMessage(Constants.DISPLAY_OTHER_FRAGMENTS);
         }
         drawerLayout.addDrawerListener(createDrawerLayoutListener());
         navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
-        init();
     }
 
     @Override
@@ -125,8 +115,19 @@ public class ListSongsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
+        deInit();
+    }
+
+    @Override
+    public void download() {
+        if (downloading) {
+            return;
+        }
+        ToastUtils.displayLongToast(this, "Download callback working :D !!");
+        downloading = true;
+//        bindToDownloaderService();
     }
 
     /******************Private************************************/
@@ -139,6 +140,13 @@ public class ListSongsActivity extends AppCompatActivity {
         createDownloadCallbackForDownloader();
     }
 
+    private void deInit() {
+        NetworkUtils.unRegReceiverForConnectionValidationOnly(this, networkCallback);
+        networkCallback = null;
+        downloaderServiceConnection = null;
+        downloadCallbackForDownloader = null;
+    }
+
     private void getIntentExtras() {
         Intent intent = getIntent();
         parsedArtistInfo = intent.getParcelableExtra(Constants.PARSED_ARTIST_INFO);
@@ -146,41 +154,56 @@ public class ListSongsActivity extends AppCompatActivity {
         musicSite = Enum.valueOf(MusicSite.class, siteName);
     }
 
-    private void createArtistMenuGroup() {
-        Menu menu = navigationView.getMenu();
-        SubMenu subMenu = menu.addSubMenu(R.string.artist_group_id, Menu.NONE, 100, R.string.artist_info);
-        subMenu.add(R.string.artist_group_id, Menu.NONE, 100, parsedArtistInfo.getArtist());
-        subMenu.setGroupCheckable(R.string.artist_group_id, true, true);
-    }
-
-    private void createAlbumMenuGroup() {
-        Menu menu = navigationView.getMenu();
-        SubMenu subMenu = menu.addSubMenu(R.string.album_group_id, Menu.NONE, 105, R.string.album_info);
-        for (String album : parsedArtistInfo.getAlbumInfo().keySet()) {
-            subMenu.add(R.string.album_group_id, Menu.NONE, 105, album);
-        }
-        subMenu.setGroupCheckable(R.string.album_group_id, true, true);
-    }
-
     private void displayArtistFragment() {
+        handler.sendEmptyMessage(Constants.DISPLAY_ARTIST_FRAGMENT);
         setActionBarTitle(R.string.artist_info);
-        // TODO: 26-09-2018 fragment transaction
+        ArtistFragment artistFragment = new ArtistFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Constants.PARSED_ARTIST_INFO, parsedArtistInfo);
+        artistFragment.setArguments(bundle);
+        displayFragment(artistFragment);
     }
 
     private void displayAlbumFragment(String album, HashMap<String, List<Integer>> albumInfo) {
+        handler.sendEmptyMessage(Constants.DISPLAY_OTHER_FRAGMENTS);
         actionBar.setTitle(R.string.album_info);
-        // TODO: 26-09-2018 fragment transaction
+        AlbumFragment albumFragment = new AlbumFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Constants.PARSE_SUCCESS_MESSAGE_KEY, parsedArtistInfo);
+        albumFragment.setArguments(bundle);
+        displayFragment(albumFragment);
     }
 
-    private void changeDownloadButtonVisibility(int vis) {
-        if (downloadButton == null) {
-            return;
+    private void displaySettingsFragment() {
+        CURRENTLY_SELECTED_FRAGMENT = Constants.OTHER_FRAGMENTS;
+        setActionBarTitle(R.string.nav_settings);
+        displayFragment(new SettingsFragment());
+    }
+
+    private void displayAboutUsFragment() {
+        CURRENTLY_SELECTED_FRAGMENT = Constants.OTHER_FRAGMENTS;
+        setActionBarTitle(R.string.nav_source);
+        displayFragment(new AboutUsFragment());
+    }
+
+    private void displayFragment(Fragment fragment) {
+        logCheckedItems();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
+    }
+
+    private void logCheckedItems() {
+        Integer size = parsedArtistInfo.getSongsMap().size();
+        int count = 0;
+        for (int i = 0; i < size; i++) {
+            if (parsedArtistInfo.getSongsMap().valueAt(i).isChecked()) {
+                count++;
+            }
         }
-        if (vis == View.GONE) {
-            downloadButton.hide();
-        } else {
-            downloadButton.show();
-        }
+        Log.d(TAG, "logCheckedItems(): Check count: " + count);
     }
 
     private void setActionBarTitle(int stringRes) {
@@ -189,36 +212,8 @@ public class ListSongsActivity extends AppCompatActivity {
         }
     }
 
-    private void displaySettingsFragment() {
-        CURRENTLY_SELECTED_FRAGMENT = OTHER_FRAGMENTS;
-        setActionBarTitle(R.string.nav_settings);
-        displayFragment(new SettingsFragment());
-    }
-
-    private void displayAboutUsFragment() {
-        CURRENTLY_SELECTED_FRAGMENT = OTHER_FRAGMENTS;
-        setActionBarTitle(R.string.nav_source);
-        displayFragment(new AboutUsFragment());
-    }
-
-    private void displayFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content_frame, fragment);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.commit();
-    }
-
     public ArtistInfo getSelectedSongs() {
         return parsedArtistInfo;
-    }
-
-    public ArtistInfo getParsedArtistInfo() {
-        return parsedArtistInfo;
-    }
-
-    public void setParsedArtistInfo(ArtistInfo parsedArtistInfo) {
-        this.parsedArtistInfo = parsedArtistInfo;
     }
 
     private void bindToDownloaderService() {
@@ -363,6 +358,22 @@ public class ListSongsActivity extends AppCompatActivity {
 
             @Override
             public void finishDownloading() {
+            }
+        };
+    }
+
+    public void createHandler() {
+        // TODO: 27-09-2018 decide on its existence :P
+        handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case Constants.DISPLAY_ARTIST_FRAGMENT:
+                        break;
+                    case Constants.DISPLAY_OTHER_FRAGMENTS:
+                        break;
+                }
             }
         };
     }
