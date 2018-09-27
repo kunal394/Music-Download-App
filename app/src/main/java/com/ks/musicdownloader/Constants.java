@@ -18,6 +18,7 @@ public class Constants {
     public static final String PARSE_SUCCESS_ACTION_KEY = "PARSE_SUCCESS_ACTION_KEY";
     public static final String PARSE_SUCCESS_MESSAGE_KEY = "PARSE_SUCCESS_MESSAGE_KEY";
     public static final String PARSED_ARTIST_INFO = "PARSED_ARTIST_INFO";
+    public static final String ALBUM_TO_VIEW = "ALBUM_TO_VIEW";
 
     // Toast Messages and validator status
     public static final String NO_EXTERNAL_STORAGE_PERMISSION_MESSAGE = "No permission to save downloaded files!";
@@ -71,11 +72,14 @@ public class Constants {
     public static final int HIDE_PROGRESS_BAR = 2;
     public static final int VALIDATING_PROGRESS = 3;
     public static final int PARSE_ERROR = 4;
+    public static final int DISPLAY_ARTIST_FRAGMENT = 1;
+    public static final int DISPLAY_OTHER_FRAGMENTS = 2;
+
+    // class local constants
     public static final String AUDIO_MIME_TYPE = "audio/*";
     public static final String GITHUB_REPO_URI = "https://github.com/kunal394/Music-Download-App";
     public static String MP3_EXTENSION = ".mp3";
     public static final int OTHER_FRAGMENTS = 2;
     public static final int NO_FRAGMENT = 0;
-    public static final int DISPLAY_ARTIST_FRAGMENT = 1;
-    public static final int DISPLAY_OTHER_FRAGMENTS = 2;
+
 }

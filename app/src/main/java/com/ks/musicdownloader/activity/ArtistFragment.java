@@ -39,6 +39,8 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
     // are same references.
     private ArtistInfo artistInfo;
 
+    ArtistAdapter adapter;
+
     private FragmentCallback fragmentCallback;
     private ArtistAdapterCallback adapterCallback;
 
@@ -78,9 +80,16 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         List<String> albumNames = new ArrayList<>(artistInfo.getAlbumInfo().keySet());
-        recyclerView.setAdapter(new ArtistAdapter(albumNames, artistInfo.getAlbumCheckedStatus(), adapterCallback));
+        adapter = new ArtistAdapter(albumNames, artistInfo.getAlbumCheckedStatus(), adapterCallback);
+        recyclerView.setAdapter(adapter);
 
         return fragmentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume() ");
     }
 
     @Override

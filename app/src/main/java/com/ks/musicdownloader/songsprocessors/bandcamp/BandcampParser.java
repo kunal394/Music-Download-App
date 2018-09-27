@@ -151,7 +151,7 @@ public class BandcampParser extends BaseParser {
                     Constants.EMPTY_STRING.equals(title) || Constants.NULL_STRING.equals(title)) {
                 continue;
             }
-            SongInfo songInfo = new SongInfo(songsCount++, title, downloadUrl);
+            SongInfo songInfo = new SongInfo(songsCount++, title, downloadUrl, albumName);
             songsInfo.add(songInfo);
         }
         artistInfo.addSongsInfoToAlbum(songsInfo, albumName);

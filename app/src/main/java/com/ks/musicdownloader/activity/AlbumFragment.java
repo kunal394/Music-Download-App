@@ -17,7 +17,6 @@ import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.SongInfo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,6 +34,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
     // in the parsedArtistInfo object in ListSongsActivity since they both
     // are same references.
     private ArtistInfo artistInfo;
+    private String album;
 
     private AlbumAdapterCallback adapterCallback;
 
@@ -52,6 +52,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
             return;
         }
         artistInfo = bundle.getParcelable(Constants.PARSED_ARTIST_INFO);
+        album = bundle.getString(Constants.ALBUM_TO_VIEW);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
         recyclerView = fragmentView.findViewById(R.id.artist_recycler_view);
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        List<SongInfo> songInfoList = artistInfo.getSongsList();
+        List<SongInfo> songInfoList = artistInfo. getSongsList(album);
         recyclerView.setAdapter(new AlbumAdapter(songInfoList, adapterCallback));
 
         return fragmentView;

@@ -2,6 +2,7 @@ package com.ks.musicdownloader;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
@@ -11,11 +12,16 @@ import java.util.Map;
 
 public class ArtistInfo implements Parcelable {
 
+    private static final String TAG = ArtistInfo.class.getSimpleName();
+
     private String artist;
 
     // album name to list of ids of songs
     private HashMap<String, List<Integer>> albumInfo;
 
+    /**
+     * to be used only ui display logic, don't use for downloading logic
+     */
     private HashMap<String, Boolean> albumCheckedStatus;
 
     // song id to songInfo
@@ -142,18 +148,42 @@ public class ArtistInfo implements Parcelable {
         }
     }
 
+    // first time called at Artist Fragment's onCreateView()
+    // so if null just initialize and return, otherwise it is being called
+    // again then return the updated album checked status based on the status
+    // of the songs of every album.
+    // EXPENSIVE FUNCTION
     public HashMap<String, Boolean> getAlbumCheckedStatus() {
         if (albumCheckedStatus == null) {
             initializeAlbumCheckedStatus();
         }
+        updateAlbumCheckStatusBasedOnSongs();
         return albumCheckedStatus;
     }
 
-    public Boolean getAlbumCheckedStatus(String album) {
+    // might be used later
+    private void updateAlbumCheckStatusBasedOnSongs() {
         if (albumCheckedStatus == null) {
-            initializeAlbumCheckedStatus();
+            albumCheckedStatus = new HashMap<>();
         }
-        return albumCheckedStatus.get(album);
+
+        for (Map.Entry<String, List<Integer>> albumSongsEntry : getAlbumInfo().entrySet()) {
+            String album = albumSongsEntry.getKey();
+            List<Integer> songIds = albumSongsEntry.getValue();
+            int totalCount = 0;
+            int checkedCount = 0;
+            for (Integer songId : songIds) {
+                totalCount++;
+                if (songsMap.get(songId).isChecked()) {
+                    checkedCount++;
+                }
+            }
+            if (checkedCount == totalCount) {
+                albumCheckedStatus.put(album, true);
+            } else {
+                albumCheckedStatus.put(album, false);
+            }
+        }
     }
 
     public void setAlbumCheckedStatus(String album, Boolean checked) {
@@ -163,6 +193,7 @@ public class ArtistInfo implements Parcelable {
         }
     }
 
+    // TODO: 28-09-2018 to be used for first time based on user settings
     private void initializeAlbumCheckedStatus() {
         if (albumCheckedStatus == null) {
             albumCheckedStatus = new HashMap<>();
@@ -174,15 +205,27 @@ public class ArtistInfo implements Parcelable {
     }
 
     public void setSongCheckedStatus(Integer songId, Boolean status) {
-        getSongsMap().get(songId).setChecked(status);
+        Log.d(TAG, "setSongCheckedStatus() ");
+        SongInfo songInfo = getSongsMap().get(songId);
+        songInfo.setChecked(status);
+        if (status.equals(false)) {
+            Log.d(TAG, "setSongCheckedStatus() unchecking song: " + songInfo.getName());
+            for (String album : albumInfo.keySet()) {
+                if (album.equals(songInfo.getAlbum())) {
+                    Log.d(TAG, "setSongCheckedStatus() unchecking song: " + songInfo.getName()
+                            + " along with its album: " + album);
+                    albumCheckedStatus.put(album, false);
+                }
+            }
+        }
     }
 
-    public ArrayList<SongInfo> getSongsList() {
-        SparseArray<SongInfo> songsMap = getSongsMap();
-        int size = songsMap.size();
+    public ArrayList<SongInfo> getSongsList(String album) {
+        getAlbumInfo();
         ArrayList<SongInfo> songInfoList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            songInfoList.add(songsMap.valueAt(i));
+        List<Integer> songIds = albumInfo.get(album);
+        for (Integer songId : songIds) {
+            songInfoList.add(songsMap.get(songId));
         }
         return songInfoList;
     }

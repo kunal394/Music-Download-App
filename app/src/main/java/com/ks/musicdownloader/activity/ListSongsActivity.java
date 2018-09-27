@@ -162,12 +162,13 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
         displayFragment(artistFragment);
     }
 
-    private void displayAlbumFragment(String album, HashMap<String, List<Integer>> albumInfo) {
+    private void displayAlbumFragment(String album) {
         handler.sendEmptyMessage(Constants.DISPLAY_OTHER_FRAGMENTS);
         actionBar.setTitle(R.string.album_info);
         AlbumFragment albumFragment = new AlbumFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.PARSED_ARTIST_INFO, parsedArtistInfo);
+        bundle.putString(Constants.ALBUM_TO_VIEW, album);
         albumFragment.setArguments(bundle);
         displayFragment(albumFragment);
     }
@@ -285,7 +286,7 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
                 for (String album : parsedArtistInfo.getAlbumInfo().keySet()) {
                     if (album.equals(menuItemTitle)) {
                         Log.d(TAG, "OnNavigationItemSelectedListener(): Clicked on album: " + album);
-                        displayAlbumFragment(album, parsedArtistInfo.getAlbumInfo());
+                        displayAlbumFragment(album);
                     }
                 }
             }
