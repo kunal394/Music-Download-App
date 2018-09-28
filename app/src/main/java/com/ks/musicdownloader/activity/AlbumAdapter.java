@@ -10,20 +10,27 @@ import android.widget.CheckedTextView;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.SongInfo;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by Kunal Singh(knl.singh) on 26-09-2018.
  */
+@SuppressWarnings("DanglingJavadoc")
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
 
     private List<SongInfo> songInfoList;
     private AlbumAdapterCallback adapterCallback;
+    private Integer checkedCount;
 
     AlbumAdapter(List<SongInfo> songInfoList, AlbumAdapterCallback adapterCallback) {
         this.songInfoList = songInfoList;
         this.adapterCallback = adapterCallback;
+        initializeCheckedCount();
+    }
+
+    void updateSongInfoList(List<SongInfo> songInfoList) {
+        this.songInfoList = songInfoList;
+        initializeCheckedCount();
     }
 
     @NonNull
@@ -65,9 +72,29 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
             int adapterPosition = getAdapterPosition();
             SongInfo songInfo = songInfoList.get(adapterPosition);
             Boolean newStatus = !songInfo.isChecked();
+            if (newStatus == Boolean.TRUE) {
+                checkedCount++;
+            } else {
+                checkedCount--;
+            }
             checkedTextView.setChecked(newStatus);
             songInfo.setChecked(newStatus);
-            adapterCallback.setSongCheckedStatus(songInfo.getId(), newStatus);
+            adapterCallback.setSongCheckedStatus(songInfo.getId(), newStatus, checkedCount);
+            if (checkedCount == songInfoList.size()) {
+                adapterCallback.notifyAllChecked();
+            }
+        }
+    }
+
+    /******************Private************************************/
+    /******************Methods************************************/
+
+    private void initializeCheckedCount() {
+        checkedCount = 0;
+        for (SongInfo songInfo : songInfoList) {
+            if (songInfo.isChecked()) {
+                checkedCount++;
+            }
         }
     }
 }

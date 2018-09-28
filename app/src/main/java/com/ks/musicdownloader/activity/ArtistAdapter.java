@@ -15,16 +15,24 @@ import java.util.List;
 /**
  * Created by Kunal Singh(knl.singh) on 26-09-2018.
  */
+@SuppressWarnings("DanglingJavadoc")
 public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder> {
 
     private List<String> albumNames;
     private HashMap<String, Boolean> albumCheckedStatus;
     private ArtistAdapterCallback adapterCallback;
+    private Integer checkedCount;
 
     ArtistAdapter(List<String> albumNames, HashMap<String, Boolean> albumCheckedStatus, ArtistAdapterCallback adapterCallback) {
         this.albumNames = albumNames;
         this.albumCheckedStatus = albumCheckedStatus;
         this.adapterCallback = adapterCallback;
+        initializeCheckedCount();
+    }
+
+    void updateAlbumCheckedStatus(HashMap<String, Boolean> albumCheckedStatus) {
+        this.albumCheckedStatus = albumCheckedStatus;
+        initializeCheckedCount();
     }
 
     @NonNull
@@ -66,9 +74,29 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder
             int adapterPosition = getAdapterPosition();
             String album = albumNames.get(adapterPosition);
             Boolean newStatus = !albumCheckedStatus.get(album);
+            if (newStatus == Boolean.TRUE) {
+                checkedCount++;
+            } else {
+                checkedCount--;
+            }
             checkedTextView.setChecked(newStatus);
             albumCheckedStatus.put(album, newStatus);
-            adapterCallback.setAlbumCheckedStatus(album, newStatus);
+            adapterCallback.setAlbumCheckedStatus(album, newStatus, checkedCount);
+            if (checkedCount == albumNames.size()) {
+                adapterCallback.notifyAllChecked();
+            }
+        }
+    }
+
+    /******************Private************************************/
+    /******************Methods************************************/
+
+    private void initializeCheckedCount() {
+        checkedCount = 0;
+        for (Boolean status : albumCheckedStatus.values()) {
+            if (status) {
+                checkedCount++;
+            }
         }
     }
 }

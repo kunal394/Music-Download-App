@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckedTextView;
+import android.widget.TextView;
 
 import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.Constants;
@@ -29,17 +31,14 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = ArtistFragment.class.getSimpleName();
 
-    public RecyclerView recyclerView;
-    private View fragmentView;
-    private FloatingActionButton downloadButton;
-    private LinearLayoutManager linearLayoutManager;
+    private RecyclerView recyclerView;
+    private CheckedTextView selectAllCheckView;
+    private ArtistAdapter adapter;
 
     // Any changes made on this object in this file will also reflect
     // in the parsedArtistInfo object in ListSongsActivity since they both
     // are same references.
     private ArtistInfo artistInfo;
-
-    ArtistAdapter adapter;
 
     private FragmentCallback fragmentCallback;
     private ArtistAdapterCallback adapterCallback;
@@ -65,10 +64,18 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         // Inflate the layout for this fragment
-        fragmentView = inflater.inflate(R.layout.fragment_artist, container, false);
+        View fragmentView = inflater.inflate(R.layout.fragment_artist, container, false);
+        TextView titleView = fragmentView.findViewById(R.id.fragment_title);
+        titleView.setText(artistInfo.getArtist());
+
+        selectAllCheckView = fragmentView.findViewById(R.id.check_select_all);
+        selectAllCheckView.setChecked(artistInfo.getArtistCheckedStatus());
+        selectAllCheckView.setOnClickListener(this);
+        String checkAllText = artistInfo.getCheckedAlbumCount() + " selected";
+        selectAllCheckView.setText(checkAllText);
 
         // set listener for download button
-        downloadButton = fragmentView.findViewById(R.id.download_button);
+        FloatingActionButton downloadButton = fragmentView.findViewById(R.id.download_button);
         downloadButton.setOnClickListener(this);
 
         // set callbacks
@@ -77,7 +84,7 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
 
         // set adapter for recycler view
         recyclerView = fragmentView.findViewById(R.id.artist_recycler_view);
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         List<String> albumNames = new ArrayList<>(artistInfo.getAlbumInfo().keySet());
         adapter = new ArtistAdapter(albumNames, artistInfo.getAlbumCheckedStatus(), adapterCallback);
@@ -105,6 +112,18 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
                     Log.d(TAG, "onClick(): fragmentCallback null!");
                 }
                 break;
+            case R.id.check_select_all:
+                boolean newStatus = artistInfo.flipArtistCheckedStatus();
+                selectAllCheckView.setChecked(newStatus);
+                adapter.updateAlbumCheckedStatus(artistInfo.getAlbumCheckedStatus());
+                adapter.notifyDataSetChanged();
+                Integer checkedCount = 0;
+                if (newStatus) {
+                    checkedCount = artistInfo.getAlbumInfo().size();
+                }
+                String checkAllText = checkedCount + " selected";
+                selectAllCheckView.setText(checkAllText);
+                break;
         }
     }
 
@@ -119,8 +138,19 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
         adapterCallback = new ArtistAdapterCallback() {
 
             @Override
-            public void setAlbumCheckedStatus(String album, Boolean status) {
+            public void setAlbumCheckedStatus(String album, Boolean status, Integer checkedCount) {
                 artistInfo.setAlbumCheckedStatus(album, status);
+                String checkAllText = checkedCount + " selected";
+                selectAllCheckView.setText(checkAllText);
+                if (!status) {
+                    selectAllCheckView.setChecked(false);
+                }
+            }
+
+            @Override
+            public void notifyAllChecked() {
+                selectAllCheckView.setChecked(true);
+                artistInfo.setArtistCheckedStatus(true);
             }
         };
     }

@@ -148,42 +148,15 @@ public class ArtistInfo implements Parcelable {
         }
     }
 
-    // first time called at Artist Fragment's onCreateView()
-    // so if null just initialize and return, otherwise it is being called
-    // again then return the updated album checked status based on the status
-    // of the songs of every album.
-    // EXPENSIVE FUNCTION
+    public boolean getAlbumCheckedStatus(String album) {
+        return albumCheckedStatus.get(album);
+    }
+
     public HashMap<String, Boolean> getAlbumCheckedStatus() {
         if (albumCheckedStatus == null) {
             initializeAlbumCheckedStatus();
         }
-        updateAlbumCheckStatusBasedOnSongs();
         return albumCheckedStatus;
-    }
-
-    // might be used later
-    private void updateAlbumCheckStatusBasedOnSongs() {
-        if (albumCheckedStatus == null) {
-            albumCheckedStatus = new HashMap<>();
-        }
-
-        for (Map.Entry<String, List<Integer>> albumSongsEntry : getAlbumInfo().entrySet()) {
-            String album = albumSongsEntry.getKey();
-            List<Integer> songIds = albumSongsEntry.getValue();
-            int totalCount = 0;
-            int checkedCount = 0;
-            for (Integer songId : songIds) {
-                totalCount++;
-                if (songsMap.get(songId).isChecked()) {
-                    checkedCount++;
-                }
-            }
-            if (checkedCount == totalCount) {
-                albumCheckedStatus.put(album, true);
-            } else {
-                albumCheckedStatus.put(album, false);
-            }
-        }
     }
 
     public void setAlbumCheckedStatus(String album, Boolean checked) {
@@ -193,7 +166,7 @@ public class ArtistInfo implements Parcelable {
         }
     }
 
-    // TODO: 28-09-2018 to be used for first time based on user settings
+    // TODO: 28-09-2018 to be used for the first time based on user settings
     private void initializeAlbumCheckedStatus() {
         if (albumCheckedStatus == null) {
             albumCheckedStatus = new HashMap<>();
@@ -204,19 +177,13 @@ public class ArtistInfo implements Parcelable {
         }
     }
 
-    public void setSongCheckedStatus(Integer songId, Boolean status) {
+    public void setSongCheckedStatus(String album, Integer songId, Boolean status) {
         Log.d(TAG, "setSongCheckedStatus() ");
         SongInfo songInfo = getSongsMap().get(songId);
         songInfo.setChecked(status);
         if (status.equals(false)) {
             Log.d(TAG, "setSongCheckedStatus() unchecking song: " + songInfo.getName());
-            for (String album : albumInfo.keySet()) {
-                if (album.equals(songInfo.getAlbum())) {
-                    Log.d(TAG, "setSongCheckedStatus() unchecking song: " + songInfo.getName()
-                            + " along with its album: " + album);
-                    albumCheckedStatus.put(album, false);
-                }
-            }
+            albumCheckedStatus.put(album, false);
         }
     }
 
@@ -228,5 +195,61 @@ public class ArtistInfo implements Parcelable {
             songInfoList.add(songsMap.get(songId));
         }
         return songInfoList;
+    }
+
+    public boolean getArtistCheckedStatus() {
+        getAlbumCheckedStatus();
+        for (String album : albumInfo.keySet()) {
+            if (!getAlbumCheckedStatus(album)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean flipAlbumCheckedStatus(String album) {
+        boolean newStatus = !albumCheckedStatus.get(album);
+        albumCheckedStatus.put(album, newStatus);
+        for (Integer songId : albumInfo.get(album)) {
+            songsMap.get(songId).setChecked(newStatus);
+        }
+        return newStatus;
+    }
+
+    public boolean flipArtistCheckedStatus() {
+        boolean newStatus = !getArtistCheckedStatus();
+        setArtistCheckedStatus(newStatus);
+        return newStatus;
+    }
+
+    public void setArtistCheckedStatus(boolean status) {
+        for (Map.Entry<String, List<Integer>> albumEntry : albumInfo.entrySet()) {
+            String album = albumEntry.getKey();
+            albumCheckedStatus.put(album, status);
+            List<Integer> songIds = albumEntry.getValue();
+            for (Integer songId : songIds) {
+                songsMap.get(songId).setChecked(status);
+            }
+        }
+    }
+
+    public Integer getCheckedSongsCountInAlbum(String album) {
+        Integer checkedCount = 0;
+        for (Integer songId : albumInfo.get(album)) {
+            if (songsMap.get(songId).isChecked()) {
+                checkedCount++;
+            }
+        }
+        return checkedCount;
+    }
+
+    public Integer getCheckedAlbumCount() {
+        Integer checkedCount = 0;
+        for (Boolean status : albumCheckedStatus.values()) {
+            if (status) {
+                checkedCount++;
+            }
+        }
+        return checkedCount;
     }
 }

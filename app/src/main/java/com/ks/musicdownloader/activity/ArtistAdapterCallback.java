@@ -5,5 +5,7 @@ package com.ks.musicdownloader.activity;
  */
 public interface ArtistAdapterCallback {
 
-    void setAlbumCheckedStatus(String album, Boolean status);
+    void setAlbumCheckedStatus(String album, Boolean status, Integer checkedCount);
+
+    void notifyAllChecked();
 }

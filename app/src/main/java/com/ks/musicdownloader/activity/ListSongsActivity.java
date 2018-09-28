@@ -4,8 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.ConnectivityManager;
-import android.net.Network;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -23,19 +21,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.ks.musicdownloader.ArtistInfo;
 import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.DownloadCallback;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.SongInfo;
-import com.ks.musicdownloader.Utils.NetworkUtils;
 import com.ks.musicdownloader.service.DownloaderService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
-
-import java.util.HashMap;
-import java.util.List;
 
 @SuppressWarnings("DanglingJavadoc")
 public class ListSongsActivity extends AppCompatActivity implements FragmentCallback {
@@ -55,8 +48,6 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
     private boolean downloading;
     private DownloaderService downloaderService;
     private ServiceConnection downloaderServiceConnection;
-    private boolean networkConnected = false;
-    private ConnectivityManager.NetworkCallback networkCallback;
     private DownloadCallback<Integer> downloadCallbackForDownloader;
     private Handler handler;
 
@@ -98,7 +89,6 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
         if (CURRENTLY_SELECTED_FRAGMENT != ARTIST_FRAGMENT) {
             handler.sendEmptyMessage(Constants.DISPLAY_OTHER_FRAGMENTS);
         }
-        drawerLayout.addDrawerListener(createDrawerLayoutListener());
         navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
     }
 
@@ -132,15 +122,11 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
     /******************Methods************************************/
 
     private void init() {
-        createNetworkCallback();
-        NetworkUtils.regReceiverForConnectionValidationOnly(this, networkCallback);
         createServiceConnForDownloaderService();
         createDownloadCallbackForDownloader();
     }
 
     private void deInit() {
-        NetworkUtils.unRegReceiverForConnectionValidationOnly(this, networkCallback);
-        networkCallback = null;
         downloaderServiceConnection = null;
         downloadCallbackForDownloader = null;
     }
@@ -211,10 +197,6 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
         }
     }
 
-    public ArtistInfo getSelectedSongs() {
-        return parsedArtistInfo;
-    }
-
     private void bindToDownloaderService() {
         Intent intent = new Intent(ListSongsActivity.this, DownloaderService.class);
         bindService(intent, downloaderServiceConnection, Context.BIND_AUTO_CREATE);
@@ -228,31 +210,6 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
     /******************Listeners************************************/
     /*********************And************************************/
     /******************Callbacks************************************/
-
-    @NonNull
-    private DrawerLayout.DrawerListener createDrawerLayoutListener() {
-        return new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View view, float v) {
-
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View view) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View view) {
-
-            }
-
-            @Override
-            public void onDrawerStateChanged(int i) {
-
-            }
-        };
-    }
 
     @NonNull
     private NavigationView.OnNavigationItemSelectedListener createNavigationViewListener() {
@@ -289,24 +246,6 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
                         displayAlbumFragment(album);
                     }
                 }
-            }
-        };
-    }
-
-    private void createNetworkCallback() {
-        Log.d(TAG, "createNetworkCallback()");
-        networkCallback = new ConnectivityManager.NetworkCallback() {
-
-            @Override
-            public void onAvailable(Network network) {
-                super.onAvailable(network);
-                networkConnected = true;
-            }
-
-            @Override
-            public void onLost(Network network) {
-                super.onLost(network);
-                networkConnected = false;
             }
         };
     }

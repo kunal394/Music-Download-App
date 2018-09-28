@@ -15,9 +15,9 @@
     <string name="github_repo">Github Repo</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="artist_info">Artist Info</string>
     <string name="artist_group_id">artist_group_id</string>
     <string name="album_info">Album Info</string>
     <string name="album_group_id">album_group_id</string>
+    <string name="test_button_text">Test</string>
 </resources>

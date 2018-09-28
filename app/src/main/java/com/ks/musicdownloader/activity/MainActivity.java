@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.ks.musicdownloader.Constants;
 import com.ks.musicdownloader.R;
@@ -75,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         checkForPermissions();
         super.onStart();
-        drawerLayout.addDrawerListener(createDrawerLayoutListener());
         navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
         markSearchMenuItemChecked();
         displaySearchFragment();
@@ -157,31 +155,6 @@ public class MainActivity extends AppCompatActivity {
     /******************Listeners************************************/
     /*********************And************************************/
     /******************Callbacks************************************/
-
-    @NonNull
-    private DrawerLayout.DrawerListener createDrawerLayoutListener() {
-        return new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View view, float v) {
-
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View view) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View view) {
-
-            }
-
-            @Override
-            public void onDrawerStateChanged(int i) {
-
-            }
-        };
-    }
 
     @NonNull
     private NavigationView.OnNavigationItemSelectedListener createNavigationViewListener() {

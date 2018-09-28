@@ -26,6 +26,17 @@ public class SongInfo implements Parcelable {
         Log.d(TAG, "SongInfo() album: " + album);
     }
 
+    @Override
+    public String toString() {
+        return "SongInfo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", checked=" + checked +
+                ", album='" + album + '\'' +
+                '}';
+    }
+
     private SongInfo(Parcel in) {
         if (in.readByte() == 0) {
             id = null;

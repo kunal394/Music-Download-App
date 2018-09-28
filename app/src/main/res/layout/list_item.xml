@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="56dp"
     android:orientation="vertical">
 
     <CheckedTextView
         android:id="@+id/checked_text_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:checked="false"
         android:drawableEnd="@null"
+        android:background="@drawable/selector"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
         android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
-        android:maxLines="1"
-        android:textAppearance="?android:textAppearanceLarge"
-        tools:text="Call Mom" />
-</LinearLayout>
+        android:maxLines="2"
+        android:textAppearance="?android:textAppearanceListItem"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/settings_divider_color" />
+</RelativeLayout>
