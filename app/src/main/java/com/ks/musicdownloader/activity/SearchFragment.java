@@ -318,7 +318,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         artistInfoTest.addSongsInfoToAlbum(songInfoList, "Album6");
 
         songInfoList = new ArrayList<>();
-        songInfoList.add(new SongInfo(28, "Song1", "url", "Album7"));
+        String veryLargeSongsName = "This is supposed to be a very large song " +
+                "name which should extend to two lines";
+        songInfoList.add(new SongInfo(28, veryLargeSongsName, "url", "Album7"));
         songInfoList.add(new SongInfo(29, "Song2", "url", "Album7"));
         songInfoList.add(new SongInfo(30, "Song3", "url", "Album7"));
         songInfoList.add(new SongInfo(31, "Song4", "url", "Album7"));
