@@ -325,6 +325,16 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         songInfoList.add(new SongInfo(32, "Song5", "url", "Album7"));
         songInfoList.add(new SongInfo(33, "Song6", "url", "Album7"));
         songInfoList.add(new SongInfo(34, "Song7", "url", "Album7"));
+        songInfoList.add(new SongInfo(35, "Song8", "url", "Album7"));
+        songInfoList.add(new SongInfo(36, "Song9", "url", "Album7"));
+        songInfoList.add(new SongInfo(37, "Song10", "url", "Album7"));
+        songInfoList.add(new SongInfo(38, "Song11", "url", "Album7"));
+        songInfoList.add(new SongInfo(39, "Song12", "url", "Album7"));
+        songInfoList.add(new SongInfo(40, "Song13", "url", "Album7"));
+        songInfoList.add(new SongInfo(41, "Song14", "url", "Album7"));
+        songInfoList.add(new SongInfo(42, "Song15", "url", "Album7"));
+        songInfoList.add(new SongInfo(43, "Song16", "url", "Album7"));
+        songInfoList.add(new SongInfo(44, "Song17", "url", "Album7"));
         artistInfoTest.addSongsInfoToAlbum(songInfoList, "Album7");
 
         Intent intent = new Intent(getContext(), ListSongsActivity.class);
