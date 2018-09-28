@@ -19,7 +19,6 @@
             android:layout_marginTop="208dp"
             android:ems="10"
             android:hint="@string/edit_message"
-            android:autofillHints=""
             android:inputType="textUri"
             app:layout_constraintEnd_toStartOf="@+id/fetch_songs_button"
             app:layout_constraintHorizontal_bias="0.5"
