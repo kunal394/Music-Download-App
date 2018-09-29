@@ -23,9 +23,6 @@ import com.ks.musicdownloader.SongInfo;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 @SuppressWarnings("DanglingJavadoc")
@@ -122,26 +119,26 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
             Log.d(TAG, "startDownload(): dm found null!");
             return;
         }
-        HashMap<String, List<Integer>> albumInfo = parsedArtistInfo.getAlbumInfo();
         SparseArray<SongInfo> songsMap = parsedArtistInfo.getSongsMap();
-        for (Map.Entry<String, List<Integer>> albumEntry : albumInfo.entrySet()) {
-            String album = albumEntry.getKey();
-            List<Integer> songIds = albumEntry.getValue();
-            for (Integer songId : songIds) {
-                SongInfo songInfo = songsMap.get(songId);
-                String filePath = musicSite.createFilePath(parsedArtistInfo.getArtist(), album, songInfo.getName());
-                if (doesFileExists(filePath)) {
-                    Log.d(TAG, "file: " + filePath + " already exists. So not downloading again.");
-                    downloadCallback.updateFromDownload(songId);
-                    continue;
-                }
-                Log.d(TAG, "enqueueSongsForDownload() adding song: " + songInfo.getName() + " for download.");
-                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(songInfo.getUrl()));
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, filePath);
-                request.setMimeType(Constants.AUDIO_MIME_TYPE);
-                songsDownloadReferences.put(dm.enqueue(request), songId);
+        for (int i = 0; i < songsMap.size(); i++) {
+            SongInfo songInfo = songsMap.valueAt(i);
+            if (!songInfo.isChecked()) {
+                Log.d(TAG, "Song: " + songInfo.getName() + " of album: " + songInfo.getAlbum()
+                        + " of artist: " + parsedArtistInfo.getArtist() + " not marked for download.");
+                continue;
             }
+            String filePath = musicSite.createFilePath(parsedArtistInfo.getArtist(), songInfo.getAlbum(), songInfo.getName());
+            if (doesFileExists(filePath)) {
+                Log.d(TAG, "file: " + filePath + " already exists. So not downloading again.");
+                downloadCallback.updateFromDownload(songInfo.getId());
+                continue;
+            }
+            Log.d(TAG, "enqueueSongsForDownload() adding song: " + songInfo.getName() + " for download.");
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(songInfo.getUrl()));
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, filePath);
+            request.setMimeType(Constants.AUDIO_MIME_TYPE);
+            songsDownloadReferences.put(dm.enqueue(request), songInfo.getId());
         }
     }
 
