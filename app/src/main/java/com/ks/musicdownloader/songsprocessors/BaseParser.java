@@ -1,7 +1,7 @@
 package com.ks.musicdownloader.songsprocessors;
 
-import com.ks.musicdownloader.ArtistInfo;
-import com.ks.musicdownloader.DownloadCallback;
+import com.ks.musicdownloader.common.ArtistInfo;
+import com.ks.musicdownloader.common.DownloadCallback;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,7 +23,7 @@ public abstract class BaseParser {
         this.downloadCallback = downloadCallback;
     }
 
-    public abstract ArtistInfo parseArtistInfo() throws IOException;
+    public abstract ArtistInfo parseArtistInfo(Boolean defaultChecked) throws IOException;
 
     protected String getUrl() {
         return url;

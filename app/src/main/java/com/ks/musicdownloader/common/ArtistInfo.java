@@ -1,4 +1,4 @@
-package com.ks.musicdownloader;
+package com.ks.musicdownloader.common;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -19,13 +19,13 @@ public class ArtistInfo implements Parcelable {
     // album name to list of ids of songs
     private HashMap<String, List<Integer>> albumInfo;
 
-    /**
-     * to be used only ui display logic, don't use for downloading logic
-     */
-    private HashMap<String, Boolean> albumCheckedStatus;
-
     // song id to songInfo
     private SparseArray<SongInfo> songsMap;
+
+    /**
+     * to be used only for ui display logic, don't use for downloading logic
+     */
+    private HashMap<String, Boolean> albumCheckedStatus;
 
     public ArtistInfo() {
     }
@@ -42,13 +42,21 @@ public class ArtistInfo implements Parcelable {
             albumInfo.put(key, value);
         }
 
-        // Read song map
+        // Read songs map
         getSongsMap();
         int songsMapSize = in.readInt();
         for (int i = 0; i < songsMapSize; i++) {
             int key = in.readInt();
             SongInfo value = in.readParcelable(SongInfo.class.getClassLoader());
             songsMap.put(key, value);
+        }
+
+        getAlbumCheckedStatus();
+        int albumCheckStatusSize = in.readInt();
+        for (int i = 0; i < albumCheckStatusSize; i++) {
+            String key = in.readString();
+            Boolean value = in.readByte() != 0;
+            albumCheckedStatus.put(key, value);
         }
     }
 
@@ -146,6 +154,13 @@ public class ArtistInfo implements Parcelable {
             dest.writeInt(key);
             dest.writeParcelable(songsMap.get(key), flags);
         }
+
+        getAlbumCheckedStatus();
+        dest.writeInt(albumCheckedStatus.size());
+        for (Map.Entry<String, Boolean> item : albumCheckedStatus.entrySet()) {
+            dest.writeString(item.getKey());
+            dest.writeByte((byte) (item.getValue() ? 1:0));
+        }
     }
 
     public boolean getAlbumCheckedStatus(String album) {
@@ -154,7 +169,7 @@ public class ArtistInfo implements Parcelable {
 
     public HashMap<String, Boolean> getAlbumCheckedStatus() {
         if (albumCheckedStatus == null) {
-            initializeAlbumCheckedStatus();
+            albumCheckedStatus = new HashMap<>();
         }
         return albumCheckedStatus;
     }
@@ -166,14 +181,13 @@ public class ArtistInfo implements Parcelable {
         }
     }
 
-    // TODO: 28-09-2018 to be used for the first time based on user settings
-    private void initializeAlbumCheckedStatus() {
+    public void initializeAlbumCheckedStatus(Boolean defaultChecked) {
         if (albumCheckedStatus == null) {
             albumCheckedStatus = new HashMap<>();
         }
 
         for (String album : albumInfo.keySet()) {
-            albumCheckedStatus.put(album, false);
+            albumCheckedStatus.put(album, defaultChecked);
         }
     }
 
@@ -198,7 +212,6 @@ public class ArtistInfo implements Parcelable {
     }
 
     public boolean getArtistCheckedStatus() {
-        getAlbumCheckedStatus();
         for (String album : albumInfo.keySet()) {
             if (!getAlbumCheckedStatus(album)) {
                 return false;
@@ -251,5 +264,13 @@ public class ArtistInfo implements Parcelable {
             }
         }
         return checkedCount;
+    }
+
+    public Integer getTotalAlbumCount() {
+        return getAlbumInfo().size();
+    }
+
+    public Integer getSongsCountInAlbum(String album) {
+        return getSongsList(album).size();
     }
 }

@@ -17,9 +17,9 @@ import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
 
-import com.ks.musicdownloader.ArtistInfo;
-import com.ks.musicdownloader.Constants;
-import com.ks.musicdownloader.SongInfo;
+import com.ks.musicdownloader.common.ArtistInfo;
+import com.ks.musicdownloader.common.Constants;
+import com.ks.musicdownloader.common.SongInfo;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
 import java.io.File;

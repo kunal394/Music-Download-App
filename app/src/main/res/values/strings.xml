@@ -10,14 +10,16 @@
     <string name="action_search">Search</string>
     <string name="nav_source">Source Code</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="under_construction">Under Construction ◝( ′ㅂ`)و ̑̑</string>
     <string name="github_repo">Github Repo</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="artist_info">Artist Info</string>
     <string name="artist_group_id">artist_group_id</string>
     <string name="album_info">Album Info</string>
     <string name="album_group_id">album_group_id</string>
     <string name="test_button_text">Test</string>
+    <string name="pref_select_all_key">PREF_SELECT_ALL_KEY</string>
+    <string name="select_all_pref_title">Select All Songs</string>
+    <string name="select_all_pref_summary">Select all the songs found on the url for download.
+        If this setting is off, by default none is selected.</string>
+    <string name="song_selection_category">Songs Selection Settings</string>
 </resources>

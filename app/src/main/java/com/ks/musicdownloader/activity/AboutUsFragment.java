@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import com.ks.musicdownloader.Constants;
+import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.R;
 
 /**

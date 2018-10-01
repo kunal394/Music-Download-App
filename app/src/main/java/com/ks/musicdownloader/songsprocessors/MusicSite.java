@@ -4,8 +4,8 @@ import android.support.design.widget.NavigationView;
 import android.view.Menu;
 import android.view.SubMenu;
 
-import com.ks.musicdownloader.ArtistInfo;
-import com.ks.musicdownloader.Constants;
+import com.ks.musicdownloader.common.ArtistInfo;
+import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.RegexUtils;
 import com.ks.musicdownloader.songsprocessors.bandcamp.BandcampParser;

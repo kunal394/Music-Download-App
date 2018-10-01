@@ -1,8 +1,7 @@
-package com.ks.musicdownloader;
+package com.ks.musicdownloader.common;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class SongInfo implements Parcelable {
 
@@ -14,16 +13,16 @@ public class SongInfo implements Parcelable {
 
     private String url;
 
-    private boolean checked;
-
     private String album;
 
-    public SongInfo(Integer id, String name, String url, String album) {
+    private boolean checked;
+
+    public SongInfo(Integer id, String name, String url, String album, Boolean checked) {
         this.id = id;
         this.name = name;
         this.url = url;
         this.album = album;
-        Log.d(TAG, "SongInfo() album: " + album);
+        this.checked = checked;
     }
 
     @Override
@@ -46,6 +45,7 @@ public class SongInfo implements Parcelable {
         name = in.readString();
         url = in.readString();
         album = in.readString();
+        checked = in.readByte() != 0;
     }
 
     public static final Creator<SongInfo> CREATOR = new Creator<SongInfo>() {
@@ -108,6 +108,7 @@ public class SongInfo implements Parcelable {
         dest.writeString(name);
         dest.writeString(url);
         dest.writeString(album);
+        dest.writeByte((byte) (checked ? 1:0));
     }
 
     public String getAlbum() {

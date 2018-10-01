@@ -6,11 +6,11 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ks.musicdownloader.ArtistInfo;
-import com.ks.musicdownloader.Constants;
-import com.ks.musicdownloader.DownloadCallback;
-import com.ks.musicdownloader.SongInfo;
 import com.ks.musicdownloader.Utils.RegexUtils;
+import com.ks.musicdownloader.common.ArtistInfo;
+import com.ks.musicdownloader.common.Constants;
+import com.ks.musicdownloader.common.DownloadCallback;
+import com.ks.musicdownloader.common.SongInfo;
 import com.ks.musicdownloader.songsprocessors.BaseParser;
 
 import org.jsoup.nodes.Document;
@@ -28,6 +28,7 @@ public class BandcampParser extends BaseParser {
 
     private ArtistInfo artistInfo;
     private int songsCount;
+    private boolean defaultChecked;
 
     public BandcampParser(String url, DownloadCallback downloadCallback) {
         super(url, downloadCallback);
@@ -35,7 +36,8 @@ public class BandcampParser extends BaseParser {
     }
 
     @Override
-    public ArtistInfo parseArtistInfo() throws IOException {
+    public ArtistInfo parseArtistInfo(Boolean defaultCheckedVal) throws IOException {
+        this.defaultChecked = defaultCheckedVal;
         Log.d(TAG, "parseArtistInfo()");
         artistInfo = new ArtistInfo();
         Document document = fetchDocumentFromUrl(getUrl());
@@ -151,7 +153,7 @@ public class BandcampParser extends BaseParser {
                     Constants.EMPTY_STRING.equals(title) || Constants.NULL_STRING.equals(title)) {
                 continue;
             }
-            SongInfo songInfo = new SongInfo(songsCount++, title, downloadUrl, albumName);
+            SongInfo songInfo = new SongInfo(songsCount++, title, downloadUrl, albumName, defaultChecked);
             songsInfo.add(songInfo);
         }
         artistInfo.addSongsInfoToAlbum(songsInfo, albumName);

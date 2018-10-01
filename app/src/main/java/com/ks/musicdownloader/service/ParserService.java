@@ -2,12 +2,14 @@ package com.ks.musicdownloader.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.ks.musicdownloader.ArtistInfo;
-import com.ks.musicdownloader.Constants;
+import com.ks.musicdownloader.common.ArtistInfo;
+import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
 import java.io.IOException;
@@ -42,10 +44,11 @@ public class ParserService extends IntentService {
         String siteName = intent.getStringExtra(Constants.MUSIC_SITE);
         ArtistInfo artistInfo = null;
         String error = Constants.EMPTY_STRING;
+        Boolean defaultCheckedValue = getDefaultCheckedValue();
         try {
             MusicSite musicSite = MusicSite.valueOf(siteName);
             Log.d(TAG, "onHandleIntent(): Parsing songs for music site: " + musicSite.name() + " with url: " + url);
-            artistInfo = musicSite.getMusicParser(url).parseArtistInfo();
+            artistInfo = musicSite.getMusicParser(url).parseArtistInfo(defaultCheckedValue);
         } catch (IOException e) {
             Log.d(TAG, "onHandleIntent(): Error found while parsing songs. Error: " + e);
             error = e.getMessage();
@@ -54,10 +57,19 @@ public class ParserService extends IntentService {
         if (artistInfo == Constants.DUMMY_ARTIST_INFO) {
             Log.d(TAG, "onHandleIntent(): Sending error broadcast with error: " + error);
             sendBroadcast(createParseErrorIntent(error));
+        } else if (artistInfo == null) {
+            Log.d(TAG, "onHandleIntent(): Sending error broadcast for null artist info!");
+            sendBroadcast(createNullInfoIntent());
         } else {
             Log.d(TAG, "onHandleIntent(): Sending success broadcast.");
+            artistInfo.initializeAlbumCheckedStatus(defaultCheckedValue);
             sendBroadcast(createSuccessIntent(artistInfo));
         }
+    }
+
+    private Boolean getDefaultCheckedValue() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        return settings.getBoolean(Constants.PREF_SELECT_ALL_KEY, false);
     }
 
     private Intent createIntentForNullIntentReceived() {
@@ -71,6 +83,13 @@ public class ParserService extends IntentService {
         Intent intent = new Intent();
         intent.setAction(Constants.PARSE_ERROR_ACTION_KEY);
         intent.putExtra(Constants.PARSE_ERROR_MESSAGE_KEY, error);
+        return intent;
+    }
+
+    private Intent createNullInfoIntent() {
+        Intent intent = new Intent();
+        intent.setAction(Constants.PARSE_ERROR_ACTION_KEY);
+        intent.putExtra(Constants.PARSE_ERROR_MESSAGE_KEY, Constants.PARSE_ERROR_NULL_ARTIST_INFO);
         return intent;
     }
 

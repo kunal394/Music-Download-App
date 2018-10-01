@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/song_selection_category">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_select_all_key"
+            android:summary="@string/select_all_pref_summary"
+            android:title="@string/select_all_pref_title" />
+    </PreferenceCategory>
+</PreferenceScreen>

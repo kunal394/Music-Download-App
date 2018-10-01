@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CheckedTextView;
 
 import com.ks.musicdownloader.R;
-import com.ks.musicdownloader.SongInfo;
+import com.ks.musicdownloader.common.SongInfo;
 
 import java.util.List;
 

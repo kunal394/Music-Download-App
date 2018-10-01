@@ -2,7 +2,7 @@ package com.ks.musicdownloader.songsprocessors;
 
 import android.support.design.widget.NavigationView;
 
-import com.ks.musicdownloader.ArtistInfo;
+import com.ks.musicdownloader.common.ArtistInfo;
 
 public interface MusicSiteService {
 

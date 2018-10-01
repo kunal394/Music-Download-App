@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
-import com.ks.musicdownloader.ArtistInfo;
-import com.ks.musicdownloader.Constants;
+import com.ks.musicdownloader.common.ArtistInfo;
+import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.R;
-import com.ks.musicdownloader.SongInfo;
+import com.ks.musicdownloader.common.SongInfo;
 
 import java.util.List;
 import java.util.Objects;
@@ -66,7 +66,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
         selectAllCheckView = fragmentView.findViewById(R.id.check_select_all);
         selectAllCheckView.setChecked(artistInfo.getAlbumCheckedStatus().get(album));
         selectAllCheckView.setOnClickListener(this);
-        String checkAllText = artistInfo.getCheckedSongsCountInAlbum(album) + " selected";
+        String checkAllText = artistInfo.getCheckedSongsCountInAlbum(album) + "/" + artistInfo.getSongsCountInAlbum(album) + " selected";
         selectAllCheckView.setText(checkAllText);
 
         // set adapter for recycler view
@@ -97,7 +97,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
                 if (newStatus) {
                     checkedCount = artistInfo.getSongsList(album).size();
                 }
-                String checkAllText = checkedCount + " selected";
+                String checkAllText = checkedCount + "/" + artistInfo.getSongsCountInAlbum(album) + " selected";
                 selectAllCheckView.setText(checkAllText);
             default:
                 break;
@@ -118,7 +118,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
             public void setSongCheckedStatus(Integer songId, Boolean status, Integer checkedCount) {
                 artistInfo.setSongCheckedStatus(album, songId, status);
                 selectAllCheckView.setChecked(artistInfo.getAlbumCheckedStatus(album));
-                String checkAllText = checkedCount + " selected";
+                String checkAllText = checkedCount + "/" + artistInfo.getSongsCountInAlbum(album) + " selected";
                 selectAllCheckView.setText(checkAllText);
             }
 

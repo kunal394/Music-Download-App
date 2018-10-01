@@ -1,4 +1,4 @@
-package com.ks.musicdownloader;
+package com.ks.musicdownloader.common;
 
 import android.Manifest;
 import android.os.Environment;
@@ -15,6 +15,7 @@ public class Constants {
     public static final String PARSE_ERROR_ACTION_KEY = "PARSER_ERROR_ACTION_KEY";
     public static final String PARSE_ERROR_MESSAGE_KEY = "PARSER_ERROR_MESSAGE_KEY";
     public static final String PARSE_ERROR_NULL_INTENT = "Null intent found!";
+    public static final String PARSE_ERROR_NULL_ARTIST_INFO = "PARSE_ERROR_NULL_ARTIST_INFO";
     public static final String PARSE_SUCCESS_ACTION_KEY = "PARSE_SUCCESS_ACTION_KEY";
     public static final String PARSE_SUCCESS_MESSAGE_KEY = "PARSE_SUCCESS_MESSAGE_KEY";
     public static final String PARSED_ARTIST_INFO = "PARSED_ARTIST_INFO";
@@ -81,5 +82,8 @@ public class Constants {
     public static String MP3_EXTENSION = ".mp3";
     public static final int OTHER_FRAGMENTS = 2;
     public static final int NO_FRAGMENT = 0;
+
+    // Shared Pref Keys
+    public static final String PREF_SELECT_ALL_KEY = "PREF_SELECT_ALL_KEY";
 
 }

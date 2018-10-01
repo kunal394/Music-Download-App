@@ -22,11 +22,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.ks.musicdownloader.ArtistInfo;
-import com.ks.musicdownloader.Constants;
-import com.ks.musicdownloader.DownloadCallback;
+import com.ks.musicdownloader.common.ArtistInfo;
+import com.ks.musicdownloader.common.Constants;
+import com.ks.musicdownloader.common.DownloadCallback;
 import com.ks.musicdownloader.R;
-import com.ks.musicdownloader.SongInfo;
+import com.ks.musicdownloader.common.SongInfo;
 import com.ks.musicdownloader.service.DownloaderService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
@@ -150,7 +150,7 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
 
     private void displayAlbumFragment(String album) {
         handler.sendEmptyMessage(Constants.DISPLAY_OTHER_FRAGMENTS);
-        actionBar.setTitle(R.string.album_info);
+        setActionBarTitle(R.string.album_info);
         AlbumFragment albumFragment = new AlbumFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.PARSED_ARTIST_INFO, parsedArtistInfo);

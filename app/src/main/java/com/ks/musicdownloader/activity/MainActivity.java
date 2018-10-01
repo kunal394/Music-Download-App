@@ -18,7 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.ks.musicdownloader.Constants;
+import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.R;
 
 @SuppressWarnings("DanglingJavadoc")
