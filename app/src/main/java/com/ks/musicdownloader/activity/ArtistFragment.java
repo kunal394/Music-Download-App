@@ -1,9 +1,7 @@
 package com.ks.musicdownloader.activity;
 
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -67,7 +65,6 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
         TextView titleView = fragmentView.findViewById(R.id.fragment_title);
         titleView.setText(artistInfo.getArtist());
 
-//        artistInfo.initializeAlbumCheckedStatus(getDefaultCheckedValue());
         selectAllCheckView = fragmentView.findViewById(R.id.check_select_all);
         selectAllCheckView.setChecked(artistInfo.getArtistCheckedStatus());
         selectAllCheckView.setOnClickListener(this);
@@ -132,13 +129,6 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
 
     private void removeFragment() {
         Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().remove(this).commit();
-    }
-
-    private Boolean getDefaultCheckedValue() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean defaultChecked = settings.getBoolean(Constants.PREF_SELECT_ALL_KEY, false);
-        Log.d(TAG, "getDefaultCheckedValue(): val: " + defaultChecked);
-        return defaultChecked;
     }
 
     private void createAdapterCallback() {

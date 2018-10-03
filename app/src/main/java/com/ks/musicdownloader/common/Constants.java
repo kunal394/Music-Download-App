@@ -9,7 +9,7 @@ public class Constants {
     public static final String[] REQUIRED_PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
     public static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 1;
 
-    // Intent extra strings
+    // Intent Extra Strings
     public static final String DOWNLOAD_URL = "DOWNLOAD_URL";
     public static final String MUSIC_SITE = "MUSIC_SITE";
     public static final String PARSE_ERROR_ACTION_KEY = "PARSER_ERROR_ACTION_KEY";
@@ -21,7 +21,7 @@ public class Constants {
     public static final String PARSED_ARTIST_INFO = "PARSED_ARTIST_INFO";
     public static final String ALBUM_TO_VIEW = "ALBUM_TO_VIEW";
 
-    // Toast Messages and validator status
+    // Toast Messages and Validator Status
     public static final String NO_EXTERNAL_STORAGE_PERMISSION_MESSAGE = "No permission to save downloaded files!";
     public static final String NO_INTERNET_MESSAGE = "No internet is available. Please check your connection and retry!";
     public static final String NO_URL_PROVIDED_MESSAGE = "No url provided. Please provide a valid url and retry!";
@@ -31,16 +31,16 @@ public class Constants {
     public static final String VALID_URL_MESSAGE = "VALID_URL";
     public static final String PARSE_ERROR_MESSAGE = "Error while extracting songs from the url!";
 
-    // String constants
+    // String Constants
     public static final String EMPTY_STRING = "";
     public static final String NULL_STRING = "null";
 
-    // Request methods
+    // Request Methods
     public static final String REQUEST_HEAD = "HEAD";
     public static final String URL_HTTP_PART = "http://";
     public static final String URL_HTTPS_PART = "https://";
 
-    // Bandcamp
+    // Bandcamp Constants
     public static final String BANDCAMP_URL_REGEX = "(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com\\/?.*";
     public static final String BANDCAMP_ARTIST_URL_REGEX = "^(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com((\\/$)|(\\/music$))?";
     public static final String BANDCAMP_ALBUM_URL_REGEX = "^(https?:\\/\\/)?([\\d|\\w]+)\\.bandcamp\\.com\\/album\\/.*";
@@ -73,17 +73,21 @@ public class Constants {
     public static final int HIDE_PROGRESS_BAR = 2;
     public static final int VALIDATING_PROGRESS = 3;
     public static final int PARSE_ERROR = 4;
+    public static final int HIDE_LAST_SEARCH_VIEW = 5;
+    public static final int DISPLAY_LAST_SEARCH_VIEW = 6;
     public static final int DISPLAY_ARTIST_FRAGMENT = 1;
     public static final int DISPLAY_OTHER_FRAGMENTS = 2;
 
-    // class local constants
+    // Class Local Constants
     public static final String AUDIO_MIME_TYPE = "audio/*";
     public static final String GITHUB_REPO_URI = "https://github.com/kunal394/Music-Download-App";
     public static String MP3_EXTENSION = ".mp3";
     public static final int OTHER_FRAGMENTS = 2;
     public static final int NO_FRAGMENT = 0;
 
-    // Shared Pref Keys
+    // Shared Pref Constants
+    public static final String SETTINGS_PREF_NAME = "settings_preferences";
+    public static final String SEARCH_PREF_NAME = "search_preferences";
     public static final String PREF_SELECT_ALL_KEY = "PREF_SELECT_ALL_KEY";
-
+    public static final String PREF_LAST_FETCHED_URL_KEY = "PREF_LAST_FETCHED_URL_KEY";
 }

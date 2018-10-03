@@ -14,6 +14,8 @@ public class ArtistInfo implements Parcelable {
 
     private static final String TAG = ArtistInfo.class.getSimpleName();
 
+    private String url;
+
     private String artist;
 
     // album name to list of ids of songs
@@ -31,6 +33,7 @@ public class ArtistInfo implements Parcelable {
     }
 
     private ArtistInfo(Parcel in) {
+        url = in.readString();
         artist = in.readString();
         // Read album info
         getAlbumInfo();
@@ -71,6 +74,14 @@ public class ArtistInfo implements Parcelable {
             return new ArtistInfo[size];
         }
     };
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public String getArtist() {
         return artist;
@@ -137,6 +148,7 @@ public class ArtistInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(url);
         dest.writeString(artist);
         // Write album info
         getAlbumInfo();
@@ -159,7 +171,7 @@ public class ArtistInfo implements Parcelable {
         dest.writeInt(albumCheckedStatus.size());
         for (Map.Entry<String, Boolean> item : albumCheckedStatus.entrySet()) {
             dest.writeString(item.getKey());
-            dest.writeByte((byte) (item.getValue() ? 1:0));
+            dest.writeByte((byte) (item.getValue() ? 1 : 0));
         }
     }
 

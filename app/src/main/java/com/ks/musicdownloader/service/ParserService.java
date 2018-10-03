@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.ks.musicdownloader.Utils.CommonUtils;
 import com.ks.musicdownloader.common.ArtistInfo;
 import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
@@ -17,6 +18,8 @@ import java.io.IOException;
 public class ParserService extends IntentService {
 
     private static final String TAG = ParserService.class.getSimpleName();
+
+    private String url;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -40,7 +43,7 @@ public class ParserService extends IntentService {
             return;
         }
 
-        String url = intent.getStringExtra(Constants.DOWNLOAD_URL);
+        url = intent.getStringExtra(Constants.DOWNLOAD_URL);
         String siteName = intent.getStringExtra(Constants.MUSIC_SITE);
         ArtistInfo artistInfo = null;
         String error = Constants.EMPTY_STRING;
@@ -63,6 +66,7 @@ public class ParserService extends IntentService {
         } else {
             Log.d(TAG, "onHandleIntent(): Sending success broadcast.");
             artistInfo.initializeAlbumCheckedStatus(defaultCheckedValue);
+            artistInfo.setUrl(url);
             sendBroadcast(createSuccessIntent(artistInfo));
         }
     }

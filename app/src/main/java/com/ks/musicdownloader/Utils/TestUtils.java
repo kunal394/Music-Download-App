@@ -13,6 +13,7 @@ public class TestUtils {
 
     public static ArtistInfo createTestArtistInfo(Boolean defaultChecked) {
         ArtistInfo artistInfoTest = new ArtistInfo();
+        artistInfoTest.setUrl("https://www.test.com/music");
         artistInfoTest.setArtist("Artist");
         List<SongInfo> songInfoList;
 

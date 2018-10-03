@@ -14,7 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"> <!-- don't know what is fullbackup content. need to read this first -->
-        <activity android:name=".activity.MainActivity">
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -24,7 +26,9 @@
         <service android:name=".service.DownloaderService" />
         <service android:name=".service.ParserService" />
 
-        <activity android:name=".activity.ListSongsActivity" />
+        <activity
+            android:name=".activity.ListSongsActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

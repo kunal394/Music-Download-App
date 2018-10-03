@@ -22,4 +22,5 @@
     <string name="select_all_pref_summary">Select all the songs found on the url for download.
         If this setting is off, by default none is selected.</string>
     <string name="song_selection_category">Songs Selection Settings</string>
+    <string name="last_fetched_url">Last Fetched Url\n(Click to fill the input box)</string>
 </resources>

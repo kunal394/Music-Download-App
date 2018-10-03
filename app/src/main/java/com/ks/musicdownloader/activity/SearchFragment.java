@@ -5,14 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -44,8 +42,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private View fragmentView;
     private RelativeLayout validatorProgressBar;
     private TextView progressBarTextView;
-    Button fetchSongsButton;
-    Button testButton;
+    private TextView lastSearchTextView;
+    private TextView lastSearchTextTitleView;
+    private EditText searchEditText;
 
     private ConnectivityManager.NetworkCallback networkCallback;
     private boolean networkConnected;
@@ -69,11 +68,16 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         validatorProgressBar = fragmentView.findViewById(R.id.urlValidatorProgressBar);
         progressBarTextView = fragmentView.findViewById(R.id.progressBarText);
-        fetchSongsButton = fragmentView.findViewById(R.id.fetch_songs_button);
+        Button fetchSongsButton = fragmentView.findViewById(R.id.fetch_songs_button);
         fetchSongsButton.setOnClickListener(this);
 
-        testButton = fragmentView.findViewById(R.id.test_button);
+        Button testButton = fragmentView.findViewById(R.id.test_button);
         testButton.setOnClickListener(this);
+
+        lastSearchTextView = fragmentView.findViewById(R.id.last_search_view);
+        lastSearchTextTitleView = fragmentView.findViewById(R.id.last_search_title_view);
+
+        searchEditText = fragmentView.findViewById(R.id.search_url_editText);
 
         broadcastReceiver = new ParserBroadcastReceiver();
         return fragmentView;
@@ -84,6 +88,20 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        String lastFetchedUrl = CommonUtils.getPrefString(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
+                Constants.PREF_LAST_FETCHED_URL_KEY, Constants.EMPTY_STRING);
+        if (Constants.EMPTY_STRING.equals(lastFetchedUrl)) {
+            handler.sendEmptyMessage(Constants.HIDE_LAST_SEARCH_VIEW);
+        } else {
+            handler.sendEmptyMessage(Constants.DISPLAY_LAST_SEARCH_VIEW);
+            lastSearchTextView.setOnClickListener(this);
+            lastSearchTextView.setText(lastFetchedUrl);
+        }
     }
 
     @Override
@@ -109,6 +127,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             case R.id.test_button:
                 Log.d(TAG, "test button clicked!");
                 test();
+                break;
+
+            case R.id.last_search_view:
+                Log.d(TAG, "Last Search Text clicked!");
+                searchEditText.setText(lastSearchTextView.getText());
                 break;
         }
     }
@@ -138,7 +161,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private void validateURL() {
         // TODO: 26-09-2018 in my mobile the validator progress bar is hardly visible.
         // since the validation is pretty fast. need to think about it
-        EditText editText = fragmentView.findViewById(R.id.editText);
+        EditText editText = fragmentView.findViewById(R.id.search_url_editText);
         String url = editText.getText().toString();
         handler.sendEmptyMessage(Constants.VALIDATING_PROGRESS);
         new URLValidatorTask(url, urlValidatorTaskListener).execute();
@@ -155,13 +178,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
         intent.putExtras(bundle);
         startActivity(intent);
-    }
-
-    private Boolean getDefaultCheckedValue() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean defaultChecked = settings.getBoolean(Constants.PREF_SELECT_ALL_KEY, false);
-        Log.d(TAG, "getDefaultCheckedValue(): val: " + defaultChecked);
-        return defaultChecked;
     }
 
     /******************Listeners************************************/
@@ -206,6 +222,14 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     case Constants.PARSE_ERROR:
                         validatorProgressBar.setVisibility(View.GONE);
                         displayErrorToast(ValidationResult.PARSING_ERROR);
+                        break;
+                    case Constants.HIDE_LAST_SEARCH_VIEW:
+                        lastSearchTextView.setVisibility(View.GONE);
+                        lastSearchTextTitleView.setVisibility(View.GONE);
+                        break;
+                    case Constants.DISPLAY_LAST_SEARCH_VIEW:
+                        lastSearchTextView.setVisibility(View.VISIBLE);
+                        lastSearchTextTitleView.setVisibility(View.VISIBLE);
                         break;
                 }
             }
@@ -266,6 +290,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_SUCCESS_ACTION_KEY, artistInfo: "
                             + artistInfo.toString());
                     Log.d(TAG, "site: " + musicSite);
+                    CommonUtils.putPrefString(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
+                            Constants.PREF_LAST_FETCHED_URL_KEY, artistInfo.getUrl());
                     handler.sendEmptyMessage(Constants.HIDE_PROGRESS_BAR);
                     createIntentAndDelegateActivity(artistInfo);
                     break;
@@ -280,7 +306,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     private void test() {
         Log.d(TAG, "test(): ");
-        Boolean defaultChecked = getDefaultCheckedValue();
+        Boolean defaultChecked = CommonUtils.getPrefBoolean(Objects.requireNonNull(getContext()),
+                Constants.SETTINGS_PREF_NAME, Constants.PREF_SELECT_ALL_KEY, false);
         Intent intent = new Intent(getContext(), ListSongsActivity.class);
         intent.putExtra(Constants.MUSIC_SITE, MusicSite.BANDCAMP.name());
         Bundle bundle = new Bundle();

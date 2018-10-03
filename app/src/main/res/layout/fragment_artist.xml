@@ -20,13 +20,13 @@
             android:id="@+id/check_select_all"
             android:layout_width="361dp"
             android:layout_height="29dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="40dp"
-            android:layout_marginEnd="8dp"
             android:background="@drawable/selector"
             android:checked="false"
-            android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
             android:drawableEnd="@null"
+            android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
             android:gravity="center_vertical"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="#22928E"
@@ -49,9 +49,8 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/artist_recycler_view"
             android:layout_width="361dp"
-            android:layout_height="373dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:background="@drawable/rececyler_view_border"
             android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,6 +58,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/check_select_all_divider"
             app:layout_constraintVertical_bias="0.06">
+            <!--android:background="@drawable/recycler_view_border"-->
 
         </android.support.v7.widget.RecyclerView>
 
@@ -68,8 +68,8 @@
             android:layout_height="56dp"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@android:drawable/stat_sys_download" />
