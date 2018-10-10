@@ -29,7 +29,6 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = ArtistFragment.class.getSimpleName();
 
-    private RecyclerView recyclerView;
     private CheckedTextView selectAllCheckView;
     private ArtistAdapter adapter;
 
@@ -81,7 +80,7 @@ public class ArtistFragment extends Fragment implements View.OnClickListener {
         createAdapterCallback();
 
         // set adapter for recycler view
-        recyclerView = fragmentView.findViewById(R.id.artist_recycler_view);
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.artist_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         List<String> albumNames = new ArrayList<>(artistInfo.getAlbumInfo().keySet());

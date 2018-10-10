@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.CommonUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
@@ -71,7 +72,7 @@ public class ParserService extends IntentService {
                 Log.d(TAG, "onHandleIntent(): Sending success broadcast.");
                 sendBroadcast(createSuccessIntent(artistInfo));
             } else {
-                // TODO: 10-10-2018 notification not displayed!!
+                // TODO: 10-10-2018 tapping on notification does nothing!!
                 Log.d(TAG, "onHandleIntent(): Sending success notification.");
                 String body = "Parsing complete for the url: " + url;
                 Intent intentForNoti = new Intent(getApplicationContext(), ListSongsActivity.class);
@@ -79,9 +80,9 @@ public class ParserService extends IntentService {
                 Bundle bundle = new Bundle();
                 bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
                 intent.putExtras(bundle);
-                CommonUtils.sendNotification(getApplicationContext(),
-                        "Parsing Complete", body, "", intentForNoti,
-                        0, android.support.compat.R.drawable.notification_icon_background);
+                CommonUtils.sendNotification(getApplicationContext(), Constants.LIST_SONGS_NOTIFICATION_TITLE
+                        , body, Constants.LIST_SONGS_NOTIFICATION_CHANNEL_ID, intentForNoti,
+                        Constants.LIST_SONGS_NOTIFICATION_ID, R.drawable.ic_launcher_background);
             }
         }
     }

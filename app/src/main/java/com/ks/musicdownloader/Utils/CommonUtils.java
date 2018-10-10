@@ -3,15 +3,20 @@ package com.ks.musicdownloader.Utils;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import com.ks.musicdownloader.activity.common.Constants;
 
 public class CommonUtils {
 
@@ -77,12 +82,26 @@ public class CommonUtils {
 
     public static void sendNotification(Context context, String title, String body,
                                         String channelId, Intent intent, Integer id, Integer iconResourceId) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "");
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null) {
+            Log.d(TAG, "sendNotification(): noti manager null!!");
+            return;
+        }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId,
+                    Constants.DEFAULT_NOTIFICATION_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(Constants.DEFAULT_NOTIFICATION_CHANNEL_DESCRIPTION);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
         builder.setContentTitle(title);
         builder.setContentText(body);
         builder.setSmallIcon(iconResourceId);
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
+
         Notification notification = builder.build();
         NotificationManagerCompat.from(context).notify(id, notification);
     }

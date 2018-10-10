@@ -97,4 +97,11 @@ public class Constants {
 
     // Request codes for activities
     public static final Integer SET_DEFAULT_FOLDER_REQUEST_CODE = 900;
+
+    // Notification Constants
+    public static final String DEFAULT_NOTIFICATION_CHANNEL_NAME = "DEFAULT_CHANNEL_NAME";
+    public static final String DEFAULT_NOTIFICATION_CHANNEL_DESCRIPTION = "DEFAULT_CHANNEL_DESC";
+    public static final String LIST_SONGS_NOTIFICATION_TITLE = "Parsing Complete";
+    public static final String LIST_SONGS_NOTIFICATION_CHANNEL_ID = "list_songs_channel";
+    public static final Integer LIST_SONGS_NOTIFICATION_ID = 100;
 }
