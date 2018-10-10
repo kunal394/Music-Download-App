@@ -93,6 +93,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart()");
         super.onStart();
         String lastFetchedUrl = CommonUtils.getPrefString(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_LAST_FETCHED_URL_KEY, Constants.EMPTY_STRING);
@@ -107,6 +108,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onDestroyView() {
+        Log.d(TAG, "onDestroyView()");
         super.onDestroyView();
         Objects.requireNonNull(getActivity()).unregisterReceiver(broadcastReceiver);
         NetworkUtils.unRegReceiverForConnectionValidationOnly(getContext(), networkCallback);
@@ -114,24 +116,26 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        Log.d(TAG, "onClick()");
         if (view == null) {
+            Log.d(TAG, "onClick() view null!");
             return;
         }
         switch (view.getId()) {
             case R.id.fetch_songs_button:
-                Log.d(TAG, "Extact button clicked!!");
+                Log.d(TAG, "onclick() Extact button clicked!!");
                 if (!parsing) {
                     parsing = true;
                     extractSongsFromURL();
                 }
                 break;
             case R.id.test_button:
-                Log.d(TAG, "test button clicked!");
+                Log.d(TAG, "onclick() test button clicked!");
                 test();
                 break;
 
             case R.id.last_search_view:
-                Log.d(TAG, "Last Search Text clicked!");
+                Log.d(TAG, "onclick() Last Search Text clicked!");
                 searchEditText.setText(lastSearchTextView.getText());
                 break;
         }
@@ -141,6 +145,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     /******************Methods************************************/
 
     private void init() {
+        Log.d(TAG, "init()");
         networkConnected = false;
         createNetworkCallback();
         createHandler();
@@ -160,6 +165,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     private void validateURL() {
+        Log.d(TAG, "validateURL()");
         // TODO: 26-09-2018 in my mobile the validator progress bar is hardly visible.
         // since the validation is pretty fast. need to think about it
         EditText editText = fragmentView.findViewById(R.id.search_url_editText);
@@ -173,6 +179,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     private void createIntentAndDelegateActivity(ArtistInfo artistInfo) {
+        Log.d(TAG, "createIntentAndDelegateActivity()");
         Intent intent = new Intent(getContext(), ListSongsActivity.class);
         intent.putExtra(Constants.MUSIC_SITE, musicSite);
         Bundle bundle = new Bundle();
