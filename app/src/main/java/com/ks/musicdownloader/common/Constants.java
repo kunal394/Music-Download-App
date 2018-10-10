@@ -1,6 +1,7 @@
 package com.ks.musicdownloader.common;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Environment;
 
 public class Constants {
@@ -60,7 +61,9 @@ public class Constants {
     public static final String BANDCAMP_TRACK_TEST_URL = "https://ommosound.bandcamp.com/track/plutesc-in-aer";
 
     //Directories
-    public static final String MUSIC_DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+    public static final String MUSIC_DIRECTORY = Environment.getExternalStoragePublicDirectory
+            (Environment.DIRECTORY_MUSIC).getAbsolutePath();
+    public static final String EXTERNAL_STORAGE_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath();
 
     // Artist info
     public static final ArtistInfo DUMMY_ARTIST_INFO = new ArtistInfo();
@@ -90,4 +93,8 @@ public class Constants {
     public static final String SEARCH_PREF_NAME = "search_preferences";
     public static final String PREF_SELECT_ALL_KEY = "PREF_SELECT_ALL_KEY";
     public static final String PREF_LAST_FETCHED_URL_KEY = "PREF_LAST_FETCHED_URL_KEY";
+    public static final String PREF_DEFAULT_SONGS_FOLDER_KEY = "PREF_DEFAULT_SONGS_FOLDER_KEY";
+
+    // Request codes for activities
+    public static final Integer SET_DEFAULT_FOLDER_REQUEST_CODE = 900;
 }

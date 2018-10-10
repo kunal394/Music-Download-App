@@ -23,4 +23,7 @@
         If this setting is off, by default none is selected.</string>
     <string name="song_selection_category">Songs Selection Settings</string>
     <string name="last_fetched_url">Last Fetched Url\n(Click to fill the input box)</string>
+    <string name="pref_default_songs_folder_key">PREF_DEFAULT_SONGS_FOLDER_KEY</string>
+    <string name="pref_default_songs_folder_title">Choose default folder</string>
+    <string name="pref_default_songs_folder_summary">Choose the default folder for downloaded songs to be saved.</string>
 </resources>

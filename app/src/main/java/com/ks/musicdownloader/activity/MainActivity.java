@@ -1,5 +1,7 @@
 package com.ks.musicdownloader.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,10 +15,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.R;
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate() starts");
+        checkForPermissions();
         super.onCreate(savedInstanceState);
 
         // set activity layout
@@ -59,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.nav_view);
         // inflate the global menu items inside the nav view
         navigationView.inflateMenu(R.menu.main_activity_menu_items);
+        navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
+        displaySearchFragment();
+        markSearchMenuItemChecked();
     }
 
     @Override
@@ -68,15 +76,6 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_top_bar_search, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    protected void onStart() {
-        checkForPermissions();
-        super.onStart();
-        navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
-        markSearchMenuItemChecked();
-        displaySearchFragment();
     }
 
     @Override

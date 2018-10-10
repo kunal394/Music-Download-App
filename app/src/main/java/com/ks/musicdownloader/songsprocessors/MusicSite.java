@@ -4,10 +4,10 @@ import android.support.design.widget.NavigationView;
 import android.view.Menu;
 import android.view.SubMenu;
 
-import com.ks.musicdownloader.common.ArtistInfo;
-import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.RegexUtils;
+import com.ks.musicdownloader.common.ArtistInfo;
+import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.songsprocessors.bandcamp.BandcampParser;
 
 import java.io.File;
@@ -26,8 +26,9 @@ public enum MusicSite implements MusicSiteService {
         }
 
         @Override
-        public String createFilePath(String artist, String album, String song) {
-            return artist + File.separator + album + File.separator + song + Constants.MP3_EXTENSION;
+        public String createFilePath(String externalDir, String album, String song, String artist) {
+            return externalDir + File.separator + artist + File.separator
+                    + album + File.separator + song + Constants.MP3_EXTENSION;
         }
 
         @Override

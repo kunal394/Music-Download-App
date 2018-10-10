@@ -18,7 +18,7 @@ public interface MusicSiteService {
 
     BaseParser getMusicParser(String url);
 
-    String createFilePath(String artist, String album, String song);
+    String createFilePath(String externalDir, String album, String song, String artist);
 
     void createNavMenu(NavigationView navView, ArtistInfo artistInfo);
 

@@ -22,11 +22,6 @@ public class CommonUtils {
         }
     }
 
-    public static Integer getPrefInt(Context context, String prefName, String prefKey, Integer defValue) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
-        return sharedPreferences.getInt(prefKey, defValue);
-    }
-
     public static Boolean getPrefBoolean(Context context, String prefName, String prefKey, boolean defValue) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(prefKey, defValue);
@@ -43,5 +38,14 @@ public class CommonUtils {
     public static String getPrefString(Context context, String prefName, String prefKey, String defaultValue) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
         return sharedPreferences.getString(prefKey, defaultValue);
+    }
+
+    public static String putPrefStringIfNull(Context context, String prefName, String prefKey, String defaultValue) {
+        String currentVal = getPrefString(context, prefName, prefKey, null);
+        if (currentVal == null) {
+            putPrefString(context, prefName, prefKey, defaultValue);
+            currentVal = defaultValue;
+        }
+        return currentVal;
     }
 }

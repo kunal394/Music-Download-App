@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -17,12 +16,12 @@ import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
 
+import com.ks.musicdownloader.Utils.CommonUtils;
+import com.ks.musicdownloader.Utils.FileUtils;
 import com.ks.musicdownloader.common.ArtistInfo;
 import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.common.SongInfo;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
-
-import java.io.File;
 
 
 @SuppressWarnings("DanglingJavadoc")
@@ -127,8 +126,10 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
                         + " of artist: " + parsedArtistInfo.getArtist() + " not marked for download.");
                 continue;
             }
-            String filePath = musicSite.createFilePath(parsedArtistInfo.getArtist(), songInfo.getAlbum(), songInfo.getName());
-            if (doesFileExists(filePath)) {
+            String filePath = musicSite.createFilePath(CommonUtils.putPrefStringIfNull(getApplicationContext(),
+                    Constants.SETTINGS_PREF_NAME, Constants.PREF_DEFAULT_SONGS_FOLDER_KEY, Constants.MUSIC_DIRECTORY)
+                    , songInfo.getAlbum(), songInfo.getName(), parsedArtistInfo.getArtist());
+            if (FileUtils.doesFileExists(filePath)) {
                 Log.d(TAG, "file: " + filePath + " already exists. So not downloading again.");
                 downloadCallback.updateFromDownload(songInfo.getId());
                 continue;
@@ -136,14 +137,9 @@ public class DownloaderService extends BaseDownloadService<ArtistInfo, Integer> 
             Log.d(TAG, "enqueueSongsForDownload() adding song: " + songInfo.getName() + " for download.");
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(songInfo.getUrl()));
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, filePath);
+            request.setDestinationUri(Uri.parse(filePath));
             request.setMimeType(Constants.AUDIO_MIME_TYPE);
             songsDownloadReferences.put(dm.enqueue(request), songInfo.getId());
         }
-    }
-
-    private boolean doesFileExists(String filePath) {
-        File file = new File(Constants.MUSIC_DIRECTORY, filePath);
-        return file.exists();
     }
 }
