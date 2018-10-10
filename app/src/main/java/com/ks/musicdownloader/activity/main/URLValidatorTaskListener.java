@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.activity;
+package com.ks.musicdownloader.activity.main;
 
 interface URLValidatorTaskListener {
 

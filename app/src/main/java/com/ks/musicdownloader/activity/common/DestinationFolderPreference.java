@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.activity;
+package com.ks.musicdownloader.activity.common;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -6,7 +6,6 @@ import android.support.v7.preference.Preference;
 import android.util.AttributeSet;
 
 import com.ks.musicdownloader.R;
-import com.ks.musicdownloader.common.Constants;
 
 /**
  * Created by Kunal Singh(knl.singh) on 10-10-2018.

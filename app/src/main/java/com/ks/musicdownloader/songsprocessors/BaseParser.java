@@ -1,7 +1,7 @@
 package com.ks.musicdownloader.songsprocessors;
 
-import com.ks.musicdownloader.common.ArtistInfo;
-import com.ks.musicdownloader.common.DownloadCallback;
+import com.ks.musicdownloader.activity.common.ArtistInfo;
+import com.ks.musicdownloader.activity.common.DownloadCallback;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

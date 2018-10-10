@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.common;
+package com.ks.musicdownloader.activity.common;
 
 import android.os.Parcel;
 import android.os.Parcelable;

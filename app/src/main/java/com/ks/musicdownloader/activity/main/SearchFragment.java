@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.activity;
+package com.ks.musicdownloader.activity.main;
 
 
 import android.content.BroadcastReceiver;
@@ -27,8 +27,9 @@ import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.CommonUtils;
 import com.ks.musicdownloader.Utils.NetworkUtils;
 import com.ks.musicdownloader.Utils.TestUtils;
-import com.ks.musicdownloader.common.ArtistInfo;
-import com.ks.musicdownloader.common.Constants;
+import com.ks.musicdownloader.activity.common.ArtistInfo;
+import com.ks.musicdownloader.activity.common.Constants;
+import com.ks.musicdownloader.activity.listsongs.ListSongsActivity;
 import com.ks.musicdownloader.service.ParserService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 

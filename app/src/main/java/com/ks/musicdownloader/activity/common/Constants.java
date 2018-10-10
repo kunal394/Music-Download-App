@@ -1,9 +1,9 @@
-package com.ks.musicdownloader.common;
+package com.ks.musicdownloader.activity.common;
 
 import android.Manifest;
-import android.content.Intent;
 import android.os.Environment;
 
+@SuppressWarnings("WeakerAccess")
 public class Constants {
 
     // Permissions Constants

@@ -3,7 +3,7 @@ package com.ks.musicdownloader.Utils;
 import android.util.Log;
 import android.util.Patterns;
 
-import com.ks.musicdownloader.common.Constants;
+import com.ks.musicdownloader.activity.common.Constants;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"> <!-- don't know what is fullbackup content. need to read this first -->
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.main.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
         <service android:name=".service.ParserService" />
 
         <activity
-            android:name=".activity.ListSongsActivity"
+            android:name=".activity.listsongs.ListSongsActivity"
             android:screenOrientation="portrait" />
     </application>
 

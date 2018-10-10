@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.activity;
+package com.ks.musicdownloader.activity.common;
 
 
 import android.content.Intent;
@@ -11,7 +11,6 @@ import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.CommonUtils;
 import com.ks.musicdownloader.Utils.FileUtils;
 import com.ks.musicdownloader.Utils.ToastUtils;
-import com.ks.musicdownloader.common.Constants;
 
 import java.util.Objects;
 

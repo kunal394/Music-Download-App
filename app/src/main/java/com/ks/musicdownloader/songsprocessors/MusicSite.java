@@ -6,8 +6,8 @@ import android.view.SubMenu;
 
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.RegexUtils;
-import com.ks.musicdownloader.common.ArtistInfo;
-import com.ks.musicdownloader.common.Constants;
+import com.ks.musicdownloader.activity.common.ArtistInfo;
+import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.songsprocessors.bandcamp.BandcampParser;
 
 import java.io.File;

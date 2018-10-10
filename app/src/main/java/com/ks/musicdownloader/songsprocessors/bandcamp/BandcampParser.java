@@ -7,10 +7,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ks.musicdownloader.Utils.RegexUtils;
-import com.ks.musicdownloader.common.ArtistInfo;
-import com.ks.musicdownloader.common.Constants;
-import com.ks.musicdownloader.common.DownloadCallback;
-import com.ks.musicdownloader.common.SongInfo;
+import com.ks.musicdownloader.activity.common.ArtistInfo;
+import com.ks.musicdownloader.activity.common.Constants;
+import com.ks.musicdownloader.activity.common.DownloadCallback;
+import com.ks.musicdownloader.activity.common.SongInfo;
 import com.ks.musicdownloader.songsprocessors.BaseParser;
 
 import org.jsoup.nodes.Document;

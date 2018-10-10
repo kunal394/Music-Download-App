@@ -1,12 +1,21 @@
 package com.ks.musicdownloader.Utils;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 public class CommonUtils {
+
+    private static final String TAG = CommonUtils.class.getSimpleName();
 
     // works only when called from an activity
     public static void hideKeyboard(Activity activity) {
@@ -47,5 +56,34 @@ public class CommonUtils {
             currentVal = defaultValue;
         }
         return currentVal;
+    }
+
+    public static boolean appInForeground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager == null) {
+            return false;
+        }
+        for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : activityManager.getRunningAppProcesses()) {
+            if (runningAppProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                    || runningAppProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
+                Log.i("Foreground App: ", runningAppProcessInfo.processName);
+                if (runningAppProcessInfo.processName.equals(context.getPackageName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void sendNotification(Context context, String title, String body,
+                                        String channelId, Intent intent, Integer id, Integer iconResourceId) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "");
+        builder.setContentTitle(title);
+        builder.setContentText(body);
+        builder.setSmallIcon(iconResourceId);
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        builder.setContentIntent(pendingIntent);
+        Notification notification = builder.build();
+        NotificationManagerCompat.from(context).notify(id, notification);
     }
 }

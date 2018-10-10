@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.activity;
+package com.ks.musicdownloader.activity.listsongs;
 
 
 import android.os.Bundle;
@@ -16,8 +16,9 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.ks.musicdownloader.R;
-import com.ks.musicdownloader.common.ArtistInfo;
-import com.ks.musicdownloader.common.Constants;
+import com.ks.musicdownloader.activity.common.ArtistInfo;
+import com.ks.musicdownloader.activity.common.Constants;
+import com.ks.musicdownloader.activity.common.FragmentCallback;
 
 import java.util.ArrayList;
 import java.util.List;

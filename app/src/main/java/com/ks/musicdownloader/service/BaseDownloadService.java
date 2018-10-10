@@ -2,7 +2,7 @@ package com.ks.musicdownloader.service;
 
 import android.app.Service;
 
-import com.ks.musicdownloader.common.DownloadCallback;
+import com.ks.musicdownloader.activity.common.DownloadCallback;
 
 public abstract class BaseDownloadService<Input, Res> extends Service {
 

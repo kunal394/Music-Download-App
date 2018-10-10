@@ -1,9 +1,9 @@
-package com.ks.musicdownloader.activity;
+package com.ks.musicdownloader.activity.main;
 
 import android.content.Context;
 
-import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.Utils.ToastUtils;
+import com.ks.musicdownloader.activity.common.Constants;
 
 public enum ValidationResult implements ValidationResultService {
 

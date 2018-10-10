@@ -9,8 +9,9 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.ks.musicdownloader.Utils.CommonUtils;
-import com.ks.musicdownloader.common.ArtistInfo;
-import com.ks.musicdownloader.common.Constants;
+import com.ks.musicdownloader.activity.common.ArtistInfo;
+import com.ks.musicdownloader.activity.common.Constants;
+import com.ks.musicdownloader.activity.listsongs.ListSongsActivity;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
 import java.io.IOException;
@@ -64,10 +65,24 @@ public class ParserService extends IntentService {
             Log.d(TAG, "onHandleIntent(): Sending error broadcast for null artist info!");
             sendBroadcast(createNullInfoIntent());
         } else {
-            Log.d(TAG, "onHandleIntent(): Sending success broadcast.");
             artistInfo.initializeAlbumCheckedStatus(defaultCheckedValue);
             artistInfo.setUrl(url);
-            sendBroadcast(createSuccessIntent(artistInfo));
+            if (CommonUtils.appInForeground(getApplicationContext())) {
+                Log.d(TAG, "onHandleIntent(): Sending success broadcast.");
+                sendBroadcast(createSuccessIntent(artistInfo));
+            } else {
+                // TODO: 10-10-2018 notification not displayed!!
+                Log.d(TAG, "onHandleIntent(): Sending success notification.");
+                String body = "Parsing complete for the url: " + url;
+                Intent intentForNoti = new Intent(getApplicationContext(), ListSongsActivity.class);
+                intentForNoti.putExtra(Constants.MUSIC_SITE, siteName);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
+                intent.putExtras(bundle);
+                CommonUtils.sendNotification(getApplicationContext(),
+                        "Parsing Complete", body, "", intentForNoti,
+                        0, android.support.compat.R.drawable.notification_icon_background);
+            }
         }
     }
 

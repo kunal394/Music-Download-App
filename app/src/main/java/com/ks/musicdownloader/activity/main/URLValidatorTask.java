@@ -1,11 +1,11 @@
-package com.ks.musicdownloader.activity;
+package com.ks.musicdownloader.activity.main;
 
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
 
-import com.ks.musicdownloader.common.Constants;
 import com.ks.musicdownloader.Utils.RegexUtils;
+import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 import com.ks.musicdownloader.songsprocessors.SongsFactory;
 

@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.activity;
+package com.ks.musicdownloader.activity.listsongs;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,28 +8,30 @@ import android.view.ViewGroup;
 import android.widget.CheckedTextView;
 
 import com.ks.musicdownloader.R;
-import com.ks.musicdownloader.common.SongInfo;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by Kunal Singh(knl.singh) on 26-09-2018.
  */
 @SuppressWarnings("DanglingJavadoc")
-public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
+public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder> {
 
-    private List<SongInfo> songInfoList;
-    private AlbumAdapterCallback adapterCallback;
+    private List<String> albumNames;
+    private HashMap<String, Boolean> albumCheckedStatus;
+    private ArtistAdapterCallback adapterCallback;
     private Integer checkedCount;
 
-    AlbumAdapter(List<SongInfo> songInfoList, AlbumAdapterCallback adapterCallback) {
-        this.songInfoList = songInfoList;
+    ArtistAdapter(List<String> albumNames, HashMap<String, Boolean> albumCheckedStatus, ArtistAdapterCallback adapterCallback) {
+        this.albumNames = albumNames;
+        this.albumCheckedStatus = albumCheckedStatus;
         this.adapterCallback = adapterCallback;
         initializeCheckedCount();
     }
 
-    void updateSongInfoList(List<SongInfo> songInfoList) {
-        this.songInfoList = songInfoList;
+    void updateAlbumCheckedStatus(HashMap<String, Boolean> albumCheckedStatus) {
+        this.albumCheckedStatus = albumCheckedStatus;
         initializeCheckedCount();
     }
 
@@ -43,12 +45,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        holder.bind(songInfoList.get(holder.getAdapterPosition()));
+        holder.bind(albumNames.get(holder.getAdapterPosition()));
     }
 
     @Override
     public int getItemCount() {
-        return songInfoList.size();
+        return albumNames.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -61,26 +63,26 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
             this.checkedTextView = itemView.findViewById(R.id.checked_text_view);
         }
 
-        void bind(SongInfo songInfo) {
+        void bind(String album) {
             // use the sparse boolean array to check
-            checkedTextView.setChecked(songInfo.isChecked());
-            checkedTextView.setText(songInfo.getName());
+            checkedTextView.setChecked(albumCheckedStatus.get(album));
+            checkedTextView.setText(album);
         }
 
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            SongInfo songInfo = songInfoList.get(adapterPosition);
-            Boolean newStatus = !songInfo.isChecked();
+            String album = albumNames.get(adapterPosition);
+            Boolean newStatus = !albumCheckedStatus.get(album);
             if (newStatus == Boolean.TRUE) {
                 checkedCount++;
             } else {
                 checkedCount--;
             }
             checkedTextView.setChecked(newStatus);
-            songInfo.setChecked(newStatus);
-            adapterCallback.setSongCheckedStatus(songInfo.getId(), newStatus, checkedCount);
-            if (checkedCount == songInfoList.size()) {
+            albumCheckedStatus.put(album, newStatus);
+            adapterCallback.setAlbumCheckedStatus(album, newStatus, checkedCount);
+            if (checkedCount == albumNames.size()) {
                 adapterCallback.notifyAllChecked();
             }
         }
@@ -91,8 +93,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     private void initializeCheckedCount() {
         checkedCount = 0;
-        for (SongInfo songInfo : songInfoList) {
-            if (songInfo.isChecked()) {
+        for (Boolean status : albumCheckedStatus.values()) {
+            if (status) {
                 checkedCount++;
             }
         }

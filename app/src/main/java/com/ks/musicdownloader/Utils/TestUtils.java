@@ -1,7 +1,7 @@
 package com.ks.musicdownloader.Utils;
 
-import com.ks.musicdownloader.common.ArtistInfo;
-import com.ks.musicdownloader.common.SongInfo;
+import com.ks.musicdownloader.activity.common.ArtistInfo;
+import com.ks.musicdownloader.activity.common.SongInfo;
 
 import java.util.ArrayList;
 import java.util.List;

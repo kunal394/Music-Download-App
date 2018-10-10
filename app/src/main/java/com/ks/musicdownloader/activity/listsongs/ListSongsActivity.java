@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.activity;
+package com.ks.musicdownloader.activity.listsongs;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -22,11 +22,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.ks.musicdownloader.common.ArtistInfo;
-import com.ks.musicdownloader.common.Constants;
-import com.ks.musicdownloader.common.DownloadCallback;
 import com.ks.musicdownloader.R;
-import com.ks.musicdownloader.common.SongInfo;
+import com.ks.musicdownloader.activity.common.AboutUsFragment;
+import com.ks.musicdownloader.activity.common.ArtistInfo;
+import com.ks.musicdownloader.activity.common.Constants;
+import com.ks.musicdownloader.activity.common.DownloadCallback;
+import com.ks.musicdownloader.activity.common.FragmentCallback;
+import com.ks.musicdownloader.activity.common.SettingsFragment;
+import com.ks.musicdownloader.activity.common.SongInfo;
 import com.ks.musicdownloader.service.DownloaderService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 

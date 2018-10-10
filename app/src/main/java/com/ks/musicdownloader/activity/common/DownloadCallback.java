@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.common;
+package com.ks.musicdownloader.activity.common;
 
 public interface DownloadCallback<T> {
     interface Progress {
