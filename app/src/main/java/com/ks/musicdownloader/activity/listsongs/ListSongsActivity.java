@@ -121,6 +121,15 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
 //        bindToDownloaderService();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (CURRENTLY_SELECTED_FRAGMENT != ARTIST_FRAGMENT) {
+            displayArtistFragment();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     /******************Private************************************/
     /******************Methods************************************/
 
@@ -135,13 +144,17 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
     }
 
     private void getIntentExtras() {
+        Log.d(TAG, "getIntentExtras()");
         Intent intent = getIntent();
         parsedArtistInfo = intent.getParcelableExtra(Constants.PARSED_ARTIST_INFO);
         String siteName = intent.getStringExtra(Constants.MUSIC_SITE);
+        Log.d(TAG, "getIntentExtras() sitename: " + siteName);
         musicSite = Enum.valueOf(MusicSite.class, siteName);
+        Log.d(TAG, "getIntentExtras() artInfo: " + parsedArtistInfo.toString());
     }
 
     private void displayArtistFragment() {
+        CURRENTLY_SELECTED_FRAGMENT = ARTIST_FRAGMENT;
         handler.sendEmptyMessage(Constants.DISPLAY_ARTIST_FRAGMENT);
         setActionBarTitle(R.string.artist_info);
         ArtistFragment artistFragment = new ArtistFragment();
@@ -152,6 +165,7 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
     }
 
     private void displayAlbumFragment(String album) {
+        CURRENTLY_SELECTED_FRAGMENT = Constants.OTHER_FRAGMENTS;
         handler.sendEmptyMessage(Constants.DISPLAY_OTHER_FRAGMENTS);
         setActionBarTitle(R.string.album_info);
         AlbumFragment albumFragment = new AlbumFragment();
@@ -175,23 +189,11 @@ public class ListSongsActivity extends AppCompatActivity implements FragmentCall
     }
 
     private void displayFragment(Fragment fragment) {
-        logCheckedItems();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, fragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.commit();
-    }
-
-    private void logCheckedItems() {
-        Integer size = parsedArtistInfo.getSongsMap().size();
-        int count = 0;
-        for (int i = 0; i < size; i++) {
-            if (parsedArtistInfo.getSongsMap().valueAt(i).isChecked()) {
-                count++;
-            }
-        }
-        Log.d(TAG, "logCheckedItems(): Check count: " + count);
     }
 
     private void setActionBarTitle(int stringRes) {

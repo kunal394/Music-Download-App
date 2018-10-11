@@ -103,6 +103,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (CURRENTLY_SELECTED_FRAGMENT == SEARCH_FRAGMENT) {
+            CURRENTLY_SELECTED_FRAGMENT = NO_FRAGMENT;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (CURRENTLY_SELECTED_FRAGMENT != SEARCH_FRAGMENT && CURRENTLY_SELECTED_FRAGMENT != NO_FRAGMENT) {
+            displaySearchFragment();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     /******************Private************************************/
     /******************Methods************************************/
 

@@ -17,6 +17,7 @@ import com.ks.musicdownloader.songsprocessors.MusicSite;
 
 import java.io.IOException;
 
+@SuppressWarnings("DanglingJavadoc")
 public class ParserService extends IntentService {
 
     private static final String TAG = ParserService.class.getSimpleName();
@@ -41,7 +42,8 @@ public class ParserService extends IntentService {
         Log.d(TAG, "onHandleIntent()");
         if (intent == null) {
             Log.d(TAG, "onHandleIntent(): Intent null!");
-            sendBroadcast(createIntentForNullIntentReceived());
+            updateParsingPreference();
+            sendBroadcast(createParseErrorIntent(Constants.PARSE_ERROR_NULL_INTENT));
             return;
         }
 
@@ -58,45 +60,46 @@ public class ParserService extends IntentService {
             Log.d(TAG, "onHandleIntent(): Error found while parsing songs. Error: " + e);
             error = e.getMessage();
             e.printStackTrace();
+        } finally {
+            updateParsingPreference();
         }
         if (artistInfo == Constants.DUMMY_ARTIST_INFO) {
             Log.d(TAG, "onHandleIntent(): Sending error broadcast with error: " + error);
             sendBroadcast(createParseErrorIntent(error));
         } else if (artistInfo == null) {
             Log.d(TAG, "onHandleIntent(): Sending error broadcast for null artist info!");
-            sendBroadcast(createNullInfoIntent());
+            sendBroadcast(createParseErrorIntent(Constants.PARSE_ERROR_NULL_ARTIST_INFO));
         } else {
             artistInfo.initializeAlbumCheckedStatus(defaultCheckedValue);
             artistInfo.setUrl(url);
+            // TODO: 11-10-2018 bundle intent has a size limit, so save the data in a file
+            // and then use it later in the list songs activity instead of passing all of it in intent
             if (CommonUtils.appInForeground(getApplicationContext())) {
                 Log.d(TAG, "onHandleIntent(): Sending success broadcast.");
-                sendBroadcast(createSuccessIntent(artistInfo));
+                CommonUtils.putPrefString(getApplicationContext(), Constants.SEARCH_PREF_NAME,
+                        Constants.PREF_LAST_FETCHED_URL_KEY, artistInfo.getUrl());
+                sendBroadcast(createParseSuccessIntent(siteName, artistInfo));
             } else {
-                // TODO: 10-10-2018 tapping on notification does nothing!!
                 Log.d(TAG, "onHandleIntent(): Sending success notification.");
-                String body = "Parsing complete for the url: " + url;
-                Intent intentForNoti = new Intent(getApplicationContext(), ListSongsActivity.class);
-                intentForNoti.putExtra(Constants.MUSIC_SITE, siteName);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
-                intent.putExtras(bundle);
-                CommonUtils.sendNotification(getApplicationContext(), Constants.LIST_SONGS_NOTIFICATION_TITLE
-                        , body, Constants.LIST_SONGS_NOTIFICATION_CHANNEL_ID, intentForNoti,
-                        Constants.LIST_SONGS_NOTIFICATION_ID, R.drawable.ic_launcher_background);
+                sendSuccessNotification(siteName, artistInfo);
             }
         }
     }
 
-    private Boolean getDefaultCheckedValue() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        return settings.getBoolean(Constants.PREF_SELECT_ALL_KEY, false);
-    }
+    /******************Private************************************/
+    /******************Methods************************************/
 
-    private Intent createIntentForNullIntentReceived() {
-        Intent intent = new Intent();
-        intent.setAction(Constants.PARSE_ERROR_ACTION_KEY);
-        intent.putExtra(Constants.PARSE_ERROR_MESSAGE_KEY, Constants.PARSE_ERROR_NULL_INTENT);
-        return intent;
+    private void sendSuccessNotification(String siteName, ArtistInfo artistInfo) {
+        String body = "Parsing complete for the url: " + url;
+        Intent notifyIntent = new Intent(getApplicationContext(), ListSongsActivity.class);
+        notifyIntent.putExtra(Constants.MUSIC_SITE, siteName);
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
+        notifyIntent.putExtras(bundle);
+        CommonUtils.sendNotification(getApplicationContext(), Constants.LIST_SONGS_NOTIFICATION_TITLE
+                , body, Constants.LIST_SONGS_NOTIFICATION_CHANNEL_ID, notifyIntent,
+                Constants.LIST_SONGS_NOTIFICATION_ID, R.drawable.ic_launcher_background);
     }
 
     private Intent createParseErrorIntent(String error) {
@@ -106,19 +109,23 @@ public class ParserService extends IntentService {
         return intent;
     }
 
-    private Intent createNullInfoIntent() {
-        Intent intent = new Intent();
-        intent.setAction(Constants.PARSE_ERROR_ACTION_KEY);
-        intent.putExtra(Constants.PARSE_ERROR_MESSAGE_KEY, Constants.PARSE_ERROR_NULL_ARTIST_INFO);
-        return intent;
-    }
-
-    private Intent createSuccessIntent(ArtistInfo artistInfo) {
+    private Intent createParseSuccessIntent(String siteName, ArtistInfo artistInfo) {
         Intent intent = new Intent();
         intent.setAction(Constants.PARSE_SUCCESS_ACTION_KEY);
+        intent.putExtra(Constants.MUSIC_SITE, siteName);
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.PARSE_SUCCESS_MESSAGE_KEY, artistInfo);
         intent.putExtras(bundle);
         return intent;
+    }
+
+    private void updateParsingPreference() {
+        CommonUtils.putPrefInt(getApplicationContext(), Constants.SEARCH_PREF_NAME,
+                Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
+    }
+
+    private Boolean getDefaultCheckedValue() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        return settings.getBoolean(Constants.PREF_SELECT_ALL_KEY, false);
     }
 }

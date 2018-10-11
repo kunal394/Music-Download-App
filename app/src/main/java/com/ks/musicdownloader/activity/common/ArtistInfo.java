@@ -5,12 +5,13 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.util.SparseArray;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ArtistInfo implements Parcelable {
+public class ArtistInfo implements Parcelable, Serializable {
 
     private static final String TAG = ArtistInfo.class.getSimpleName();
 

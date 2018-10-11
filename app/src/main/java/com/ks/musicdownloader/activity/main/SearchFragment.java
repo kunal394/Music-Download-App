@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,10 +26,10 @@ import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.CommonUtils;
 import com.ks.musicdownloader.Utils.NetworkUtils;
 import com.ks.musicdownloader.Utils.TestUtils;
+import com.ks.musicdownloader.Utils.ToastUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.activity.listsongs.ListSongsActivity;
-import com.ks.musicdownloader.service.ParserService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
 import java.util.Objects;
@@ -41,7 +40,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = SearchFragment.class.getSimpleName();
 
     private View fragmentView;
-    private RelativeLayout validatorProgressBar;
+    private RelativeLayout validatorProgressBarLayout;
     private TextView progressBarTextView;
     private TextView lastSearchTextView;
     private TextView lastSearchTextTitleView;
@@ -49,12 +48,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     private ConnectivityManager.NetworkCallback networkCallback;
     private boolean networkConnected;
-    private URLValidatorTaskListener urlValidatorTaskListener;
     private BroadcastReceiver broadcastReceiver;
     private Handler handler;
-
-    private String musicSite;
-    private boolean parsing;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -64,10 +59,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView()");
         // Inflate the layout for this fragment
         fragmentView = inflater.inflate(R.layout.fragment_search, container, false);
 
-        validatorProgressBar = fragmentView.findViewById(R.id.urlValidatorProgressBar);
+        validatorProgressBarLayout = fragmentView.findViewById(R.id.urlValidatorProgressBar);
         progressBarTextView = fragmentView.findViewById(R.id.progressBarText);
         Button fetchSongsButton = fragmentView.findViewById(R.id.fetch_songs_button);
         fetchSongsButton.setOnClickListener(this);
@@ -84,19 +80,18 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         return fragmentView;
     }
 
-    // use any getActivity() calls only after this function has started executing
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        init();
-    }
-
+    // use any getActivity() calls only after this function(onActivityCreated()) has started executing
+    // this is called after onActivityCreated()
     @Override
     public void onStart() {
         Log.d(TAG, "onStart()");
         super.onStart();
+        init();
+
+        // last search view handling
         String lastFetchedUrl = CommonUtils.getPrefString(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_LAST_FETCHED_URL_KEY, Constants.EMPTY_STRING);
+
         if (Constants.EMPTY_STRING.equals(lastFetchedUrl)) {
             handler.sendEmptyMessage(Constants.HIDE_LAST_SEARCH_VIEW);
         } else {
@@ -104,13 +99,23 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             lastSearchTextView.setOnClickListener(this);
             lastSearchTextView.setText(lastFetchedUrl);
         }
+
+        // progress bar handling
+        Integer parsingStatus = CommonUtils.getPrefInt(getContext(), Constants.SEARCH_PREF_NAME,
+                Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
+        handler.sendEmptyMessage(parsingStatus);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Objects.requireNonNull(getActivity()).unregisterReceiver(broadcastReceiver);
     }
 
     @Override
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView()");
         super.onDestroyView();
-        Objects.requireNonNull(getActivity()).unregisterReceiver(broadcastReceiver);
         NetworkUtils.unRegReceiverForConnectionValidationOnly(getContext(), networkCallback);
     }
 
@@ -124,9 +129,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.fetch_songs_button:
                 Log.d(TAG, "onclick() Extact button clicked!!");
-                if (!parsing) {
-                    parsing = true;
+                Integer parsingStatus = CommonUtils.getPrefInt(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
+                        Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
+                if (parsingStatus == Constants.PARSING_COMPLETE) {
                     extractSongsFromURL();
+                } else {
+                    ToastUtils.displayLongToast(getContext(), Constants.PARSING_IN_PROGRESS);
                 }
                 break;
             case R.id.test_button:
@@ -151,7 +159,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         createHandler();
         registerBroadcastReceiver();
         NetworkUtils.regReceiverForConnectionValidationOnly(getContext(), networkCallback);
-        createUrlValidatorListener();
     }
 
     private void extractSongsFromURL() {
@@ -160,28 +167,30 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         if (networkConnected) {
             validateURL();
         } else {
-            displayErrorToast(ValidationResult.NO_INTERNET);
+            ToastUtils.displayLongToast(getContext(), ValidationResult.NO_INTERNET.getMessage());
         }
     }
 
     private void validateURL() {
         Log.d(TAG, "validateURL()");
-        // TODO: 26-09-2018 in my mobile the validator progress bar is hardly visible.
-        // since the validation is pretty fast. need to think about it
+        updateParserStatusInPref(Constants.VALIDATING_PROGRESS);
         EditText editText = fragmentView.findViewById(R.id.search_url_editText);
         String url = editText.getText().toString();
-        handler.sendEmptyMessage(Constants.VALIDATING_PROGRESS);
-        new URLValidatorTask(url, urlValidatorTaskListener).execute();
+        Intent intent = new Intent(getActivity(), URLValidatorService.class);
+        intent.putExtra(Constants.DOWNLOAD_URL, url);
+        Objects.requireNonNull(getActivity()).startService(intent);
     }
 
-    private void displayErrorToast(ValidationResult validationResult) {
-        validationResult.displayToast(getContext());
+    private void updateParserStatusInPref(int parsingStatus) {
+        CommonUtils.putPrefInt(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
+                Constants.PREF_PARSING_STATUS_KEY, parsingStatus);
+        handler.sendEmptyMessage(parsingStatus);
     }
 
-    private void createIntentAndDelegateActivity(ArtistInfo artistInfo) {
+    private void createIntentAndDelegateActivity(ArtistInfo artistInfo, String siteName) {
         Log.d(TAG, "createIntentAndDelegateActivity()");
         Intent intent = new Intent(getContext(), ListSongsActivity.class);
-        intent.putExtra(Constants.MUSIC_SITE, musicSite);
+        intent.putExtra(Constants.MUSIC_SITE, siteName);
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
         intent.putExtras(bundle);
@@ -219,17 +228,18 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 switch (msg.what) {
                     case Constants.VALIDATING_PROGRESS:
                         progressBarTextView.setText(R.string.validatorProgressText);
-                        validatorProgressBar.setVisibility(View.VISIBLE);
+                        validatorProgressBarLayout.setVisibility(View.VISIBLE);
                         break;
                     case Constants.PARSING_PROGRESS:
                         progressBarTextView.setText(R.string.parsingProgressText);
+                        validatorProgressBarLayout.setVisibility(View.VISIBLE);
                         break;
-                    case Constants.HIDE_PROGRESS_BAR:
-                        validatorProgressBar.setVisibility(View.GONE);
+                    case Constants.PARSING_COMPLETE:
+                        validatorProgressBarLayout.setVisibility(View.GONE);
                         break;
                     case Constants.PARSE_ERROR:
-                        validatorProgressBar.setVisibility(View.GONE);
-                        displayErrorToast(ValidationResult.PARSING_ERROR);
+                        validatorProgressBarLayout.setVisibility(View.GONE);
+                        ToastUtils.displayLongToast(getContext(), ValidationResult.PARSING_ERROR.getMessage());
                         break;
                     case Constants.HIDE_LAST_SEARCH_VIEW:
                         lastSearchTextView.setVisibility(View.GONE);
@@ -248,27 +258,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.PARSE_ERROR_ACTION_KEY);
         intentFilter.addAction(Constants.PARSE_SUCCESS_ACTION_KEY);
+        intentFilter.addAction(Constants.VALIDATE_ERROR_ACTION_KEY);
+        intentFilter.addAction(Constants.VALIDATE_SUCCESS_ACTION_KEY);
         intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
         Objects.requireNonNull(getActivity()).registerReceiver(broadcastReceiver, intentFilter);
-    }
-
-    private void createUrlValidatorListener() {
-        urlValidatorTaskListener = new URLValidatorTaskListener() {
-            @Override
-            public void handleValidatorResult(ValidationResult validationResult, String url, String siteName) {
-                if (validationResult.isValidResult()) {
-                    handler.sendEmptyMessage(Constants.PARSING_PROGRESS);
-                    musicSite = siteName;
-                    Intent intent = new Intent(getActivity(), ParserService.class);
-                    intent.putExtra(Constants.DOWNLOAD_URL, url);
-                    intent.putExtra(Constants.MUSIC_SITE, siteName);
-                    Objects.requireNonNull(getActivity()).startService(intent);
-                } else {
-                    handler.sendEmptyMessage(Constants.HIDE_PROGRESS_BAR);
-                    displayErrorToast(validationResult);
-                }
-            }
-        };
     }
 
     private class ParserBroadcastReceiver extends BroadcastReceiver {
@@ -280,28 +273,29 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             if (parseResult == null || parseResult.equals(Constants.EMPTY_STRING)) {
                 return;
             }
+            String errorMsg;
             switch (parseResult) {
+                case Constants.VALIDATE_ERROR_ACTION_KEY:
+                    handler.sendEmptyMessage(Constants.PARSING_COMPLETE);
+                    errorMsg = intent.getStringExtra(Constants.VALIDATE_ERROR_MESSAGE_KEY);
+                    ToastUtils.displayLongToast(getContext(), errorMsg);
+                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() VALIDATE_ERROR_ACTION_KEY, validate error: " + errorMsg);
+                    break;
+                case Constants.VALIDATE_SUCCESS_ACTION_KEY:
+                    handler.sendEmptyMessage(Constants.PARSING_PROGRESS);
+                    break;
                 case Constants.PARSE_ERROR_ACTION_KEY:
-                    parsing = false;
-                    String errorMsg = intent.getStringExtra(Constants.PARSE_ERROR_MESSAGE_KEY);
-                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_ERROR_ACTION_KEY, parse error: " + errorMsg);
-                    if (Constants.PARSE_ERROR_NULL_INTENT.equals(errorMsg)) {
-                        Log.wtf(TAG, "ParserBroadcastReceiver, onReceive() parser service received null intent!");
-                    } else if (Constants.PARSE_ERROR_NULL_ARTIST_INFO.equals(errorMsg)) {
-                        Log.wtf(TAG, "ParserBroadcastReceiver, onReceive() parser service received null intent!");
-                    }
                     handler.sendEmptyMessage(Constants.PARSE_ERROR);
+                    errorMsg = intent.getStringExtra(Constants.PARSE_ERROR_MESSAGE_KEY);
+                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_ERROR_ACTION_KEY, parse error: " + errorMsg);
                     break;
                 case Constants.PARSE_SUCCESS_ACTION_KEY:
-                    parsing = false;
+                    handler.sendEmptyMessage(Constants.PARSING_COMPLETE);
                     ArtistInfo artistInfo = intent.getParcelableExtra(Constants.PARSE_SUCCESS_MESSAGE_KEY);
+                    String siteName = intent.getStringExtra(Constants.MUSIC_SITE);
                     Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_SUCCESS_ACTION_KEY, artistInfo: "
                             + artistInfo.toString());
-                    Log.d(TAG, "site: " + musicSite);
-                    CommonUtils.putPrefString(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
-                            Constants.PREF_LAST_FETCHED_URL_KEY, artistInfo.getUrl());
-                    handler.sendEmptyMessage(Constants.HIDE_PROGRESS_BAR);
-                    createIntentAndDelegateActivity(artistInfo);
+                    createIntentAndDelegateActivity(artistInfo, siteName);
                     break;
                 default:
                     break;

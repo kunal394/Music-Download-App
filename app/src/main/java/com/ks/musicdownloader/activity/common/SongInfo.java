@@ -3,7 +3,9 @@ package com.ks.musicdownloader.activity.common;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class SongInfo implements Parcelable {
+import java.io.Serializable;
+
+public class SongInfo implements Parcelable, Serializable {
 
     private static final String TAG = SongInfo.class.getSimpleName();
 

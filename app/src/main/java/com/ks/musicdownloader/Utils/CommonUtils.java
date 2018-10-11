@@ -12,11 +12,13 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.ks.musicdownloader.activity.common.Constants;
+import com.ks.musicdownloader.activity.main.MainActivity;
 
 public class CommonUtils {
 
@@ -41,17 +43,17 @@ public class CommonUtils {
         return sharedPreferences.getBoolean(prefKey, defValue);
     }
 
+    public static String getPrefString(Context context, String prefName, String prefKey, String defaultValue) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(prefKey, defaultValue);
+    }
+
     public static void putPrefString(Context context, String prefName, String prefKey, String prefValue) {
         SharedPreferences pref = context.getSharedPreferences(prefName,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString(prefKey, prefValue);
         editor.apply();
-    }
-
-    public static String getPrefString(Context context, String prefName, String prefKey, String defaultValue) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(prefKey, defaultValue);
     }
 
     public static String putPrefStringIfNull(Context context, String prefName, String prefKey, String defaultValue) {
@@ -61,6 +63,19 @@ public class CommonUtils {
             currentVal = defaultValue;
         }
         return currentVal;
+    }
+
+    public static Integer getPrefInt(Context context, String prefName, String prefKey, Integer defaultValue) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(prefKey, defaultValue);
+    }
+
+    public static void putPrefInt(Context context, String prefName, String prefKey, Integer prefValue) {
+        SharedPreferences pref = context.getSharedPreferences(prefName,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt(prefKey, prefValue);
+        editor.apply();
     }
 
     public static boolean appInForeground(Context context) {
@@ -95,14 +110,26 @@ public class CommonUtils {
             notificationManager.createNotificationChannel(channel);
         }
 
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntent(intent);
+        // TODO: 11-10-2018 not working, back button just closes the app
+        stackBuilder.addParentStack(MainActivity.class);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(Constants.PENDING_INTENT_DEFAULT_REQ_CODE,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
         builder.setContentTitle(title);
         builder.setContentText(body);
         builder.setSmallIcon(iconResourceId);
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
+        builder.setTimeoutAfter(Constants.DEFAULT_NOTIFICATION_TIMEOUT);
 
         Notification notification = builder.build();
+        // Play default notification sound
+        notification.defaults |= Notification.DEFAULT_SOUND;
+
+        // Vibrate if vibrate is enabled
+        notification.defaults |= Notification.DEFAULT_VIBRATE;
         NotificationManagerCompat.from(context).notify(id, notification);
     }
 }

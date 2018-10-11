@@ -13,12 +13,17 @@ public class Constants {
     // Intent Extra Strings
     public static final String DOWNLOAD_URL = "DOWNLOAD_URL";
     public static final String MUSIC_SITE = "MUSIC_SITE";
-    public static final String PARSE_ERROR_ACTION_KEY = "PARSER_ERROR_ACTION_KEY";
-    public static final String PARSE_ERROR_MESSAGE_KEY = "PARSER_ERROR_MESSAGE_KEY";
+    public static final String PARSE_ERROR_ACTION_KEY = "PARSE_ERROR_ACTION_KEY";
+    public static final String PARSE_ERROR_MESSAGE_KEY = "PARSE_ERROR_MESSAGE_KEY";
     public static final String PARSE_ERROR_NULL_INTENT = "Null intent found!";
     public static final String PARSE_ERROR_NULL_ARTIST_INFO = "PARSE_ERROR_NULL_ARTIST_INFO";
     public static final String PARSE_SUCCESS_ACTION_KEY = "PARSE_SUCCESS_ACTION_KEY";
     public static final String PARSE_SUCCESS_MESSAGE_KEY = "PARSE_SUCCESS_MESSAGE_KEY";
+    public static final String VALIDATE_ERROR_ACTION_KEY = "VALIDATE_ERROR_ACTION_KEY";
+    public static final String VALIDATE_ERROR_MESSAGE_KEY = "VALIDATE_ERROR_MESSAGE_KEY";
+    public static final String VALIDATE_ERROR_NULL_INTENT = "Null intent found!";
+    public static final String VALIDATE_SUCCESS_ACTION_KEY = "VALIDATE_SUCCESS_ACTION_KEY";
+    public static final String VALIDATE_SUCCESS_MESSAGE_KEY = "VALIDATE_SUCCESS_MESSAGE_KEY";
     public static final String PARSED_ARTIST_INFO = "PARSED_ARTIST_INFO";
     public static final String ALBUM_TO_VIEW = "ALBUM_TO_VIEW";
 
@@ -31,6 +36,7 @@ public class Constants {
     public static final String NON_EXISTENT_URL_MESSAGE = "The provided url does not exists.";
     public static final String VALID_URL_MESSAGE = "VALID_URL";
     public static final String PARSE_ERROR_MESSAGE = "Error while extracting songs from the url!";
+    public static final String PARSING_IN_PROGRESS = "Previous extraction is already in progress.";
 
     // String Constants
     public static final String EMPTY_STRING = "";
@@ -72,9 +78,9 @@ public class Constants {
     // Looper Constants
     public static final String DOWNLOAD_THREAD = "DOWNLOAD_THREAD";
     public static final int ENQUEUE_SONGS = 1;
+    public static final int PARSING_COMPLETE = 0;
     public static final int PARSING_PROGRESS = 1;
-    public static final int HIDE_PROGRESS_BAR = 2;
-    public static final int VALIDATING_PROGRESS = 3;
+    public static final int VALIDATING_PROGRESS = 2;
     public static final int PARSE_ERROR = 4;
     public static final int HIDE_LAST_SEARCH_VIEW = 5;
     public static final int DISPLAY_LAST_SEARCH_VIEW = 6;
@@ -94,6 +100,7 @@ public class Constants {
     public static final String PREF_SELECT_ALL_KEY = "PREF_SELECT_ALL_KEY";
     public static final String PREF_LAST_FETCHED_URL_KEY = "PREF_LAST_FETCHED_URL_KEY";
     public static final String PREF_DEFAULT_SONGS_FOLDER_KEY = "PREF_DEFAULT_SONGS_FOLDER_KEY";
+    public static final String PREF_PARSING_STATUS_KEY = "PREF_PARSING_STATUS_KEY";
 
     // Request codes for activities
     public static final Integer SET_DEFAULT_FOLDER_REQUEST_CODE = 900;
@@ -104,4 +111,7 @@ public class Constants {
     public static final String LIST_SONGS_NOTIFICATION_TITLE = "Parsing Complete";
     public static final String LIST_SONGS_NOTIFICATION_CHANNEL_ID = "list_songs_channel";
     public static final Integer LIST_SONGS_NOTIFICATION_ID = 100;
+    public static final int PENDING_INTENT_DEFAULT_REQ_CODE = 10;
+    public static final long DEFAULT_NOTIFICATION_TIMEOUT = 120000;
+
 }
