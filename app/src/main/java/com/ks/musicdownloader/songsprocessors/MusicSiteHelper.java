@@ -4,7 +4,7 @@ import android.support.design.widget.NavigationView;
 
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 
-public interface MusicSiteService {
+public interface MusicSiteHelper {
 
     /**
      * This method is responsible for checking if a url belongs to a particular website or not.

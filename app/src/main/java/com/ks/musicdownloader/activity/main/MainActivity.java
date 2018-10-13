@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.ks.musicdownloader.R;
+import com.ks.musicdownloader.Utils.ToastUtils;
 import com.ks.musicdownloader.activity.common.AboutUsFragment;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.activity.common.SettingsFragment;
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case Constants.PERMISSION_WRITE_EXTERNAL_STORAGE:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    ValidationResult.NO_EXTERNAL_STORAGE_PERMISSION.displayToast(this);
+                    ToastUtils.displayLongToast(this, Constants.NO_EXTERNAL_STORAGE_PERMISSION_MESSAGE);
                     finish();
                 }
                 break;

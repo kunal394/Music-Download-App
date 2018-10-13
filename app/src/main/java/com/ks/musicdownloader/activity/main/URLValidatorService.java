@@ -10,7 +10,7 @@ import com.ks.musicdownloader.Utils.RegexUtils;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.service.ParserService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
-import com.ks.musicdownloader.songsprocessors.SongsFactory;
+import com.ks.musicdownloader.songsprocessors.MusicSiteFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -53,26 +53,26 @@ public class URLValidatorService extends IntentService {
         url = intent.getStringExtra(Constants.DOWNLOAD_URL);
         if (Constants.EMPTY_STRING.equals(url)) {
             Log.d(TAG, "onHandleIntent(): Empty url!");
-            sendErrorBroadCast(ValidationResult.NO_URL_PROVIDED.getMessage());
+            sendErrorBroadCast(Constants.NO_URL_PROVIDED_MESSAGE);
             return;
         } else if (!RegexUtils.isAValidUrl(url)) {
             Log.d(TAG, "onHandleIntent(): Invalid url: " + url);
-            sendErrorBroadCast(ValidationResult.INVALID_URL.getMessage());
+            sendErrorBroadCast(Constants.INVALID_URL_MESSAGE);
             return;
         }
 
         url = RegexUtils.prependHTTPSPartIfNotPresent(url);
-        MusicSite site = SongsFactory.getInstance().getSite(url);
+        MusicSite site = MusicSiteFactory.getInstance().getSite(url);
         if (null == site) {
             Log.d(TAG, "onHandleIntent(): Unknown site: " + url);
-            sendErrorBroadCast(ValidationResult.UNSUPPORTED_SITE.getMessage());
+            sendErrorBroadCast(Constants.UNSUPPORTED_SITE_MESSAGE);
         } else {
             if (remoteUrlExists()) {
                 Log.d(TAG, "onHandleIntent(): site: " + site.name());
                 sendSuccessBroadcast();
                 startParserService(site);
             } else {
-                sendErrorBroadCast(ValidationResult.NON_EXISTENT_URL.getMessage());
+                sendErrorBroadCast(Constants.NON_EXISTENT_URL_MESSAGE);
             }
         }
     }

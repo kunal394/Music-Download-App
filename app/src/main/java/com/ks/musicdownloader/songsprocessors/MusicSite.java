@@ -12,7 +12,7 @@ import com.ks.musicdownloader.songsprocessors.bandcamp.BandcampParser;
 
 import java.io.File;
 
-public enum MusicSite implements MusicSiteService {
+public enum MusicSite implements MusicSiteHelper {
 
     BANDCAMP {
         @Override

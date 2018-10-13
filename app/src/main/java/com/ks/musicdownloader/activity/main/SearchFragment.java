@@ -131,10 +131,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 Log.d(TAG, "onclick() Extact button clicked!!");
                 Integer parsingStatus = CommonUtils.getPrefInt(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
                         Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
-                if (parsingStatus == Constants.PARSING_COMPLETE) {
-                    extractSongsFromURL();
-                } else {
+                CommonUtils.hideKeyboard(Objects.requireNonNull(getActivity()));
+                if (!networkConnected) {
+                    ToastUtils.displayLongToast(getContext(), Constants.NO_INTERNET_MESSAGE);
+                } else if (parsingStatus != Constants.PARSING_COMPLETE) {
                     ToastUtils.displayLongToast(getContext(), Constants.PARSING_IN_PROGRESS);
+                } else {
+                    validateURL();
                 }
                 break;
             case R.id.test_button:
@@ -161,19 +164,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         NetworkUtils.regReceiverForConnectionValidationOnly(getContext(), networkCallback);
     }
 
-    private void extractSongsFromURL() {
-        Log.d(TAG, "extractSongsFromURL()");
-        CommonUtils.hideKeyboard(Objects.requireNonNull(getActivity()));
-        if (networkConnected) {
-            validateURL();
-        } else {
-            ToastUtils.displayLongToast(getContext(), ValidationResult.NO_INTERNET.getMessage());
-        }
-    }
-
     private void validateURL() {
         Log.d(TAG, "validateURL()");
-        updateParserStatusInPref(Constants.VALIDATING_PROGRESS);
+        updateParserStartedInPref();
         EditText editText = fragmentView.findViewById(R.id.search_url_editText);
         String url = editText.getText().toString();
         Intent intent = new Intent(getActivity(), URLValidatorService.class);
@@ -181,10 +174,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         Objects.requireNonNull(getActivity()).startService(intent);
     }
 
-    private void updateParserStatusInPref(int parsingStatus) {
+    private void updateParserStartedInPref() {
         CommonUtils.putPrefInt(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
-                Constants.PREF_PARSING_STATUS_KEY, parsingStatus);
-        handler.sendEmptyMessage(parsingStatus);
+                Constants.PREF_PARSING_STATUS_KEY, Constants.VALIDATING_PROGRESS);
+        handler.sendEmptyMessage(Constants.VALIDATING_PROGRESS);
     }
 
     private void createIntentAndDelegateActivity(ArtistInfo artistInfo, String siteName) {
@@ -239,7 +232,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                         break;
                     case Constants.PARSE_ERROR:
                         validatorProgressBarLayout.setVisibility(View.GONE);
-                        ToastUtils.displayLongToast(getContext(), ValidationResult.PARSING_ERROR.getMessage());
+                        ToastUtils.displayLongToast(getContext(), Constants.PARSE_ERROR_MESSAGE);
                         break;
                     case Constants.HIDE_LAST_SEARCH_VIEW:
                         lastSearchTextView.setVisibility(View.GONE);
