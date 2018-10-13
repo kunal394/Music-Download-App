@@ -26,7 +26,6 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = AlbumFragment.class.getSimpleName();
 
-    private RecyclerView recyclerView;
     private CheckedTextView selectAllCheckView;
     private AlbumAdapter adapter;
 
@@ -71,7 +70,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
 
         // set adapter for recycler view
         createAdapterCallback();
-        recyclerView = fragmentView.findViewById(R.id.artist_recycler_view);
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.artist_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(),
                 LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);

@@ -8,14 +8,14 @@
         android:id="@+id/checked_text_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:checked="false"
-        android:drawableEnd="@null"
-        android:background="@drawable/selector"
         android:layout_centerVertical="true"
-        android:gravity="center_vertical"
+        android:background="@drawable/selector"
+        android:checked="false"
         android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
+        android:drawableEnd="@null"
+        android:gravity="center_vertical"
         android:maxLines="2"
-        android:textAppearance="?android:textAppearanceListItem"/>
+        android:textAppearance="?android:textAppearanceListItem" />
 
     <View
         android:layout_width="match_parent"
