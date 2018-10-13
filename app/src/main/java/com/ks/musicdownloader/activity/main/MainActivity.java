@@ -128,9 +128,9 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_WRITE_EXTERNAL_STORAGE);
     }
 
-    private void setActionBarTitle(int stringRes) {
+    private void setActionBarTitle(int titleStringId) {
         if (actionBar != null) {
-            actionBar.setTitle(stringRes);
+            actionBar.setTitle(titleStringId);
         }
     }
 
@@ -185,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.nav_search:
                         displaySearchFragment();
+                        markSearchMenuItemChecked();
                         break;
                     case R.id.nav_settings:
                         displaySettingsFragment();
