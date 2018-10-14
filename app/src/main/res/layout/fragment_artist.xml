@@ -44,7 +44,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/check_select_all" />
+            app:layout_constraintTop_toBottomOf="@id/check_select_all" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/artist_recycler_view"
