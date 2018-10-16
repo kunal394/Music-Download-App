@@ -25,7 +25,7 @@
 
         <service android:name=".service.DownloaderService" />
         <service android:name=".service.ParserService" />
-        <service android:name=".activity.main.URLValidatorService" />
+        <service android:name=".service.URLValidatorService" />
 
         <activity
             android:name=".activity.listsongs.ListSongsActivity"

@@ -31,6 +31,7 @@ import com.ks.musicdownloader.Utils.ToastUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.activity.listsongs.ListSongsActivity;
+import com.ks.musicdownloader.service.URLValidatorService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 
 import java.util.Objects;

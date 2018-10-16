@@ -1,4 +1,4 @@
-package com.ks.musicdownloader.activity.main;
+package com.ks.musicdownloader.service;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -8,7 +8,6 @@ import android.util.Log;
 import com.ks.musicdownloader.Utils.PrefUtils;
 import com.ks.musicdownloader.Utils.RegexUtils;
 import com.ks.musicdownloader.activity.common.Constants;
-import com.ks.musicdownloader.service.ParserService;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 import com.ks.musicdownloader.songsprocessors.MusicSiteFactory;
 
