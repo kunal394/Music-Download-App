@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.CommonUtils;
+import com.ks.musicdownloader.Utils.PrefUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.activity.listsongs.ListSongsActivity;
@@ -72,11 +73,9 @@ public class ParserService extends IntentService {
         } else {
             artistInfo.initializeAlbumCheckedStatus(defaultCheckedValue);
             artistInfo.setUrl(url);
-            // TODO: 11-10-2018 bundle intent has a size limit, so save the data in a file
-            // and then use it later in the list songs activity instead of passing all of it in intent
             if (CommonUtils.appInForeground(getApplicationContext())) {
                 Log.d(TAG, "onHandleIntent(): Sending success broadcast.");
-                CommonUtils.putPrefString(getApplicationContext(), Constants.SEARCH_PREF_NAME,
+                PrefUtils.putPrefString(getApplicationContext(), Constants.SEARCH_PREF_NAME,
                         Constants.PREF_LAST_FETCHED_URL_KEY, artistInfo.getUrl());
                 sendBroadcast(createParseSuccessIntent(siteName, artistInfo));
             } else {
@@ -92,10 +91,12 @@ public class ParserService extends IntentService {
     private void sendSuccessNotification(String siteName, ArtistInfo artistInfo) {
         String body = "Parsing complete for the url: " + url;
         Intent notifyIntent = new Intent(getApplicationContext(), ListSongsActivity.class);
-        notifyIntent.putExtra(Constants.MUSIC_SITE, siteName);
+        notifyIntent.setAction(Intent.ACTION_VIEW);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.PARSED_ARTIST_INFO, artistInfo);
+        bundle.putString(Constants.MUSIC_SITE, siteName);
+        bundle.putString(Constants.NOTI_ID_KEY, Constants.LIST_SONGS_NOTIFICATION_ID.toString());
         notifyIntent.putExtras(bundle);
         CommonUtils.sendNotification(getApplicationContext(), Constants.LIST_SONGS_NOTIFICATION_TITLE
                 , body, Constants.LIST_SONGS_NOTIFICATION_CHANNEL_ID, notifyIntent,
@@ -112,15 +113,15 @@ public class ParserService extends IntentService {
     private Intent createParseSuccessIntent(String siteName, ArtistInfo artistInfo) {
         Intent intent = new Intent();
         intent.setAction(Constants.PARSE_SUCCESS_ACTION_KEY);
-        intent.putExtra(Constants.MUSIC_SITE, siteName);
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.PARSE_SUCCESS_MESSAGE_KEY, artistInfo);
+        bundle.putString(Constants.MUSIC_SITE, siteName);
         intent.putExtras(bundle);
         return intent;
     }
 
     private void updateParsingPreference() {
-        CommonUtils.putPrefInt(getApplicationContext(), Constants.SEARCH_PREF_NAME,
+        PrefUtils.putPrefInt(getApplicationContext(), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
     }
 

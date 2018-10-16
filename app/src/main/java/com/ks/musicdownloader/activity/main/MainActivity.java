@@ -5,14 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,47 +13,23 @@ import android.view.MenuItem;
 
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.ToastUtils;
+import com.ks.musicdownloader.activity.DrawerActivityWithFragment;
 import com.ks.musicdownloader.activity.common.AboutUsFragment;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.activity.common.SettingsFragment;
 
 @SuppressWarnings("DanglingJavadoc")
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends DrawerActivityWithFragment {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int SEARCH_FRAGMENT = 1;
-    private static final int OTHER_FRAGMENTS = 2;
-    private static final int NO_FRAGMENT = 0;
-    private static int CURRENTLY_SELECTED_FRAGMENT = NO_FRAGMENT;
-
-    private DrawerLayout drawerLayout;
-    private ActionBar actionBar;
-    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate() starts");
         checkForPermissions();
+        Log.d(TAG, "onCreate() starts");
         super.onCreate(savedInstanceState);
-
-        // set activity layout
-        setContentView(R.layout.activity_drawer);
-
-        //get the drawer layout
-        drawerLayout = findViewById(R.id.drawer_layout);
-
-        //set the top action bar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        }
-
-        // get the navigation view
-        navigationView = findViewById(R.id.nav_view);
         // inflate the global menu items inside the nav view
         navigationView.inflateMenu(R.menu.main_activity_menu_items);
         navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
@@ -108,14 +77,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if (CURRENTLY_SELECTED_FRAGMENT == SEARCH_FRAGMENT) {
-            CURRENTLY_SELECTED_FRAGMENT = NO_FRAGMENT;
+            CURRENTLY_SELECTED_FRAGMENT = Constants.NO_FRAGMENT;
         }
     }
 
     @Override
     public void onBackPressed() {
-        if (CURRENTLY_SELECTED_FRAGMENT != SEARCH_FRAGMENT && CURRENTLY_SELECTED_FRAGMENT != NO_FRAGMENT) {
+        if (CURRENTLY_SELECTED_FRAGMENT != SEARCH_FRAGMENT && CURRENTLY_SELECTED_FRAGMENT != Constants.NO_FRAGMENT) {
             displaySearchFragment();
+            markSearchMenuItemChecked();
         } else {
             super.onBackPressed();
         }
@@ -128,12 +98,6 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_WRITE_EXTERNAL_STORAGE);
     }
 
-    private void setActionBarTitle(int titleStringId) {
-        if (actionBar != null) {
-            actionBar.setTitle(titleStringId);
-        }
-    }
-
     private void markSearchMenuItemChecked() {
         Menu menu = navigationView.getMenu();
         menu.findItem(R.id.nav_search).setChecked(true);
@@ -141,30 +105,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void displaySearchFragment() {
         if (CURRENTLY_SELECTED_FRAGMENT != SEARCH_FRAGMENT) {
-            CURRENTLY_SELECTED_FRAGMENT = SEARCH_FRAGMENT;
-            setActionBarTitle(R.string.action_search);
-            displayFragment(new SearchFragment());
+            displayFragment(new SearchFragment(), R.string.action_search, SEARCH_FRAGMENT);
         }
     }
 
     private void displaySettingsFragment() {
-        CURRENTLY_SELECTED_FRAGMENT = OTHER_FRAGMENTS;
-        setActionBarTitle(R.string.nav_settings);
-        displayFragment(new SettingsFragment());
+        displayFragment(new SettingsFragment(), R.string.nav_settings, Constants.OTHER_FRAGMENTS);
     }
 
     private void displayAboutUsFragment() {
-        CURRENTLY_SELECTED_FRAGMENT = OTHER_FRAGMENTS;
-        setActionBarTitle(R.string.nav_source);
-        displayFragment(new AboutUsFragment());
-    }
-
-    private void displayFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content_frame, fragment);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.commit();
+        displayFragment(new AboutUsFragment(), R.string.nav_source, Constants.OTHER_FRAGMENTS);
     }
 
     /******************Listeners************************************/

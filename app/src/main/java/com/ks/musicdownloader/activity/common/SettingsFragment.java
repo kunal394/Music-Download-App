@@ -8,8 +8,8 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 
 import com.ks.musicdownloader.R;
-import com.ks.musicdownloader.Utils.CommonUtils;
 import com.ks.musicdownloader.Utils.FileUtils;
+import com.ks.musicdownloader.Utils.PrefUtils;
 import com.ks.musicdownloader.Utils.ToastUtils;
 
 import java.util.Objects;
@@ -27,13 +27,21 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        Log.d(TAG, "onCreatePreferences: ");
         getPreferenceManager().setSharedPreferencesName(Constants.SETTINGS_PREF_NAME);
         setPreferencesFromResource(R.xml.settings_preferences, rootKey);
-        getPreferenceManager().findPreference(Constants.PREF_DEFAULT_SONGS_FOLDER_KEY).setOnPreferenceClickListener(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+        initDefaultFolderPreference();
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
+        Log.d(TAG, "onPreferenceClick: ");
         switch (preference.getKey()) {
             case Constants.PREF_DEFAULT_SONGS_FOLDER_KEY:
                 displayExplorer();
@@ -44,6 +52,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult: ");
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) {
             Log.d(TAG, "Result is not RESULT_OK");
@@ -56,7 +65,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
             }
             Log.d(TAG, "onActivityResult(): destinationFolderPreference, data: " +
                     data.getDataString() + " path: " + folderPath);
-            CommonUtils.putPrefString(Objects.requireNonNull(getContext()), Constants.SETTINGS_PREF_NAME,
+            PrefUtils.putPrefString(Objects.requireNonNull(getContext()), Constants.SETTINGS_PREF_NAME,
                     Constants.PREF_DEFAULT_SONGS_FOLDER_KEY, folderPath);
         }
     }
@@ -64,8 +73,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     /******************Private************************************/
     /******************Methods************************************/
 
+    private void initDefaultFolderPreference() {
+        Log.d(TAG, "initDefaultFolderPreference: ");
+        Preference defaultFolderPreference = getPreferenceManager().findPreference(Constants.PREF_DEFAULT_SONGS_FOLDER_KEY);
+        String defaultFolder = PrefUtils.getPrefString(Objects.requireNonNull(getContext()),
+                Constants.SETTINGS_PREF_NAME, Constants.PREF_DEFAULT_SONGS_FOLDER_KEY, Constants.MUSIC_DIRECTORY);
+        String defaultFolderSummary = getResources().getString(R.string.pref_default_songs_folder_summary);
+        defaultFolderPreference.setSummary(defaultFolderSummary + defaultFolder);
+        defaultFolderPreference.setOnPreferenceClickListener(this);
+    }
+
     private void displayExplorer() {
-        // TODO: 10-10-2018 not showing the current value of default folder in settings, need to see this
+        // TODO: 16-10-2018 how to open the explorer in currently selected folder
+        Log.d(TAG, "displayExplorer: ");
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
 

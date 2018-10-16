@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ks.musicdownloader.Utils.RegexUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
-import com.ks.musicdownloader.activity.common.DownloadCallback;
 import com.ks.musicdownloader.activity.common.SongInfo;
 import com.ks.musicdownloader.songsprocessors.BaseParser;
 
@@ -30,8 +29,8 @@ public class BandcampParser extends BaseParser {
     private int songsCount;
     private boolean defaultChecked;
 
-    public BandcampParser(String url, DownloadCallback downloadCallback) {
-        super(url, downloadCallback);
+    public BandcampParser(String url) {
+        super(url);
         songsCount = 0;
     }
 

@@ -23,7 +23,6 @@ public class Constants {
     public static final String VALIDATE_ERROR_MESSAGE_KEY = "VALIDATE_ERROR_MESSAGE_KEY";
     public static final String VALIDATE_ERROR_NULL_INTENT = "Null intent found!";
     public static final String VALIDATE_SUCCESS_ACTION_KEY = "VALIDATE_SUCCESS_ACTION_KEY";
-    public static final String VALIDATE_SUCCESS_MESSAGE_KEY = "VALIDATE_SUCCESS_MESSAGE_KEY";
     public static final String PARSED_ARTIST_INFO = "PARSED_ARTIST_INFO";
     public static final String ALBUM_TO_VIEW = "ALBUM_TO_VIEW";
 
@@ -113,5 +112,6 @@ public class Constants {
     public static final Integer LIST_SONGS_NOTIFICATION_ID = 100;
     public static final int PENDING_INTENT_DEFAULT_REQ_CODE = 10;
     public static final long DEFAULT_NOTIFICATION_TIMEOUT = 120000;
+    public static final String NOTI_ID_KEY = "NOTI_ID_KEY";
 
 }

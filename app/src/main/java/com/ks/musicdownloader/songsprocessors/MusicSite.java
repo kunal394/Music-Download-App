@@ -22,7 +22,7 @@ public enum MusicSite implements MusicSiteHelper {
 
         @Override
         public BandcampParser getMusicParser(String url) {
-            return new BandcampParser(url, null);
+            return new BandcampParser(url);
         }
 
         @Override

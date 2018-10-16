@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.ks.musicdownloader.Utils.CommonUtils;
+import com.ks.musicdownloader.Utils.PrefUtils;
 import com.ks.musicdownloader.Utils.RegexUtils;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.service.ParserService;
@@ -82,7 +82,7 @@ public class URLValidatorService extends IntentService {
 
     private void sendErrorBroadCast(String error) {
         Log.d(TAG, "sendErrorBroadCast()");
-        CommonUtils.putPrefInt(getApplicationContext(), Constants.SEARCH_PREF_NAME,
+        PrefUtils.putPrefInt(getApplicationContext(), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
         Intent intent = new Intent();
         intent.setAction(Constants.VALIDATE_ERROR_ACTION_KEY);
@@ -92,7 +92,7 @@ public class URLValidatorService extends IntentService {
 
     private void sendSuccessBroadcast() {
         Log.d(TAG, "sendSuccessBroadcast()");
-        CommonUtils.putPrefInt(getApplicationContext(), Constants.SEARCH_PREF_NAME,
+        PrefUtils.putPrefInt(getApplicationContext(), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_PROGRESS);
         Intent intent = new Intent();
         intent.setAction(Constants.VALIDATE_SUCCESS_ACTION_KEY);

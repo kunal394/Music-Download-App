@@ -8,7 +8,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -38,46 +37,6 @@ public class CommonUtils {
         }
     }
 
-    public static Boolean getPrefBoolean(Context context, String prefName, String prefKey, boolean defValue) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
-        return sharedPreferences.getBoolean(prefKey, defValue);
-    }
-
-    public static String getPrefString(Context context, String prefName, String prefKey, String defaultValue) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(prefKey, defaultValue);
-    }
-
-    public static void putPrefString(Context context, String prefName, String prefKey, String prefValue) {
-        SharedPreferences pref = context.getSharedPreferences(prefName,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString(prefKey, prefValue);
-        editor.apply();
-    }
-
-    public static String putPrefStringIfNull(Context context, String prefName, String prefKey, String defaultValue) {
-        String currentVal = getPrefString(context, prefName, prefKey, null);
-        if (currentVal == null) {
-            putPrefString(context, prefName, prefKey, defaultValue);
-            currentVal = defaultValue;
-        }
-        return currentVal;
-    }
-
-    public static Integer getPrefInt(Context context, String prefName, String prefKey, Integer defaultValue) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
-        return sharedPreferences.getInt(prefKey, defaultValue);
-    }
-
-    public static void putPrefInt(Context context, String prefName, String prefKey, Integer prefValue) {
-        SharedPreferences pref = context.getSharedPreferences(prefName,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putInt(prefKey, prefValue);
-        editor.apply();
-    }
-
     public static boolean appInForeground(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager == null) {
@@ -96,7 +55,8 @@ public class CommonUtils {
     }
 
     public static void sendNotification(Context context, String title, String body,
-                                        String channelId, Intent intent, Integer id, Integer iconResourceId) {
+                                        String channelId, Intent intent,
+                                        Integer notificationId, Integer iconResourceId) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager == null) {
             Log.d(TAG, "sendNotification(): noti manager null!!");
@@ -112,7 +72,6 @@ public class CommonUtils {
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addNextIntent(intent);
-        // TODO: 11-10-2018 not working, back button just closes the app
         stackBuilder.addParentStack(MainActivity.class);
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(Constants.PENDING_INTENT_DEFAULT_REQ_CODE,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -125,11 +84,14 @@ public class CommonUtils {
         builder.setTimeoutAfter(Constants.DEFAULT_NOTIFICATION_TIMEOUT);
 
         Notification notification = builder.build();
-        // Play default notification sound
-        notification.defaults |= Notification.DEFAULT_SOUND;
+        notification.defaults |= Notification.DEFAULT_ALL;
+        NotificationManagerCompat.from(context).notify(notificationId, notification);
+    }
 
-        // Vibrate if vibrate is enabled
-        notification.defaults |= Notification.DEFAULT_VIBRATE;
-        NotificationManagerCompat.from(context).notify(id, notification);
+    public static void cancelNotification(Context context, Integer notiId) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.cancel(notiId);
+        }
     }
 }

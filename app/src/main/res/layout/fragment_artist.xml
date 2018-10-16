@@ -49,15 +49,15 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/artist_recycler_view"
             android:layout_width="361dp"
-            android:layout_height="wrap_content"
+            android:layout_height="390dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp"
             android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/download_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.266"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/check_select_all_divider"
-            app:layout_constraintVertical_bias="0.06">
+            app:layout_constraintTop_toBottomOf="@+id/check_select_all_divider">
             <!--android:background="@drawable/recycler_view_border"-->
 
         </android.support.v7.widget.RecyclerView>

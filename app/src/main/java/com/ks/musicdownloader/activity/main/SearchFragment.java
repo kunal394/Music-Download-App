@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.CommonUtils;
 import com.ks.musicdownloader.Utils.NetworkUtils;
+import com.ks.musicdownloader.Utils.PrefUtils;
 import com.ks.musicdownloader.Utils.TestUtils;
 import com.ks.musicdownloader.Utils.ToastUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
@@ -89,7 +90,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         init();
 
         // last search view handling
-        String lastFetchedUrl = CommonUtils.getPrefString(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
+        String lastFetchedUrl = PrefUtils.getPrefString(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_LAST_FETCHED_URL_KEY, Constants.EMPTY_STRING);
 
         if (Constants.EMPTY_STRING.equals(lastFetchedUrl)) {
@@ -101,7 +102,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         }
 
         // progress bar handling
-        Integer parsingStatus = CommonUtils.getPrefInt(getContext(), Constants.SEARCH_PREF_NAME,
+        Integer parsingStatus = PrefUtils.getPrefInt(getContext(), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
         handler.sendEmptyMessage(parsingStatus);
     }
@@ -129,7 +130,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.fetch_songs_button:
                 Log.d(TAG, "onclick() Extact button clicked!!");
-                Integer parsingStatus = CommonUtils.getPrefInt(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
+                Integer parsingStatus = PrefUtils.getPrefInt(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
                         Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
                 CommonUtils.hideKeyboard(Objects.requireNonNull(getActivity()));
                 if (!networkConnected) {
@@ -166,7 +167,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     private void validateURL() {
         Log.d(TAG, "validateURL()");
-        updateParserStartedInPref();
+        updateParserStatusInPref();
         EditText editText = fragmentView.findViewById(R.id.search_url_editText);
         String url = editText.getText().toString();
         Intent intent = new Intent(getActivity(), URLValidatorService.class);
@@ -174,8 +175,8 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         Objects.requireNonNull(getActivity()).startService(intent);
     }
 
-    private void updateParserStartedInPref() {
-        CommonUtils.putPrefInt(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
+    private void updateParserStatusInPref() {
+        PrefUtils.putPrefInt(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_PARSING_STATUS_KEY, Constants.VALIDATING_PROGRESS);
         handler.sendEmptyMessage(Constants.VALIDATING_PROGRESS);
     }
@@ -301,7 +302,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     private void test() {
         Log.d(TAG, "test(): ");
-        Boolean defaultChecked = CommonUtils.getPrefBoolean(Objects.requireNonNull(getContext()),
+        Boolean defaultChecked = PrefUtils.getPrefBoolean(Objects.requireNonNull(getContext()),
                 Constants.SETTINGS_PREF_NAME, Constants.PREF_SELECT_ALL_KEY, false);
         Intent intent = new Intent(getContext(), ListSongsActivity.class);
         intent.putExtra(Constants.MUSIC_SITE, MusicSite.BANDCAMP.name());
