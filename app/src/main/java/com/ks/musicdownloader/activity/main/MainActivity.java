@@ -51,6 +51,7 @@ public class MainActivity extends DrawerActivityWithFragment {
         switch (item.getItemId()) {
             case R.id.action_search:
                 displaySearchFragment();
+                markSearchMenuItemChecked();
                 return true;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
