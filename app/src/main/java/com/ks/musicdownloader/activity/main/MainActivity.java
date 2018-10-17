@@ -1,22 +1,18 @@
 package com.ks.musicdownloader.activity.main;
 
 import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.ks.musicdownloader.R;
+import com.ks.musicdownloader.Utils.LogUtils;
 import com.ks.musicdownloader.Utils.ToastUtils;
 import com.ks.musicdownloader.activity.DrawerActivityWithFragment;
-import com.ks.musicdownloader.activity.common.AboutUsFragment;
 import com.ks.musicdownloader.activity.common.Constants;
-import com.ks.musicdownloader.activity.common.SettingsFragment;
 
 @SuppressWarnings("DanglingJavadoc")
 public class MainActivity extends DrawerActivityWithFragment {
@@ -26,20 +22,8 @@ public class MainActivity extends DrawerActivityWithFragment {
     private static final int SEARCH_FRAGMENT = 1;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        checkForPermissions();
-        Log.d(TAG, "onCreate() starts");
-        super.onCreate(savedInstanceState);
-        // inflate the global menu items inside the nav view
-        navigationView.inflateMenu(R.menu.main_activity_menu_items);
-        navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
-        displaySearchFragment();
-        markSearchMenuItemChecked();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "onCreateOptionsMenu()");
+        LogUtils.d(TAG, "onCreateOptionsMenu()");
         // inflate the top right search icon
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_top_bar_search, menu);
@@ -51,7 +35,6 @@ public class MainActivity extends DrawerActivityWithFragment {
         switch (item.getItemId()) {
             case R.id.action_search:
                 displaySearchFragment();
-                markSearchMenuItemChecked();
                 return true;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -86,9 +69,32 @@ public class MainActivity extends DrawerActivityWithFragment {
     public void onBackPressed() {
         if (CURRENTLY_SELECTED_FRAGMENT != SEARCH_FRAGMENT && CURRENTLY_SELECTED_FRAGMENT != Constants.NO_FRAGMENT) {
             displaySearchFragment();
-            markSearchMenuItemChecked();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void inflateActivitySpecificMenu() {
+        navigationView.inflateMenu(R.menu.main_activity_menu_items);
+    }
+
+    @Override
+    protected void displayInitialFragment() {
+        displaySearchFragment();
+    }
+
+    @Override
+    protected void init() {
+        checkForPermissions();
+    }
+
+    @Override
+    protected void checkForActivityRelatedMenuItems(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.nav_search:
+                displaySearchFragment();
+                break;
         }
     }
 
@@ -99,54 +105,10 @@ public class MainActivity extends DrawerActivityWithFragment {
         ActivityCompat.requestPermissions(this, Constants.REQUIRED_PERMISSIONS, Constants.PERMISSION_WRITE_EXTERNAL_STORAGE);
     }
 
-    private void markSearchMenuItemChecked() {
-        Menu menu = navigationView.getMenu();
-        menu.findItem(R.id.nav_search).setChecked(true);
-    }
-
     private void displaySearchFragment() {
         if (CURRENTLY_SELECTED_FRAGMENT != SEARCH_FRAGMENT) {
             displayFragment(new SearchFragment(), R.string.action_search, SEARCH_FRAGMENT);
+            markMenuItemChecked(R.id.nav_search, true);
         }
-    }
-
-    private void displaySettingsFragment() {
-        displayFragment(new SettingsFragment(), R.string.nav_settings, Constants.OTHER_FRAGMENTS);
-    }
-
-    private void displayAboutUsFragment() {
-        displayFragment(new AboutUsFragment(), R.string.nav_source, Constants.OTHER_FRAGMENTS);
-    }
-
-    /******************Listeners************************************/
-    /*********************And************************************/
-    /******************Callbacks************************************/
-
-    @NonNull
-    private NavigationView.OnNavigationItemSelectedListener createNavigationViewListener() {
-        return new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                // set item as selected to persist highlight
-                menuItem.setChecked(true);
-
-                // close drawer when item is tapped
-                drawerLayout.closeDrawers();
-
-                switch (menuItem.getItemId()) {
-                    case R.id.nav_search:
-                        displaySearchFragment();
-                        markSearchMenuItemChecked();
-                        break;
-                    case R.id.nav_settings:
-                        displaySettingsFragment();
-                        break;
-                    case R.id.nav_source:
-                        displayAboutUsFragment();
-                        break;
-                }
-                return true;
-            }
-        };
     }
 }

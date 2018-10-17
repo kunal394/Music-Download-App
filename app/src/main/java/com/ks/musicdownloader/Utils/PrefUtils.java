@@ -7,6 +7,10 @@ public class PrefUtils {
 
     private static final String TAG = PrefUtils.class.getSimpleName();
 
+    private PrefUtils() {
+        // enforcing non-instantiability since it is a utility class
+    }
+
     public static Boolean getPrefBoolean(Context context, String prefName, String prefKey, boolean defValue) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(prefKey, defValue);

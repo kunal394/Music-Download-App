@@ -1,6 +1,5 @@
 package com.ks.musicdownloader.Utils;
 
-import android.util.Log;
 import android.util.Patterns;
 
 import com.ks.musicdownloader.activity.common.Constants;
@@ -12,6 +11,10 @@ import java.util.regex.Pattern;
 public class RegexUtils {
 
     private static final String TAG = RegexUtils.class.getSimpleName();
+
+    private RegexUtils() {
+        // enforcing non-instantiability since it is a utility class
+    }
 
     public static boolean isAValidUrl(String url) {
         return Patterns.WEB_URL.matcher(url).matches();
@@ -44,9 +47,9 @@ public class RegexUtils {
     }
 
     private static String getNthRegexResult(String pattern, String text, int pos) {
-        String matched = Constants.EMPTY_STRING;
+        String matched = StringUtils.emptyString();
         if (pos < 1) {
-            Log.d(TAG, "Invalid result position: " + pos);
+            LogUtils.d(TAG, "Invalid result position: " + pos);
             return matched;
         }
         Pattern p = Pattern.compile(pattern);

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.ks.musicdownloader.R;
+import com.ks.musicdownloader.Utils.LogUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,9 +20,7 @@ import com.ks.musicdownloader.R;
 @SuppressWarnings("DanglingJavadoc")
 public class AboutUsFragment extends Fragment implements View.OnClickListener {
 
-
-    View fragment;
-    ImageButton githubImageButton;
+    private static final String TAG = AboutUsFragment.class.getSimpleName();
 
     public AboutUsFragment() {
         // Required empty public constructor
@@ -31,9 +30,10 @@ public class AboutUsFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        LogUtils.d(TAG, "onCreateView: ");
         // Inflate the layout for this fragment
-        fragment = inflater.inflate(R.layout.fragment_about_us, container, false);
-        githubImageButton = fragment.findViewById(R.id.github_image_button);
+        View fragment = inflater.inflate(R.layout.fragment_about_us, container, false);
+        ImageButton githubImageButton = fragment.findViewById(R.id.github_image_button);
         githubImageButton.setOnClickListener(this);
         return fragment;
     }

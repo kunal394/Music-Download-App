@@ -23,6 +23,10 @@ public class FileUtils {
     private static final String TAG = FileUtils.class.getSimpleName();
     private static final String PRIMARY_VOLUME_NAME = "primary";
 
+    private FileUtils() {
+        // enforcing non-instantiability since it is a utility class
+    }
+
     public static boolean doesFolderExists(String folderPath) {
         File folder = new File(folderPath);
         return (doesFileExists(folderPath) && folder.isDirectory());

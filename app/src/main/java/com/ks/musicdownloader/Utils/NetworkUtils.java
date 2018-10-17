@@ -4,18 +4,21 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
-import android.util.Log;
 
 @SuppressWarnings("DanglingJavadoc")
 public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
+    private NetworkUtils() {
+        // enforcing non-instantiability since it is a utility class
+    }
+
     public static void regReceiverForConnectionValidationOnly(Context context, ConnectivityManager.NetworkCallback networkCallback) {
-        Log.d(TAG, "regReceiverForConnectionValidationOnly");
+        LogUtils.d(TAG, "regReceiverForConnectionValidationOnly");
         ConnectivityManager connMgr = getConnectivityManager(context);
         if (connMgr == null) {
-            Log.d(TAG, "regReceiverForNetworkValidationOnly: Received null connMgr!! Can not register for network callback.");
+            LogUtils.d(TAG, "regReceiverForNetworkValidationOnly: Received null connMgr!! Can not register for network callback.");
             return;
         }
         NetworkRequest networkRequest = new NetworkRequest.Builder()
@@ -26,10 +29,10 @@ public class NetworkUtils {
     }
 
     public static void unRegReceiverForConnectionValidationOnly(Context context, ConnectivityManager.NetworkCallback networkCallback) {
-        Log.d(TAG, "unRegReceiverForConnectionValidationOnly");
+        LogUtils.d(TAG, "unRegReceiverForConnectionValidationOnly");
         ConnectivityManager connMgr = getConnectivityManager(context);
         if (connMgr == null) {
-            Log.d(TAG, "regReceiverForNetworkValidationOnly: Received null connMgr!! Can not register for network callback.");
+            LogUtils.d(TAG, "regReceiverForNetworkValidationOnly: Received null connMgr!! Can not register for network callback.");
             return;
         }
         NetworkRequest networkRequest = new NetworkRequest.Builder()
@@ -42,7 +45,7 @@ public class NetworkUtils {
                                           ConnectivityManager.NetworkCallback networkCallback) {
         ConnectivityManager connMgr = getConnectivityManager(context);
         if (connMgr == null) {
-            Log.d(TAG, "regNetworkReceiver: Received null connMgr!! Can not register for network callback.");
+            LogUtils.d(TAG, "regNetworkReceiver: Received null connMgr!! Can not register for network callback.");
             return;
         }
         connMgr.registerNetworkCallback(networkRequest, networkCallback);

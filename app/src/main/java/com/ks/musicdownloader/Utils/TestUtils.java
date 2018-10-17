@@ -11,6 +11,10 @@ import java.util.List;
  */
 public class TestUtils {
 
+    private TestUtils() {
+        // enforcing non-instantiability since it is a utility class
+    }
+
     public static ArtistInfo createTestArtistInfo(Boolean defaultChecked) {
         ArtistInfo artistInfoTest = new ArtistInfo();
         artistInfoTest.setUrl("https://www.test.com/music");

@@ -13,7 +13,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +23,10 @@ import android.widget.TextView;
 
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.CommonUtils;
+import com.ks.musicdownloader.Utils.LogUtils;
 import com.ks.musicdownloader.Utils.NetworkUtils;
 import com.ks.musicdownloader.Utils.PrefUtils;
+import com.ks.musicdownloader.Utils.StringUtils;
 import com.ks.musicdownloader.Utils.TestUtils;
 import com.ks.musicdownloader.Utils.ToastUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
@@ -61,7 +62,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView()");
+        LogUtils.d(TAG, "onCreateView()");
         // Inflate the layout for this fragment
         fragmentView = inflater.inflate(R.layout.fragment_search, container, false);
 
@@ -86,15 +87,15 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     // this is called after onActivityCreated()
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart()");
+        LogUtils.d(TAG, "onStart()");
         super.onStart();
         init();
 
         // last search view handling
         String lastFetchedUrl = PrefUtils.getPrefString(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
-                Constants.PREF_LAST_FETCHED_URL_KEY, Constants.EMPTY_STRING);
+                Constants.PREF_LAST_FETCHED_URL_KEY, StringUtils.emptyString());
 
-        if (Constants.EMPTY_STRING.equals(lastFetchedUrl)) {
+        if (StringUtils.isEmpty(lastFetchedUrl)) {
             handler.sendEmptyMessage(Constants.HIDE_LAST_SEARCH_VIEW);
         } else {
             handler.sendEmptyMessage(Constants.DISPLAY_LAST_SEARCH_VIEW);
@@ -116,21 +117,21 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onDestroyView() {
-        Log.d(TAG, "onDestroyView()");
+        LogUtils.d(TAG, "onDestroyView()");
         super.onDestroyView();
         NetworkUtils.unRegReceiverForConnectionValidationOnly(getContext(), networkCallback);
     }
 
     @Override
     public void onClick(View view) {
-        Log.d(TAG, "onClick()");
+        LogUtils.d(TAG, "onClick()");
         if (view == null) {
-            Log.d(TAG, "onClick() view null!");
+            LogUtils.d(TAG, "onClick() view null!");
             return;
         }
         switch (view.getId()) {
             case R.id.fetch_songs_button:
-                Log.d(TAG, "onclick() Extact button clicked!!");
+                LogUtils.d(TAG, "onclick() Extact button clicked!!");
                 Integer parsingStatus = PrefUtils.getPrefInt(Objects.requireNonNull(getContext()), Constants.SEARCH_PREF_NAME,
                         Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
                 CommonUtils.hideKeyboard(Objects.requireNonNull(getActivity()));
@@ -143,12 +144,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.test_button:
-                Log.d(TAG, "onclick() test button clicked!");
+                LogUtils.d(TAG, "onclick() test button clicked!");
                 test();
                 break;
 
             case R.id.last_search_view:
-                Log.d(TAG, "onclick() Last Search Text clicked!");
+                LogUtils.d(TAG, "onclick() Last Search Text clicked!");
                 searchEditText.setText(lastSearchTextView.getText());
                 break;
         }
@@ -158,7 +159,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     /******************Methods************************************/
 
     private void init() {
-        Log.d(TAG, "init()");
+        LogUtils.d(TAG, "init()");
         networkConnected = false;
         createNetworkCallback();
         createHandler();
@@ -167,7 +168,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     private void validateURL() {
-        Log.d(TAG, "validateURL()");
+        LogUtils.d(TAG, "validateURL()");
         updateParserStatusInPref();
         EditText editText = fragmentView.findViewById(R.id.search_url_editText);
         String url = editText.getText().toString();
@@ -183,7 +184,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     }
 
     private void createIntentAndDelegateActivity(ArtistInfo artistInfo, String siteName) {
-        Log.d(TAG, "createIntentAndDelegateActivity()");
+        LogUtils.d(TAG, "createIntentAndDelegateActivity()");
         Intent intent = new Intent(getContext(), ListSongsActivity.class);
         intent.putExtra(Constants.MUSIC_SITE, siteName);
         Bundle bundle = new Bundle();
@@ -197,7 +198,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     /******************Callbacks************************************/
 
     private void createNetworkCallback() {
-        Log.d(TAG, "createNetworkCallback()");
+        LogUtils.d(TAG, "createNetworkCallback()");
         networkCallback = new ConnectivityManager.NetworkCallback() {
 
             @Override
@@ -218,7 +219,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                Log.d(TAG, "handleMessage()");
+                LogUtils.d(TAG, "handleMessage()");
                 super.handleMessage(msg);
                 switch (msg.what) {
                     case Constants.VALIDATING_PROGRESS:
@@ -263,9 +264,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "ParserBroadcastReceiver, onReceive()");
+            LogUtils.d(TAG, "ParserBroadcastReceiver, onReceive()");
             String parseResult = intent.getAction();
-            if (parseResult == null || parseResult.equals(Constants.EMPTY_STRING)) {
+            if (StringUtils.isEmpty(parseResult)) {
                 return;
             }
             String errorMsg;
@@ -274,7 +275,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                     handler.sendEmptyMessage(Constants.PARSING_COMPLETE);
                     errorMsg = intent.getStringExtra(Constants.VALIDATE_ERROR_MESSAGE_KEY);
                     ToastUtils.displayLongToast(getContext(), errorMsg);
-                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() VALIDATE_ERROR_ACTION_KEY, validate error: " + errorMsg);
+                    LogUtils.d(TAG, "ParserBroadcastReceiver, onReceive() VALIDATE_ERROR_ACTION_KEY, validate error: " + errorMsg);
                     break;
                 case Constants.VALIDATE_SUCCESS_ACTION_KEY:
                     handler.sendEmptyMessage(Constants.PARSING_PROGRESS);
@@ -282,13 +283,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                 case Constants.PARSE_ERROR_ACTION_KEY:
                     handler.sendEmptyMessage(Constants.PARSE_ERROR);
                     errorMsg = intent.getStringExtra(Constants.PARSE_ERROR_MESSAGE_KEY);
-                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_ERROR_ACTION_KEY, parse error: " + errorMsg);
+                    LogUtils.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_ERROR_ACTION_KEY, parse error: " + errorMsg);
                     break;
                 case Constants.PARSE_SUCCESS_ACTION_KEY:
                     handler.sendEmptyMessage(Constants.PARSING_COMPLETE);
                     ArtistInfo artistInfo = intent.getParcelableExtra(Constants.PARSE_SUCCESS_MESSAGE_KEY);
                     String siteName = intent.getStringExtra(Constants.MUSIC_SITE);
-                    Log.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_SUCCESS_ACTION_KEY, artistInfo: "
+                    LogUtils.d(TAG, "ParserBroadcastReceiver, onReceive() PARSE_SUCCESS_ACTION_KEY, artistInfo: "
                             + artistInfo.toString());
                     createIntentAndDelegateActivity(artistInfo, siteName);
                     break;
@@ -302,7 +303,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     /******************Code************************************/
 
     private void test() {
-        Log.d(TAG, "test(): ");
+        LogUtils.d(TAG, "test(): ");
         Boolean defaultChecked = PrefUtils.getPrefBoolean(Objects.requireNonNull(getContext()),
                 Constants.SETTINGS_PREF_NAME, Constants.PREF_SELECT_ALL_KEY, false);
         Intent intent = new Intent(getContext(), ListSongsActivity.class);

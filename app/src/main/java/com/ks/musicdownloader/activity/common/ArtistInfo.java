@@ -2,8 +2,9 @@ package com.ks.musicdownloader.activity.common;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 import android.util.SparseArray;
+
+import com.ks.musicdownloader.Utils.LogUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -205,11 +206,11 @@ public class ArtistInfo implements Parcelable, Serializable {
     }
 
     public void setSongCheckedStatus(String album, Integer songId, Boolean status) {
-        Log.d(TAG, "setSongCheckedStatus() ");
+        LogUtils.d(TAG, "setSongCheckedStatus() ");
         SongInfo songInfo = getSongsMap().get(songId);
         songInfo.setChecked(status);
         if (status.equals(false)) {
-            Log.d(TAG, "setSongCheckedStatus() unchecking song: " + songInfo.getName());
+            LogUtils.d(TAG, "setSongCheckedStatus() unchecking song: " + songInfo.getName());
             albumCheckedStatus.put(album, false);
         }
     }

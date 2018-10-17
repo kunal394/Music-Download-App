@@ -2,15 +2,14 @@ package com.ks.musicdownloader.service;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.CommonUtils;
+import com.ks.musicdownloader.Utils.LogUtils;
 import com.ks.musicdownloader.Utils.PrefUtils;
+import com.ks.musicdownloader.Utils.StringUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.activity.listsongs.ListSongsActivity;
@@ -40,9 +39,9 @@ public class ParserService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.d(TAG, "onHandleIntent()");
+        LogUtils.d(TAG, "onHandleIntent()");
         if (intent == null) {
-            Log.d(TAG, "onHandleIntent(): Intent null!");
+            LogUtils.d(TAG, "onHandleIntent(): Intent null!");
             updateParsingPreference();
             sendBroadcast(createParseErrorIntent(Constants.PARSE_ERROR_NULL_INTENT));
             return;
@@ -51,35 +50,35 @@ public class ParserService extends IntentService {
         url = intent.getStringExtra(Constants.DOWNLOAD_URL);
         String siteName = intent.getStringExtra(Constants.MUSIC_SITE);
         ArtistInfo artistInfo = null;
-        String error = Constants.EMPTY_STRING;
+        String error = StringUtils.emptyString();
         Boolean defaultCheckedValue = getDefaultCheckedValue();
         try {
             MusicSite musicSite = MusicSite.valueOf(siteName);
-            Log.d(TAG, "onHandleIntent(): Parsing songs for music site: " + musicSite.name() + " with url: " + url);
+            LogUtils.d(TAG, "onHandleIntent(): Parsing songs for music site: " + musicSite.name() + " with url: " + url);
             artistInfo = musicSite.getMusicParser(url).parseArtistInfo(defaultCheckedValue);
         } catch (IOException e) {
-            Log.d(TAG, "onHandleIntent(): Error found while parsing songs. Error: " + e);
+            LogUtils.d(TAG, "onHandleIntent(): Error found while parsing songs. Error: " + e);
             error = e.getMessage();
             e.printStackTrace();
         } finally {
             updateParsingPreference();
         }
         if (artistInfo == Constants.DUMMY_ARTIST_INFO) {
-            Log.d(TAG, "onHandleIntent(): Sending error broadcast with error: " + error);
+            LogUtils.d(TAG, "onHandleIntent(): Sending error broadcast with error: " + error);
             sendBroadcast(createParseErrorIntent(error));
         } else if (artistInfo == null) {
-            Log.d(TAG, "onHandleIntent(): Sending error broadcast for null artist info!");
+            LogUtils.d(TAG, "onHandleIntent(): Sending error broadcast for null artist info!");
             sendBroadcast(createParseErrorIntent(Constants.PARSE_ERROR_NULL_ARTIST_INFO));
         } else {
             artistInfo.initializeAlbumCheckedStatus(defaultCheckedValue);
             artistInfo.setUrl(url);
             if (CommonUtils.appInForeground(getApplicationContext())) {
-                Log.d(TAG, "onHandleIntent(): Sending success broadcast.");
+                LogUtils.d(TAG, "onHandleIntent(): Sending success broadcast.");
                 PrefUtils.putPrefString(getApplicationContext(), Constants.SEARCH_PREF_NAME,
                         Constants.PREF_LAST_FETCHED_URL_KEY, artistInfo.getUrl());
                 sendBroadcast(createParseSuccessIntent(siteName, artistInfo));
             } else {
-                Log.d(TAG, "onHandleIntent(): Sending success notification.");
+                LogUtils.d(TAG, "onHandleIntent(): Sending success notification.");
                 sendSuccessNotification(siteName, artistInfo);
             }
         }
@@ -126,7 +125,6 @@ public class ParserService extends IntentService {
     }
 
     private Boolean getDefaultCheckedValue() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        return settings.getBoolean(Constants.PREF_SELECT_ALL_KEY, false);
+        return PrefUtils.getPrefBoolean(this, Constants.SEARCH_PREF_NAME, Constants.PREF_SELECT_ALL_KEY, false);
     }
 }

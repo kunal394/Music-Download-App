@@ -1,12 +1,12 @@
 package com.ks.musicdownloader.songsprocessors.bandcamp;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ks.musicdownloader.Utils.LogUtils;
 import com.ks.musicdownloader.Utils.RegexUtils;
+import com.ks.musicdownloader.Utils.StringUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.activity.common.SongInfo;
@@ -37,33 +37,33 @@ public class BandcampParser extends BaseParser {
     @Override
     public ArtistInfo parseArtistInfo(Boolean defaultCheckedVal) throws IOException {
         this.defaultChecked = defaultCheckedVal;
-        Log.d(TAG, "parseArtistInfo()");
+        LogUtils.d(TAG, "parseArtistInfo()");
         artistInfo = new ArtistInfo();
         Document document = fetchDocumentFromUrl(getUrl());
         if (isArtistUrl(getUrl())) {
-            Log.d(TAG, "parseArtistInfo(): artist url found!");
+            LogUtils.d(TAG, "parseArtistInfo(): artist url found!");
             if (!setArtistNameForArtistUrl(document)) {
-                Log.d(TAG, "parseArtistInfo() could not set artist name!");
+                LogUtils.d(TAG, "parseArtistInfo() could not set artist name!");
                 return Constants.DUMMY_ARTIST_INFO;
             }
             handleArtist(document);
         } else if (isAlbumUrl(getUrl())) {
-            Log.d(TAG, "parseArtistInfo() album url found!");
+            LogUtils.d(TAG, "parseArtistInfo() album url found!");
             if (!setArtistNameForTrackOrAlbum(document)) {
-                Log.d(TAG, "parseArtistInfo() could not set artist name!");
+                LogUtils.d(TAG, "parseArtistInfo() could not set artist name!");
                 return Constants.DUMMY_ARTIST_INFO;
             }
             handleAlbum(document);
         } else if (isTrackUrl(getUrl())) {
-            Log.d(TAG, "parseArtistInfo() track url found!");
+            LogUtils.d(TAG, "parseArtistInfo() track url found!");
             if (!setArtistNameForTrackOrAlbum(document)) {
-                Log.d(TAG, "parseArtistInfo() could not set artist name!");
+                LogUtils.d(TAG, "parseArtistInfo() could not set artist name!");
                 return Constants.DUMMY_ARTIST_INFO;
             }
             handleTrack(document);
         } else {
             // should never happen
-            Log.d(TAG, "Unknown type url: " + getUrl());
+            LogUtils.d(TAG, "Unknown type url: " + getUrl());
             return Constants.DUMMY_ARTIST_INFO;
         }
         return artistInfo;
@@ -71,7 +71,7 @@ public class BandcampParser extends BaseParser {
 
     private boolean setArtistNameForArtistUrl(Document document) {
         String artistName = document.select(Constants.BANDCAMP_ARTIST_SELECTOR_FOR_ARTIST).text();
-        if (Constants.EMPTY_STRING.equals(artistName)) {
+        if (StringUtils.isEmpty(artistName)) {
             return false;
         }
         artistInfo.setArtist(artistName);
@@ -80,7 +80,7 @@ public class BandcampParser extends BaseParser {
 
     private boolean setArtistNameForTrackOrAlbum(Document document) {
         String artistName = document.select(Constants.BANDCAMP_ARTIST_SELECTOR_FOR_ALBUM_AND_TRACK).text();
-        if (Constants.EMPTY_STRING.equals(artistName)) {
+        if (StringUtils.isEmpty(artistName)) {
             return false;
         }
         artistInfo.setArtist(artistName);
@@ -101,40 +101,40 @@ public class BandcampParser extends BaseParser {
 
     // get the list of album urls and call handleTrackOrAlbum with the document of every url
     private void handleArtist(Document document) throws IOException {
-        Log.d(TAG, "handleArtist() start");
+        LogUtils.d(TAG, "handleArtist() start");
         String baseUrl = getBaseUrlForArtist();
         Elements albumElements = document.select(Constants.BANDCAMP_ALBUM_LIST_SELECTOR).select("a");
         for (Element albumElement : albumElements) {
             String destUrl = albumElement.attr("href");
             destUrl = baseUrl + destUrl;
             Document destDocument = fetchDocumentFromUrl(destUrl);
-            Log.d(TAG, "handleArtist() calling handle album for album url: " + destUrl);
+            LogUtils.d(TAG, "handleArtist() calling handle album for album url: " + destUrl);
             if (isAlbumUrl(destUrl)) {
                 handleAlbum(destDocument);
             } else if (isTrackUrl(destUrl)) {
                 handleTrack(destDocument);
             } else {
-                Log.d(TAG, "handleArtist(): This should not happen. No type found for url: " + destUrl);
+                LogUtils.d(TAG, "handleArtist(): This should not happen. No type found for url: " + destUrl);
             }
         }
     }
 
     private void handleAlbum(Document document) throws IOException {
-        Log.d(TAG, "handleAlbum() start");
+        LogUtils.d(TAG, "handleAlbum() start");
         String albumName = document.select(Constants.BANDCAMP_TRACK_TITLE_SELECTOR).text();
         parseTrackInfo(document, albumName);
     }
 
     private void handleTrack(Document document) throws IOException {
-        Log.d(TAG, "handleTrack() start");
+        LogUtils.d(TAG, "handleTrack() start");
         parseTrackInfo(document, Constants.SINGLES_ALBUM);
     }
 
     private void parseTrackInfo(Document document, String albumName) throws IOException {
-        Log.d(TAG, "parseTrackInfo()");
+        LogUtils.d(TAG, "parseTrackInfo()");
         String trackInfo = getTrackInfoForAlbum(document);
-        if (Constants.EMPTY_STRING.equals(trackInfo)) {
-            Log.d(TAG, "handleAlbum() no trackInfo found!");
+        if (StringUtils.isEmpty(trackInfo)) {
+            LogUtils.d(TAG, "handleAlbum() no trackInfo found!");
             artistInfo = Constants.DUMMY_ARTIST_INFO;
             return;
         }
@@ -148,8 +148,7 @@ public class BandcampParser extends BaseParser {
         for (JsonNode trackInfoVal : trackInfoVals) {
             String title = String.valueOf(trackInfoVal.get(Constants.BANDCAMP_TITLE_KEY)).replaceAll("\"", "");
             String downloadUrl = String.valueOf(trackInfoVal.get(Constants.BANDCAMP_FILE_KEY).get(Constants.BANDCAMP_MP3_KEY)).replaceAll("\"", "");
-            if (Constants.EMPTY_STRING.equals(downloadUrl) || Constants.NULL_STRING.equals(downloadUrl) ||
-                    Constants.EMPTY_STRING.equals(title) || Constants.NULL_STRING.equals(title)) {
+            if (StringUtils.isEmptyOrNull(title) || StringUtils.isEmptyOrNull(downloadUrl)) {
                 continue;
             }
             SongInfo songInfo = new SongInfo(songsCount++, title, downloadUrl, albumName, defaultChecked);

@@ -23,6 +23,10 @@ public class CommonUtils {
 
     private static final String TAG = CommonUtils.class.getSimpleName();
 
+    private CommonUtils() {
+        // enforcing non-instantiability since it is a utility class
+    }
+
     // works only when called from an activity
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -45,7 +49,7 @@ public class CommonUtils {
         for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : activityManager.getRunningAppProcesses()) {
             if (runningAppProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
                     || runningAppProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
-                Log.i("Foreground App: ", runningAppProcessInfo.processName);
+                Log.i(TAG, "appInForeground: " + runningAppProcessInfo.processName);
                 if (runningAppProcessInfo.processName.equals(context.getPackageName())) {
                     return true;
                 }
@@ -59,7 +63,7 @@ public class CommonUtils {
                                         Integer notificationId, Integer iconResourceId) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager == null) {
-            Log.d(TAG, "sendNotification(): noti manager null!!");
+            LogUtils.d(TAG, "sendNotification(): noti manager null!!");
             return;
         }
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {

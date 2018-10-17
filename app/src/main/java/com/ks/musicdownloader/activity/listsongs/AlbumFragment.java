@@ -14,6 +14,8 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.ks.musicdownloader.R;
+import com.ks.musicdownloader.Utils.LogUtils;
+import com.ks.musicdownloader.Utils.StringUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.activity.common.SongInfo;
@@ -56,7 +58,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
+        LogUtils.d(TAG, "onCreateView");
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_artist, container, false);
         TextView titleView = fragmentView.findViewById(R.id.fragment_title);
@@ -65,8 +67,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
         selectAllCheckView = fragmentView.findViewById(R.id.check_select_all);
         selectAllCheckView.setChecked(artistInfo.getAlbumCheckedStatus().get(album));
         selectAllCheckView.setOnClickListener(this);
-        String checkAllText = artistInfo.getCheckedSongsCountInAlbum(album) + "/" + artistInfo.getSongsCountInAlbum(album) + " selected";
-        selectAllCheckView.setText(checkAllText);
+        selectAllCheckView.setText(getCheckAllText(artistInfo.getCheckedSongsCountInAlbum(album)));
 
         // set adapter for recycler view
         createAdapterCallback();
@@ -96,8 +97,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
                 if (newStatus) {
                     checkedCount = artistInfo.getSongsList(album).size();
                 }
-                String checkAllText = checkedCount + "/" + artistInfo.getSongsCountInAlbum(album) + " selected";
-                selectAllCheckView.setText(checkAllText);
+                selectAllCheckView.setText(getCheckAllText(checkedCount));
             default:
                 break;
         }
@@ -110,6 +110,15 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
         Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().remove(this).commit();
     }
 
+    private String getCheckAllText(Integer checkedSongsCountInAlbum) {
+        return StringUtils.add(checkedSongsCountInAlbum.toString(), "/",
+                artistInfo.getSongsCountInAlbum(album).toString(), " selected");
+    }
+
+    /******************Listeners************************************/
+    /*********************And************************************/
+    /******************Callbacks************************************/
+
     private void createAdapterCallback() {
         adapterCallback = new AlbumAdapterCallback() {
 
@@ -117,8 +126,7 @@ public class AlbumFragment extends Fragment implements View.OnClickListener {
             public void setSongCheckedStatus(Integer songId, Boolean status, Integer checkedCount) {
                 artistInfo.setSongCheckedStatus(album, songId, status);
                 selectAllCheckView.setChecked(artistInfo.getAlbumCheckedStatus(album));
-                String checkAllText = checkedCount + "/" + artistInfo.getSongsCountInAlbum(album) + " selected";
-                selectAllCheckView.setText(checkAllText);
+                selectAllCheckView.setText(getCheckAllText(checkedCount));
             }
 
             @Override

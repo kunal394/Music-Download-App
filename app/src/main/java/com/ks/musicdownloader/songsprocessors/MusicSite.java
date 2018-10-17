@@ -6,6 +6,7 @@ import android.view.SubMenu;
 
 import com.ks.musicdownloader.R;
 import com.ks.musicdownloader.Utils.RegexUtils;
+import com.ks.musicdownloader.Utils.StringUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.songsprocessors.bandcamp.BandcampParser;
@@ -27,8 +28,8 @@ public enum MusicSite implements MusicSiteHelper {
 
         @Override
         public String createFilePath(String externalDir, String album, String song, String artist) {
-            return externalDir + File.separator + artist + File.separator
-                    + album + File.separator + song + Constants.MP3_EXTENSION;
+            return StringUtils.add(externalDir, File.separator, artist, File.separator
+                    , album, File.separator, song, Constants.MP3_EXTENSION);
         }
 
         @Override
@@ -36,14 +37,17 @@ public enum MusicSite implements MusicSiteHelper {
 
             // create artist menu
             Menu menu = navView.getMenu();
-            SubMenu artistSubMenu = menu.addSubMenu(R.string.artist_group_id, Menu.NONE, 100, R.string.artist_info);
-            artistSubMenu.add(R.string.artist_group_id, Menu.NONE, 100, artistInfo.getArtist());
+            SubMenu artistSubMenu = menu.addSubMenu(R.string.artist_group_id, Menu.NONE,
+                    Constants.ARTIST_INFO_MENU_PRIORITY, R.string.artist_info);
+            artistSubMenu.add(R.string.artist_group_id, R.string.artist_item_id,
+                    Constants.ARTIST_INFO_MENU_PRIORITY, artistInfo.getArtist());
             artistSubMenu.setGroupCheckable(R.string.artist_group_id, true, true);
 
             // create album menu
-            SubMenu albumSubMenu = menu.addSubMenu(R.string.album_group_id, Menu.NONE, 105, R.string.album_info);
+            SubMenu albumSubMenu = menu.addSubMenu(R.string.album_group_id, Menu.NONE,
+                    Constants.ALBUM_INFO_MENU_PRIORITY, R.string.album_info);
             for (String album : artistInfo.getAlbumInfo().keySet()) {
-                albumSubMenu.add(R.string.album_group_id, Menu.NONE, 105, album);
+                albumSubMenu.add(R.string.album_group_id, R.string.album_item_id, Constants.ALBUM_INFO_MENU_PRIORITY, album);
             }
             albumSubMenu.setGroupCheckable(R.string.album_group_id, true, true);
         }

@@ -110,7 +110,7 @@ public class SongInfo implements Parcelable, Serializable {
         dest.writeString(name);
         dest.writeString(url);
         dest.writeString(album);
-        dest.writeByte((byte) (checked ? 1:0));
+        dest.writeByte((byte) (checked ? 1 : 0));
     }
 
     public String getAlbum() {

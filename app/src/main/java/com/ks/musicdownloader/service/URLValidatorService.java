@@ -3,10 +3,11 @@ package com.ks.musicdownloader.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
+import com.ks.musicdownloader.Utils.LogUtils;
 import com.ks.musicdownloader.Utils.PrefUtils;
 import com.ks.musicdownloader.Utils.RegexUtils;
+import com.ks.musicdownloader.Utils.StringUtils;
 import com.ks.musicdownloader.activity.common.Constants;
 import com.ks.musicdownloader.songsprocessors.MusicSite;
 import com.ks.musicdownloader.songsprocessors.MusicSiteFactory;
@@ -42,20 +43,20 @@ public class URLValidatorService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.d(TAG, "onHandleIntent()");
+        LogUtils.d(TAG, "onHandleIntent()");
         if (intent == null) {
-            Log.d(TAG, "onHandleIntent(): Intent null!");
+            LogUtils.d(TAG, "onHandleIntent(): Intent null!");
             sendErrorBroadCast(Constants.VALIDATE_ERROR_NULL_INTENT);
             return;
         }
 
         url = intent.getStringExtra(Constants.DOWNLOAD_URL);
-        if (Constants.EMPTY_STRING.equals(url)) {
-            Log.d(TAG, "onHandleIntent(): Empty url!");
+        if (StringUtils.isEmpty(url)) {
+            LogUtils.d(TAG, "onHandleIntent(): Empty url!");
             sendErrorBroadCast(Constants.NO_URL_PROVIDED_MESSAGE);
             return;
         } else if (!RegexUtils.isAValidUrl(url)) {
-            Log.d(TAG, "onHandleIntent(): Invalid url: " + url);
+            LogUtils.d(TAG, "onHandleIntent(): Invalid url: " + url);
             sendErrorBroadCast(Constants.INVALID_URL_MESSAGE);
             return;
         }
@@ -63,11 +64,11 @@ public class URLValidatorService extends IntentService {
         url = RegexUtils.prependHTTPSPartIfNotPresent(url);
         MusicSite site = MusicSiteFactory.getInstance().getSite(url);
         if (null == site) {
-            Log.d(TAG, "onHandleIntent(): Unknown site: " + url);
+            LogUtils.d(TAG, "onHandleIntent(): Unknown site: " + url);
             sendErrorBroadCast(Constants.UNSUPPORTED_SITE_MESSAGE);
         } else {
             if (remoteUrlExists()) {
-                Log.d(TAG, "onHandleIntent(): site: " + site.name());
+                LogUtils.d(TAG, "onHandleIntent(): site: " + site.name());
                 sendSuccessBroadcast();
                 startParserService(site);
             } else {
@@ -80,7 +81,7 @@ public class URLValidatorService extends IntentService {
     /******************Methods************************************/
 
     private void sendErrorBroadCast(String error) {
-        Log.d(TAG, "sendErrorBroadCast()");
+        LogUtils.d(TAG, "sendErrorBroadCast()");
         PrefUtils.putPrefInt(getApplicationContext(), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_COMPLETE);
         Intent intent = new Intent();
@@ -90,7 +91,7 @@ public class URLValidatorService extends IntentService {
     }
 
     private void sendSuccessBroadcast() {
-        Log.d(TAG, "sendSuccessBroadcast()");
+        LogUtils.d(TAG, "sendSuccessBroadcast()");
         PrefUtils.putPrefInt(getApplicationContext(), Constants.SEARCH_PREF_NAME,
                 Constants.PREF_PARSING_STATUS_KEY, Constants.PARSING_PROGRESS);
         Intent intent = new Intent();
@@ -99,7 +100,7 @@ public class URLValidatorService extends IntentService {
     }
 
     private void startParserService(MusicSite site) {
-        Log.d(TAG, "startParserService()");
+        LogUtils.d(TAG, "startParserService()");
         Intent intent = new Intent(getApplicationContext(), ParserService.class);
         intent.putExtra(Constants.DOWNLOAD_URL, url);
         intent.putExtra(Constants.MUSIC_SITE, site.name());
@@ -120,7 +121,7 @@ public class URLValidatorService extends IntentService {
             return HttpURLConnection.HTTP_OK == httpURLConnection.getResponseCode();
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d(TAG, "Error: " + e + " while validating url: " + url);
+            LogUtils.d(TAG, "Error: " + e + " while validating url: " + url);
             return false;
         }
     }

@@ -20,20 +20,20 @@
             android:id="@+id/check_select_all"
             android:layout_width="361dp"
             android:layout_height="29dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="40dp"
-            android:layout_marginEnd="8dp"
             android:background="@drawable/selector"
             android:checked="false"
-            android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
             android:drawableEnd="@null"
+            android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
             android:gravity="center_vertical"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="#22928E"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fragment_title" />
+            app:layout_constraintTop_toBottomOf="@id/fragment_title" />
 
         <View
             android:id="@+id/check_select_all_divider"
@@ -48,18 +48,17 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/artist_recycler_view"
-            android:layout_width="361dp"
-            android:layout_height="390dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp"
             android:padding="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/download_button"
+            app:layout_constraintBottom_toBottomOf="@+id/download_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.266"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/check_select_all_divider">
+            app:layout_constraintTop_toBottomOf="@id/check_select_all_divider">
             <!--android:background="@drawable/recycler_view_border"-->
-
         </android.support.v7.widget.RecyclerView>
 
         <android.support.design.widget.FloatingActionButton
@@ -68,8 +67,8 @@
             android:layout_height="56dp"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@android:drawable/stat_sys_download" />

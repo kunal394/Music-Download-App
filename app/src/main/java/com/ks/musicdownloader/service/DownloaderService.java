@@ -11,11 +11,11 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
 
 import com.ks.musicdownloader.Utils.FileUtils;
+import com.ks.musicdownloader.Utils.LogUtils;
 import com.ks.musicdownloader.Utils.PrefUtils;
 import com.ks.musicdownloader.activity.common.ArtistInfo;
 import com.ks.musicdownloader.activity.common.Constants;
@@ -54,9 +54,9 @@ public class DownloaderService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.d(TAG, "onHandleIntent: ");
+        LogUtils.d(TAG, "onHandleIntent: ");
         if (intent == null) {
-            Log.d(TAG, "onHandleIntent(): Intent null!");
+            LogUtils.d(TAG, "onHandleIntent(): Intent null!");
             return;
         }
         getIntentExtras(intent);
@@ -75,12 +75,12 @@ public class DownloaderService extends IntentService {
     }
 
     private void getIntentExtras(Intent intent) {
-        Log.d(TAG, "getIntentExtras(): ");
+        LogUtils.d(TAG, "getIntentExtras(): ");
         parsedArtistInfo = intent.getParcelableExtra(Constants.PARSED_ARTIST_INFO);
         String siteName = intent.getStringExtra(Constants.MUSIC_SITE);
-        Log.d(TAG, "getIntentExtras() sitename: " + siteName);
+        LogUtils.d(TAG, "getIntentExtras() sitename: " + siteName);
         musicSite = Enum.valueOf(MusicSite.class, siteName);
-        Log.d(TAG, "getIntentExtras() artInfo: " + parsedArtistInfo.toString());
+        LogUtils.d(TAG, "getIntentExtras() artInfo: " + parsedArtistInfo.toString());
     }
 
     private void createBroadcastReceiverForCompletedDownloads() {
@@ -88,7 +88,7 @@ public class DownloaderService extends IntentService {
             @Override
             public void onReceive(Context context, Intent intent) {
                 long downloadedReferenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-                Log.d(TAG, "onCompleteBroadcastReceiver onReceive() download id: " + downloadedReferenceId);
+                LogUtils.d(TAG, "onCompleteBroadcastReceiver onReceive() download id: " + downloadedReferenceId);
                 if (downloadedReferenceId == -1) {
                     return;
                 }
@@ -101,11 +101,11 @@ public class DownloaderService extends IntentService {
         handler = new Handler(handlerThread.getLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                Log.d(TAG, "handleMessage()");
+                LogUtils.d(TAG, "handleMessage()");
                 super.handleMessage(msg);
                 switch (msg.what) {
                     case Constants.ENQUEUE_SONGS:
-                        Log.d(TAG, "handleMessage() enqueue songs");
+                        LogUtils.d(TAG, "handleMessage() enqueue songs");
                         enqueueSongsForDownload();
                         break;
                 }
@@ -114,17 +114,17 @@ public class DownloaderService extends IntentService {
     }
 
     private void enqueueSongsForDownload() {
-        Log.d(TAG, "enqueueSongsForDownload()");
+        LogUtils.d(TAG, "enqueueSongsForDownload()");
         songsDownloadReferences = new LongSparseArray<>();
         if (dm == null) {
-            Log.d(TAG, "startDownload(): dm found null!");
+            LogUtils.d(TAG, "startDownload(): dm found null!");
             return;
         }
         SparseArray<SongInfo> songsMap = parsedArtistInfo.getSongsMap();
         for (int i = 0; i < songsMap.size(); i++) {
             SongInfo songInfo = songsMap.valueAt(i);
             if (!songInfo.isChecked()) {
-                Log.d(TAG, "Song: " + songInfo.getName() + " of album: " + songInfo.getAlbum()
+                LogUtils.d(TAG, "Song: " + songInfo.getName() + " of album: " + songInfo.getAlbum()
                         + " of artist: " + parsedArtistInfo.getArtist() + " not marked for download.");
                 continue;
             }
@@ -132,10 +132,10 @@ public class DownloaderService extends IntentService {
                     Constants.SETTINGS_PREF_NAME, Constants.PREF_DEFAULT_SONGS_FOLDER_KEY, Constants.MUSIC_DIRECTORY)
                     , songInfo.getAlbum(), songInfo.getName(), parsedArtistInfo.getArtist());
             if (FileUtils.doesFileExists(filePath)) {
-                Log.d(TAG, "file: " + filePath + " already exists. So not downloading again.");
+                LogUtils.d(TAG, "file: " + filePath + " already exists. So not downloading again.");
                 continue;
             }
-            Log.d(TAG, "enqueueSongsForDownload() adding song: " + songInfo.getName() + " for download.");
+            LogUtils.d(TAG, "enqueueSongsForDownload() adding song: " + songInfo.getName() + " for download.");
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(songInfo.getUrl()));
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             request.setDestinationUri(Uri.parse(filePath));

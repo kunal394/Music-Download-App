@@ -6,6 +6,10 @@ import android.widget.Toast;
 @SuppressWarnings("DanglingJavadoc")
 public class ToastUtils {
 
+    private ToastUtils() {
+        // enforcing non-instantiability since it is a utility class
+    }
+
     public static void displayLongToast(Context context, String message) {
         displayToast(context, message, Toast.LENGTH_LONG);
     }

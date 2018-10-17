@@ -1,4 +1,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:orderInCategory="105"
+        android:title="@string/downloads_nav_group_title">
+        <menu>
+            <group
+                android:id="@+id/nav_downloads"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_completed_downloads"
+                    android:title="@string/nav_completed_downloads_title" />
+                <item
+                    android:id="@+id/nav_ongoing_downloads"
+                    android:title="@string/nav_ongoing_downloads_title" />
+            </group>
+        </menu>
+    </item>
+
     <group
         android:id="@+id/nav_settings_and_source"
         android:checkableBehavior="single"
@@ -6,10 +23,10 @@
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"
-            android:title="@string/nav_settings" />
+            android:title="@string/nav_settings_title" />
         <item
             android:id="@+id/nav_source"
             android:icon="@drawable/ic_source"
-            android:title="@string/nav_source" />
+            android:title="@string/nav_source_title" />
     </group>
 </menu>

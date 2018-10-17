@@ -33,13 +33,8 @@ public class Constants {
     public static final String INVALID_URL_MESSAGE = "The provided url is invalid!";
     public static final String UNSUPPORTED_SITE_MESSAGE = "The url is either unsupported or has no media in it!";
     public static final String NON_EXISTENT_URL_MESSAGE = "The provided url does not exists.";
-    public static final String VALID_URL_MESSAGE = "VALID_URL";
     public static final String PARSE_ERROR_MESSAGE = "Error while extracting songs from the url!";
     public static final String PARSING_IN_PROGRESS = "Previous extraction is already in progress.";
-
-    // String Constants
-    public static final String EMPTY_STRING = "";
-    public static final String NULL_STRING = "null";
 
     // Request Methods
     public static final String REQUEST_HEAD = "HEAD";
@@ -83,8 +78,6 @@ public class Constants {
     public static final int PARSE_ERROR = 4;
     public static final int HIDE_LAST_SEARCH_VIEW = 5;
     public static final int DISPLAY_LAST_SEARCH_VIEW = 6;
-    public static final int DISPLAY_ARTIST_FRAGMENT = 1;
-    public static final int DISPLAY_OTHER_FRAGMENTS = 2;
 
     // Class Local Constants
     public static final String AUDIO_MIME_TYPE = "audio/*";
@@ -114,4 +107,7 @@ public class Constants {
     public static final long DEFAULT_NOTIFICATION_TIMEOUT = 120000;
     public static final String NOTI_ID_KEY = "NOTI_ID_KEY";
 
+    // Menu Constants
+    public static final Integer ARTIST_INFO_MENU_PRIORITY = 100; // lower the priority, higher the menu item's position
+    public static final Integer ALBUM_INFO_MENU_PRIORITY = 101;
 }
