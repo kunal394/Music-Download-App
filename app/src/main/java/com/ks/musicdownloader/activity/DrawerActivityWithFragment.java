@@ -1,6 +1,9 @@
 package com.ks.musicdownloader.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -33,6 +36,7 @@ public abstract class DrawerActivityWithFragment extends AppCompatActivity {
     protected DrawerLayout drawerLayout;
     protected ActionBar actionBar;
     protected NavigationView navigationView;
+    protected Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +65,8 @@ public abstract class DrawerActivityWithFragment extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(createNavigationViewListener());
 
         inflateActivitySpecificMenu();
+        createHandler();
         displayInitialFragment();
-    }
-
-    @Override
-    protected void onStart() {
-        LogUtils.d(TAG, "onStart: ");
-        super.onStart();
-
     }
 
     protected void displaySettingsFragment() {
@@ -87,15 +85,21 @@ public abstract class DrawerActivityWithFragment extends AppCompatActivity {
         displayFragment(new UnderConstructionFragment(), R.string.nav_completed_downloads_title, Constants.OTHER_FRAGMENTS);
     }
 
-    protected void displayFragment(Fragment fragment, int stringRes, int selectedFragment) {
+    protected void displayFragment(final Fragment fragment, final int stringRes, int selectedFragment) {
         LogUtils.d(TAG, "displayFragment: ");
         CURRENTLY_SELECTED_FRAGMENT = selectedFragment;
-        setActionBarTitle(stringRes);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content_frame, fragment);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.commit();
+        Runnable fragmentTransactionRunnable = new Runnable() {
+            @Override
+            public void run() {
+                setActionBarTitle(stringRes);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_frame, fragment);
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                fragmentTransaction.commit();
+            }
+        };
+        handler.postDelayed(fragmentTransactionRunnable, Constants.FRAGMENT_TRANSACTION_DELAY);
     }
 
     protected void markMenuItemChecked(int resid, boolean checked) {
@@ -113,6 +117,11 @@ public abstract class DrawerActivityWithFragment extends AppCompatActivity {
         // no matter how many times other menu items are selected.
     }
 
+    /**
+     * can be used by the activities to handle their local messages
+     */
+    protected void handleLocalMessage() {
+    }
 
     protected abstract void inflateActivitySpecificMenu();
 
@@ -135,6 +144,21 @@ public abstract class DrawerActivityWithFragment extends AppCompatActivity {
     /******************Listeners************************************/
     /*********************And************************************/
     /******************Callbacks************************************/
+
+    private void createHandler() {
+        handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                LogUtils.d(TAG, "handleMessage()");
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    default:
+                        handleLocalMessage();
+                        break;
+                }
+            }
+        };
+    }
 
     @NonNull
     protected NavigationView.OnNavigationItemSelectedListener createNavigationViewListener() {

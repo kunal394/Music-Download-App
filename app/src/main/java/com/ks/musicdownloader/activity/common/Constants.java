@@ -78,6 +78,7 @@ public class Constants {
     public static final int PARSE_ERROR = 4;
     public static final int HIDE_LAST_SEARCH_VIEW = 5;
     public static final int DISPLAY_LAST_SEARCH_VIEW = 6;
+    public static final int FRAGMENT_TRANSACTION = 1;
 
     // Class Local Constants
     public static final String AUDIO_MIME_TYPE = "audio/*";
@@ -85,6 +86,7 @@ public class Constants {
     public static String MP3_EXTENSION = ".mp3";
     public static final int OTHER_FRAGMENTS = 2;
     public static final int NO_FRAGMENT = 0;
+    public static final long FRAGMENT_TRANSACTION_DELAY = 1000;
 
     // Shared Pref Constants
     public static final String SETTINGS_PREF_NAME = "settings_preferences";

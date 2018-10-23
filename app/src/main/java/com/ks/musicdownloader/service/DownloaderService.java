@@ -36,8 +36,8 @@ public class DownloaderService extends IntentService {
     private DownloadManager dm;
     private BroadcastReceiver onCompleteBroadcastReceiver;
 
-    HandlerThread handlerThread = new HandlerThread(Constants.DOWNLOAD_THREAD);
-    Handler handler;
+    private HandlerThread handlerThread = new HandlerThread(Constants.DOWNLOAD_THREAD);
+    private Handler handler;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
