@@ -27,4 +27,19 @@
         <item name="android:text">@string/last_fetched_url</item>
     </style>
 
+    <style name="AppTheme.CheckedTextViewStyle">
+        <item name="android:background">@drawable/selector</item>
+        <item name="android:checked">false</item>
+        <item name="android:drawableStart">@drawable/ic_music_note_black_24dp</item>
+        <item name="android:drawableEnd">?android:attr/listChoiceIndicatorMultiple</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+        <item name="android:layout_marginEnd">8dp</item>
+    </style>
+
+    <style name="AppTheme.SelectAllCheckedTextViewStyle" parent="AppTheme.CheckedTextViewStyle">
+        <item name="android:textColor">#22928E</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

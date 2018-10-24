@@ -10,13 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:background="@drawable/selector"
-        android:checked="false"
-        android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
-        android:drawableEnd="@null"
-        android:gravity="center_vertical"
-        android:ellipsize="end"
-        android:textAppearance="?android:textAppearanceListItem" />
+        style="@style/AppTheme.CheckedTextViewStyle" />
 
     <View
         android:layout_width="match_parent"

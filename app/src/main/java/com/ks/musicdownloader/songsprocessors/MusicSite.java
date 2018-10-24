@@ -40,14 +40,16 @@ public enum MusicSite implements MusicSiteHelper {
             SubMenu artistSubMenu = menu.addSubMenu(R.string.artist_group_id, Menu.NONE,
                     Constants.ARTIST_INFO_MENU_PRIORITY, R.string.artist_info);
             artistSubMenu.add(R.string.artist_group_id, R.string.artist_item_id,
-                    Constants.ARTIST_INFO_MENU_PRIORITY, artistInfo.getArtist());
+                    Constants.ARTIST_INFO_MENU_PRIORITY, artistInfo.getArtist())
+                    .setIcon(R.drawable.ic_album_black_24dp);
             artistSubMenu.setGroupCheckable(R.string.artist_group_id, true, true);
 
             // create album menu
             SubMenu albumSubMenu = menu.addSubMenu(R.string.album_group_id, Menu.NONE,
                     Constants.ALBUM_INFO_MENU_PRIORITY, R.string.album_info);
             for (String album : artistInfo.getAlbumInfo().keySet()) {
-                albumSubMenu.add(R.string.album_group_id, R.string.album_item_id, Constants.ALBUM_INFO_MENU_PRIORITY, album);
+                albumSubMenu.add(R.string.album_group_id, R.string.album_item_id, Constants.ALBUM_INFO_MENU_PRIORITY, album)
+                        .setIcon(R.drawable.ic_album_black_24dp);
             }
             albumSubMenu.setGroupCheckable(R.string.album_group_id, true, true);
         }

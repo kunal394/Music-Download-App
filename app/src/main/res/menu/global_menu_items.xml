@@ -8,9 +8,11 @@
                 android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_completed_downloads"
+                    android:icon="@drawable/ic_completed_downloads_black_24dp"
                     android:title="@string/nav_completed_downloads_title" />
                 <item
                     android:id="@+id/nav_ongoing_downloads"
+                    android:icon="@drawable/ic_on_going_downloads_24dp"
                     android:title="@string/nav_ongoing_downloads_title" />
             </group>
         </menu>
