@@ -42,14 +42,13 @@ public class ListSongsActivity extends DrawerActivityWithFragment implements Fra
         }
     }
 
-    @Override
-    public void onBackPressed() {
+    public boolean backPressed() {
         LogUtils.d(TAG, "onBackPressed: ");
         if (CURRENTLY_SELECTED_FRAGMENT != ARTIST_FRAGMENT) {
             displayArtistFragment();
-        } else {
-            super.onBackPressed();
+            return true;
         }
+        return false;
     }
 
     @Override

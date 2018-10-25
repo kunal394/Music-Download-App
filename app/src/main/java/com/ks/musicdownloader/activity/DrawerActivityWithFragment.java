@@ -9,6 +9,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -117,6 +118,19 @@ public abstract class DrawerActivityWithFragment extends AppCompatActivity {
         // no matter how many times other menu items are selected.
     }
 
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawers();
+            return;
+        }
+
+        // if the activity does not consumes the back press, then call super
+        if (!backPressed()) {
+            super.onBackPressed();
+        }
+    }
+
     /**
      * can be used by the activities to handle their local messages
      */
@@ -130,6 +144,8 @@ public abstract class DrawerActivityWithFragment extends AppCompatActivity {
     protected abstract void init();
 
     protected abstract void checkForActivityRelatedMenuItems(MenuItem menuItem);
+
+    protected abstract boolean backPressed();
 
     /******************Private************************************/
     /******************Methods************************************/

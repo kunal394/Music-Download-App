@@ -65,13 +65,12 @@ public class MainActivity extends DrawerActivityWithFragment {
         }
     }
 
-    @Override
-    public void onBackPressed() {
+    protected boolean backPressed() {
         if (CURRENTLY_SELECTED_FRAGMENT != SEARCH_FRAGMENT && CURRENTLY_SELECTED_FRAGMENT != Constants.NO_FRAGMENT) {
             displaySearchFragment();
-        } else {
-            super.onBackPressed();
+            return true;
         }
+        return false;
     }
 
     @Override
